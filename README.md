@@ -88,8 +88,8 @@ Entity Layer:   [Evergrande] ─────────────> [Minsheng 
 
 - [x] **Stage 1**: Infrastructure & connection test ✅
 - [x] **Stage 2**: Minimal schema with Risk Layer + Neo4j backend ✅
-- [ ] **Stage 3**: Sample Evergrande data
-- [ ] **Stage 4**: Event evolution methods
+- [x] **Stage 3**: Sample Evergrande data (20 events, 10 entities, 10 risks, 190 evolution links) ✅
+- [ ] **Stage 4**: Event evolution methods (6 algorithms)
 - [ ] **Stage 5**: Risk queries (Cypher/SPARQL)
 - [ ] **Stage 6**: Three-layer visualization
 - [ ] **Stage 7**: Mini ABM (optional)
