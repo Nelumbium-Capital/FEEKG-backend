@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:feekg="http://feekg.org/ontology#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_002_to_evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_004"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.3875</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_009">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>OperationalRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.7</feekg:score>
+    <feekg:severity>high</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_002"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.37</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_007">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>ReputationalRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.75</feekg:score>
+    <feekg:severity>high</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>debt_default</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-20</feekg:date>
+    <feekg:description>Evergrande missed $83.5 million bond coupon payment (30-day grace period started)</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_016">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_016"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.22117647058823528</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_009">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_009"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.215</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_hkex">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>Hong Kong Stock Exchange</feekg:name>
+    <feekg:entityType>Exchange</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_002_to_evt_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_003"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.3775</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_010">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>regulatory_intervention</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-24</feekg:date>
+    <feekg:description>PBOC injected 120 billion yuan into banking system to ease liquidity concerns</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_pboc"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_010">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_010"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.36</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_009">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>contagion</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-23</feekg:date>
+    <feekg:description>Country Garden stock fell 12% on contagion fears from Evergrande crisis</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_hkex"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_country_garden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_country_garden">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>Country Garden Holdings</feekg:name>
+    <feekg:entityType>Company</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_002_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.42812500000000003</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>SystemicRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.55</feekg:score>
+    <feekg:severity>high</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_minsheng_bank"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>ContagionRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.45</feekg:score>
+    <feekg:severity>medium</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_country_garden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_moodys">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>Moody's</feekg:name>
+    <feekg:entityType>RatingAgency</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_010">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>ContagionRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5</feekg:score>
+    <feekg:severity>medium</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_anbang"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_016">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>asset_seizure</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2022-01-15</feekg:date>
+    <feekg:description>Chinese court seized Evergrande bank deposits worth $20 million</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_011">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_011"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.365</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>missed_payment</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-08</feekg:date>
+    <feekg:description>Evergrande missed interest payment deadline for Minsheng Bank wealth management products</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_minsheng_bank"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_011">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>debt_default</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-10-20</feekg:date>
+    <feekg:description>Grace period expired on $83.5M payment - official default declared</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_minsheng_bank">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>China Minsheng Bank</feekg:name>
+    <feekg:entityType>Bank</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_008">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>stock_crash</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-22</feekg:date>
+    <feekg:description>Evergrande stock plunged 19%, hitting 11-year low</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_hkex"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_002_to_evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_005"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.41583333333333333</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_pboc">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>People's Bank of China</feekg:name>
+    <feekg:entityType>Regulator</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_sp">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>S&amp;P Global Ratings</feekg:name>
+    <feekg:entityType>RatingAgency</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_008">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>RegulatoryRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:score>
+    <feekg:severity>medium</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_001">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>LiquidityRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.7</feekg:score>
+    <feekg:severity>high</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.365</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_007">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>credit_downgrade</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-21</feekg:date>
+    <feekg:description>Fitch downgraded Evergrande to CC from CCC+, indicating default imminent</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_fitch"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>regulatory_pressure</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2020-08-20</feekg:date>
+    <feekg:description>Chinese government introduced 'Three Red Lines' policy to limit real estate borrowing</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_pboc"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_002"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_003"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_004"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_005"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_006"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_007"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_008"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_009"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_010"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_011"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_012"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_013"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_016"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_017"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_018"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_020"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>liquidity_warning</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-05-10</feekg:date>
+    <feekg:description>Evergrande reported cash crunch, started selling assets and offering discounts</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_003"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_004"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_005"/>
+    <feekg:evolvesTo rdf:resource="http://feekg.org/ontology#evt_006"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_013">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>missed_payment</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-11-10</feekg:date>
+    <feekg:description>Missed another $148 million in offshore bond coupon payments</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_018">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>contagion</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2022-04-10</feekg:date>
+    <feekg:description>Anbang Insurance reported significant losses due to Evergrande exposure</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_anbang"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_012">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_012"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.38666666666666666</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_008">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_008"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.27166666666666667</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_013">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_013"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.375</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_004"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.2916666666666667</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>CreditRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.8</feekg:score>
+    <feekg:severity>critical</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_020">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_020"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.495</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_020">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>regulatory_pressure</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2022-08-19</feekg:date>
+    <feekg:description>Regulators ordered Evergrande to maintain financial stability and prioritize project delivery</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_pboc"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>SolvencyRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.85</feekg:score>
+    <feekg:severity>critical</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_fitch">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>Fitch Ratings</feekg:name>
+    <feekg:entityType>RatingAgency</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_evergrande">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>China Evergrande Group</feekg:name>
+    <feekg:entityType>Company</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_017">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_017"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.38666666666666666</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_005"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.3416666666666667</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#risk_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskType>MarketRisk</feekg:riskType>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.65</feekg:score>
+    <feekg:severity>high</feekg:severity>
+    <feekg:targetsEntity rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_003"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.38666666666666666</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>credit_downgrade</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-06-15</feekg:date>
+    <feekg:description>S&amp;P downgraded Evergrande credit rating to B+ with negative outlook</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_sp"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_007">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_007"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.38666666666666666</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_015">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>restructuring_announcement</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-12-06</feekg:date>
+    <feekg:description>Evergrande announced it hired financial advisers for offshore debt restructuring</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_019">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>debt_restructuring</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2022-07-11</feekg:date>
+    <feekg:description>Evergrande formally proposed $300 billion debt restructuring plan</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_017">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>credit_downgrade</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2022-03-18</feekg:date>
+    <feekg:description>Fitch downgraded Evergrande to 'Restricted Default' (RD)</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_fitch"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>stock_decline</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-07-12</feekg:date>
+    <feekg:description>Evergrande stock fell 15% in one day amid liquidity concerns</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_hkex"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_014">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>trading_halt</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-12-03</feekg:date>
+    <feekg:description>Evergrande shares suspended from trading on Hong Kong Stock Exchange</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_hkex"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_012">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventType>credit_downgrade</feekg:eventType>
+    <feekg:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-10-21</feekg:date>
+    <feekg:description>Moody's downgraded Evergrande to Ca from Caa1 (substantial default risk)</feekg:description>
+    <feekg:hasActor rdf:resource="http://feekg.org/ontology#ent_moodys"/>
+    <feekg:hasTarget rdf:resource="http://feekg.org/ontology#ent_evergrande"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#evt_001_to_evt_018">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/ontology#evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/ontology#evt_018"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.215</feekg:score>
+    <feekg:causality rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</feekg:causality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_hui_ka_yan">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>Hui Ka Yan</feekg:name>
+    <feekg:entityType>Person</feekg:entityType>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/ontology#ent_anbang">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:name>Anbang Insurance</feekg:name>
+    <feekg:entityType>Company</feekg:entityType>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:feekg="http://feekg.org/ontology#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_002</feekg:entityId>
+    <feekg:name>Barclays</feekg:name>
+    <feekg:entityType>company</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_004"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_000_to_evt_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_000"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_002"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.40750000000000003</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.41666666666666663</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventId>evt_006</feekg:eventId>
+    <feekg:date>2008-09-16</feekg:date>
+    <feekg:eventType>government_intervention</feekg:eventType>
+    <feekg:actor>unknown</feekg:actor>
+    <feekg:headline>Fed bails out AIG</feekg:headline>
+    <feekg:description>Federal Reserve provided $85 billion bailout to AIG</feekg:description>
+    <feekg:source>Capital IQ</feekg:source>
+    <feekg:sentiment rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:sentiment>
+    <feekg:triggers rdf:resource="http://feekg.org/lehman/risk_evt_006"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_001">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventId>evt_001</feekg:eventId>
+    <feekg:date>2008-03-14</feekg:date>
+    <feekg:eventType>unknown</feekg:eventType>
+    <feekg:actor>unknown</feekg:actor>
+    <feekg:headline>Bear Stearns rescued by JPMorgan</feekg:headline>
+    <feekg:description>JPMorgan acquired Bear Stearns with Federal Reserve backing</feekg:description>
+    <feekg:source>Capital IQ</feekg:source>
+    <feekg:sentiment rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:sentiment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventId>evt_005</feekg:eventId>
+    <feekg:date>2008-09-16</feekg:date>
+    <feekg:eventType>unknown</feekg:eventType>
+    <feekg:actor>unknown</feekg:actor>
+    <feekg:headline>Markets plunge on Lehman bankruptcy</feekg:headline>
+    <feekg:description>Global stock markets fell sharply following Lehman's bankruptcy filing</feekg:description>
+    <feekg:source>Capital IQ</feekg:source>
+    <feekg:sentiment rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:sentiment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_000_to_evt_001">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_000"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_001"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.34500000000000003</feekg:score>
+    <feekg:method>composite</feekg:method>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_003_to_evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_003"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_005"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.4897029090235066</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:temporalScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5488116360940264</feekg:temporalScore>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.049999999999999996</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_009">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_009</feekg:entityId>
+    <feekg:name>Lehman Brothers</feekg:name>
+    <feekg:entityType>investment_bank</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_000"/>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_002"/>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_003"/>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_004"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_005_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_005"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.34500000000000003</feekg:score>
+    <feekg:method>composite</feekg:method>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_000_to_evt_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_000"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_003"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.35307692307692307</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.05384615384615385</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/risk_evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskId>risk_evt_004</feekg:riskId>
+    <feekg:riskType>None</feekg:riskType>
+    <feekg:severity>critical</feekg:severity>
+    <feekg:likelihood rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.95</feekg:likelihood>
+    <feekg:description>Risk stemming from: Lehman Brothers files for bankruptcy</feekg:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventId>evt_004</feekg:eventId>
+    <feekg:date>2008-09-15</feekg:date>
+    <feekg:eventType>bankruptcy</feekg:eventType>
+    <feekg:actor>unknown</feekg:actor>
+    <feekg:headline>Lehman Brothers files for bankruptcy</feekg:headline>
+    <feekg:description>Lehman Brothers Holdings Inc filed for Chapter 11 bankruptcy protection</feekg:description>
+    <feekg:source>Capital IQ</feekg:source>
+    <feekg:sentiment rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:sentiment>
+    <feekg:triggers rdf:resource="http://feekg.org/lehman/risk_evt_004"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/risk_evt_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskId>risk_evt_002</feekg:riskId>
+    <feekg:riskType>None</feekg:riskType>
+    <feekg:severity>medium</feekg:severity>
+    <feekg:likelihood rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.7</feekg:likelihood>
+    <feekg:description>Risk stemming from: Lehman reports $2.8B loss</feekg:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_000_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_000"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.34500000000000003</feekg:score>
+    <feekg:method>composite</feekg:method>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_002_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.35550000000000004</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.06999999999999999</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_003</feekg:entityId>
+    <feekg:name>Bear Stearns</feekg:name>
+    <feekg:entityType>company</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_001"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_007">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_007</feekg:entityId>
+    <feekg:name>Federal Reserve</feekg:name>
+    <feekg:entityType>regulator</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_001"/>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_006"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_002_to_evt_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_003"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.35454545454545455</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.06363636363636363</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventId>evt_002</feekg:eventId>
+    <feekg:date>2008-06-09</feekg:date>
+    <feekg:eventType>earnings_announcement</feekg:eventType>
+    <feekg:actor>unknown</feekg:actor>
+    <feekg:headline>Lehman reports $2.8B loss</feekg:headline>
+    <feekg:description>Lehman Brothers reported a $2.8 billion quarterly loss</feekg:description>
+    <feekg:source>Capital IQ</feekg:source>
+    <feekg:sentiment rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:sentiment>
+    <feekg:triggers rdf:resource="http://feekg.org/lehman/risk_evt_002"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_010">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_010</feekg:entityId>
+    <feekg:name>S&amp;P 500</feekg:name>
+    <feekg:entityType>company</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_005"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_001_to_evt_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_003"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.34500000000000003</feekg:score>
+    <feekg:method>composite</feekg:method>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_002_to_evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_005"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.35250000000000004</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.049999999999999996</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/risk_evt_000">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskId>risk_evt_000</feekg:riskId>
+    <feekg:riskType>None</feekg:riskType>
+    <feekg:severity>medium</feekg:severity>
+    <feekg:likelihood rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.7</feekg:likelihood>
+    <feekg:description>Risk stemming from: Lehman warns of Q4 losses</feekg:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_001_to_evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_005"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.39</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.3</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_001_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.366</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.13999999999999999</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_003_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_003"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.4822029090235066</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:temporalScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5488116360940264</feekg:temporalScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_001_to_evt_002">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_002"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.34500000000000003</feekg:score>
+    <feekg:method>composite</feekg:method>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_004_to_evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_004"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_005"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5862093545089899</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:temporalScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9048374180359595</feekg:temporalScore>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.09999999999999999</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_003">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventId>evt_003</feekg:eventId>
+    <feekg:date>2008-09-10</feekg:date>
+    <feekg:eventType>merger_acquisition</feekg:eventType>
+    <feekg:actor>unknown</feekg:actor>
+    <feekg:headline>BofA backs out of Lehman deal</feekg:headline>
+    <feekg:description>Bank of America withdrew from negotiations to acquire Lehman</feekg:description>
+    <feekg:source>Capital IQ</feekg:source>
+    <feekg:sentiment rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:sentiment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_000_to_evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_000"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_004"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.36115384615384616</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.1076923076923077</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_001">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_001</feekg:entityId>
+    <feekg:name>Bank of America</feekg:name>
+    <feekg:entityType>bank</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_011">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_011</feekg:entityId>
+    <feekg:name>Treasury</feekg:name>
+    <feekg:entityType>regulator</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_006"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_004_to_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_004"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_006"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5712093545089899</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:temporalScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9048374180359595</feekg:temporalScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_000">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_000</feekg:entityId>
+    <feekg:name>AIG</feekg:name>
+    <feekg:entityType>insurance</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_006"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_008">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_008</feekg:entityId>
+    <feekg:name>JPMorgan</feekg:name>
+    <feekg:entityType>bank</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_001"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_002_to_evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_002"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_004"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.36409090909090913</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.12727272727272726</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_000_to_evt_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_000"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_005"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.3515625</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.04375</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_005">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_005</feekg:entityId>
+    <feekg:name>FTSE</feekg:name>
+    <feekg:entityType>company</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_005"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/risk_evt_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Risk"/>
+    <feekg:riskId>risk_evt_006</feekg:riskId>
+    <feekg:riskType>None</feekg:riskType>
+    <feekg:severity>high</feekg:severity>
+    <feekg:likelihood rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.85</feekg:likelihood>
+    <feekg:description>Risk stemming from: Fed bails out AIG</feekg:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_004</feekg:entityId>
+    <feekg:name>Dow Jones</feekg:name>
+    <feekg:entityType>company</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_005"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_001_to_evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_001"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_004"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.34500000000000003</feekg:score>
+    <feekg:method>composite</feekg:method>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_000">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Event"/>
+    <feekg:eventId>evt_000</feekg:eventId>
+    <feekg:date>2008-01-02</feekg:date>
+    <feekg:eventType>earnings_announcement</feekg:eventType>
+    <feekg:actor>unknown</feekg:actor>
+    <feekg:headline>Lehman warns of Q4 losses</feekg:headline>
+    <feekg:description>Lehman Brothers warned investors of potential fourth-quarter losses</feekg:description>
+    <feekg:source>Capital IQ</feekg:source>
+    <feekg:sentiment rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</feekg:sentiment>
+    <feekg:triggers rdf:resource="http://feekg.org/lehman/risk_evt_000"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/evt_003_to_evt_004">
+    <rdf:type rdf:resource="http://feekg.org/ontology#EvolutionLink"/>
+    <feekg:fromEvent rdf:resource="http://feekg.org/lehman/evt_003"/>
+    <feekg:toEvent rdf:resource="http://feekg.org/lehman/evt_004"/>
+    <feekg:score rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5053826649281584</feekg:score>
+    <feekg:method>composite</feekg:method>
+    <feekg:temporalScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6065306597126334</feekg:temporalScore>
+    <feekg:semanticScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.05833333333333333</feekg:semanticScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://feekg.org/lehman/ent_006">
+    <rdf:type rdf:resource="http://feekg.org/ontology#Entity"/>
+    <feekg:entityId>ent_006</feekg:entityId>
+    <feekg:name>Fed</feekg:name>
+    <feekg:entityType>regulator</feekg:entityType>
+    <feekg:involves rdf:resource="http://feekg.org/lehman/evt_004"/>
+  </rdf:Description>
+</rdf:RDF>

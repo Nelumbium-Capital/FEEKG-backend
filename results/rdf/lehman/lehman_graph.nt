@@ -1,0 +1,278 @@
+<http://feekg.org/lehman/ent_002> <http://feekg.org/ontology#name> "Barclays" .
+<http://feekg.org/lehman/evt_000_to_evt_002> <http://feekg.org/ontology#semanticScore> "0.41666666666666663"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#date> "2008-09-16" .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#headline> "Bear Stearns rescued by JPMorgan" .
+<http://feekg.org/lehman/evt_005> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Event> .
+<http://feekg.org/lehman/evt_000_to_evt_001> <http://feekg.org/ontology#score> "0.34500000000000003"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_003_to_evt_005> <http://feekg.org/ontology#semanticScore> "0.049999999999999996"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000_to_evt_001> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/ent_009> <http://feekg.org/ontology#entityId> "ent_009" .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#actor> "unknown" .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#sentiment> "0.0"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_005_to_evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_000_to_evt_003> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/risk_evt_004> <http://feekg.org/ontology#description> "Risk stemming from: Lehman Brothers files for bankruptcy" .
+<http://feekg.org/lehman/evt_000_to_evt_003> <http://feekg.org/ontology#score> "0.35307692307692307"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#eventId> "evt_004" .
+<http://feekg.org/lehman/risk_evt_002> <http://feekg.org/ontology#likelihood> "0.7"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_002> <http://feekg.org/ontology#entityId> "ent_002" .
+<http://feekg.org/lehman/evt_000_to_evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_000_to_evt_001> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_000> .
+<http://feekg.org/lehman/evt_002_to_evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/ent_003> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/ent_007> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/evt_002_to_evt_003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_003_to_evt_005> <http://feekg.org/ontology#score> "0.4897029090235066"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#source> "Capital IQ" .
+<http://feekg.org/lehman/ent_010> <http://feekg.org/ontology#entityType> "company" .
+<http://feekg.org/lehman/ent_003> <http://feekg.org/ontology#name> "Bear Stearns" .
+<http://feekg.org/lehman/evt_001_to_evt_003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_002_to_evt_005> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_002> .
+<http://feekg.org/lehman/ent_009> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_000> .
+<http://feekg.org/lehman/evt_002_to_evt_006> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_000_to_evt_006> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/risk_evt_000> <http://feekg.org/ontology#description> "Risk stemming from: Lehman warns of Q4 losses" .
+<http://feekg.org/lehman/evt_001_to_evt_005> <http://feekg.org/ontology#semanticScore> "0.3"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/risk_evt_002> <http://feekg.org/ontology#severity> "medium" .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#eventType> "unknown" .
+<http://feekg.org/lehman/evt_001_to_evt_006> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/evt_003_to_evt_006> <http://feekg.org/ontology#score> "0.4822029090235066"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000_to_evt_002> <http://feekg.org/ontology#score> "0.40750000000000003"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_001_to_evt_003> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/ent_002> <http://feekg.org/ontology#entityType> "company" .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#actor> "unknown" .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#headline> "Lehman Brothers files for bankruptcy" .
+<http://feekg.org/lehman/evt_001_to_evt_002> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_004_to_evt_005> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#source> "Capital IQ" .
+<http://feekg.org/lehman/evt_004_to_evt_005> <http://feekg.org/ontology#temporalScore> "0.9048374180359595"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_010> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/evt_000_to_evt_004> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_000> .
+<http://feekg.org/lehman/evt_004_to_evt_005> <http://feekg.org/ontology#score> "0.5862093545089899"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_001> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/evt_003_to_evt_006> <http://feekg.org/ontology#temporalScore> "0.5488116360940264"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_004_to_evt_005> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/ent_009> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/evt_001_to_evt_002> <http://feekg.org/ontology#score> "0.34500000000000003"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_001_to_evt_005> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/evt_003_to_evt_005> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/ent_009> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_002> .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#actor> "unknown" .
+<http://feekg.org/lehman/ent_011> <http://feekg.org/ontology#entityType> "regulator" .
+<http://feekg.org/lehman/evt_002_to_evt_006> <http://feekg.org/ontology#semanticScore> "0.06999999999999999"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000_to_evt_002> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#description> "Lehman Brothers reported a $2.8 billion quarterly loss" .
+<http://feekg.org/lehman/evt_000_to_evt_001> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/ent_003> <http://feekg.org/ontology#entityType> "company" .
+<http://feekg.org/lehman/evt_003_to_evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_004_to_evt_006> <http://feekg.org/ontology#score> "0.5712093545089899"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_000> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#eventType> "merger_acquisition" .
+<http://feekg.org/lehman/evt_005_to_evt_006> <http://feekg.org/ontology#score> "0.34500000000000003"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_008> <http://feekg.org/ontology#entityId> "ent_008" .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#description> "Bank of America withdrew from negotiations to acquire Lehman" .
+<http://feekg.org/lehman/evt_002_to_evt_004> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/evt_000_to_evt_003> <http://feekg.org/ontology#semanticScore> "0.05384615384615385"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_002_to_evt_003> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#triggers> <http://feekg.org/lehman/risk_evt_004> .
+<http://feekg.org/lehman/evt_000_to_evt_003> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_000> .
+<http://feekg.org/lehman/risk_evt_004> <http://feekg.org/ontology#riskType> "None" .
+<http://feekg.org/lehman/ent_003> <http://feekg.org/ontology#entityId> "ent_003" .
+<http://feekg.org/lehman/ent_000> <http://feekg.org/ontology#entityId> "ent_000" .
+<http://feekg.org/lehman/evt_001_to_evt_003> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/evt_000_to_evt_005> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_000> .
+<http://feekg.org/lehman/ent_005> <http://feekg.org/ontology#entityType> "company" .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#description> "Global stock markets fell sharply following Lehman's bankruptcy filing" .
+<http://feekg.org/lehman/risk_evt_006> <http://feekg.org/ontology#description> "Risk stemming from: Fed bails out AIG" .
+<http://feekg.org/lehman/evt_004_to_evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/ent_004> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_001_to_evt_003> <http://feekg.org/ontology#score> "0.34500000000000003"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/risk_evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Risk> .
+<http://feekg.org/lehman/evt_002_to_evt_003> <http://feekg.org/ontology#score> "0.35454545454545455"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_001_to_evt_004> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_001_to_evt_006> <http://feekg.org/ontology#semanticScore> "0.13999999999999999"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#source> "Capital IQ" .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#date> "2008-09-10" .
+<http://feekg.org/lehman/evt_002_to_evt_004> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_001_to_evt_005> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_001_to_evt_004> <http://feekg.org/ontology#score> "0.34500000000000003"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#description> "JPMorgan acquired Bear Stearns with Federal Reserve backing" .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#date> "2008-01-02" .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#eventId> "evt_002" .
+<http://feekg.org/lehman/ent_002> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/risk_evt_000> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Risk> .
+<http://feekg.org/lehman/evt_000_to_evt_004> <http://feekg.org/ontology#semanticScore> "0.1076923076923077"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000_to_evt_005> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#date> "2008-03-14" .
+<http://feekg.org/lehman/evt_002_to_evt_003> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/ent_005> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#source> "Capital IQ" .
+<http://feekg.org/lehman/evt_001_to_evt_004> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/ent_008> <http://feekg.org/ontology#entityType> "bank" .
+<http://feekg.org/lehman/ent_004> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#date> "2008-09-16" .
+<http://feekg.org/lehman/evt_003_to_evt_006> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_003_to_evt_005> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/ent_000> <http://feekg.org/ontology#entityType> "insurance" .
+<http://feekg.org/lehman/evt_003_to_evt_004> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/risk_evt_000> <http://feekg.org/ontology#severity> "medium" .
+<http://feekg.org/lehman/evt_000_to_evt_002> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_002> .
+<http://feekg.org/lehman/ent_011> <http://feekg.org/ontology#name> "Treasury" .
+<http://feekg.org/lehman/evt_002_to_evt_006> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_002> .
+<http://feekg.org/lehman/ent_007> <http://feekg.org/ontology#entityType> "regulator" .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#actor> "unknown" .
+<http://feekg.org/lehman/evt_000_to_evt_005> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#eventType> "unknown" .
+<http://feekg.org/lehman/ent_011> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/risk_evt_000> <http://feekg.org/ontology#riskType> "None" .
+<http://feekg.org/lehman/evt_003_to_evt_004> <http://feekg.org/ontology#score> "0.5053826649281584"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_005_to_evt_006> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/risk_evt_004> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Risk> .
+<http://feekg.org/lehman/evt_002_to_evt_003> <http://feekg.org/ontology#semanticScore> "0.06363636363636363"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_003_to_evt_005> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/ent_000> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_000_to_evt_005> <http://feekg.org/ontology#score> "0.3515625"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#headline> "Fed bails out AIG" .
+<http://feekg.org/lehman/evt_004_to_evt_006> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/ent_000> <http://feekg.org/ontology#name> "AIG" .
+<http://feekg.org/lehman/ent_006> <http://feekg.org/ontology#entityId> "ent_006" .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#eventId> "evt_005" .
+<http://feekg.org/lehman/ent_006> <http://feekg.org/ontology#name> "Fed" .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#eventType> "earnings_announcement" .
+<http://feekg.org/lehman/risk_evt_006> <http://feekg.org/ontology#riskType> "None" .
+<http://feekg.org/lehman/evt_002_to_evt_005> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#eventId> "evt_003" .
+<http://feekg.org/lehman/evt_002_to_evt_004> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_002> .
+<http://feekg.org/lehman/evt_002_to_evt_006> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#headline> "Markets plunge on Lehman bankruptcy" .
+<http://feekg.org/lehman/ent_006> <http://feekg.org/ontology#entityType> "regulator" .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#description> "Lehman Brothers Holdings Inc filed for Chapter 11 bankruptcy protection" .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#headline> "Lehman warns of Q4 losses" .
+<http://feekg.org/lehman/risk_evt_000> <http://feekg.org/ontology#riskId> "risk_evt_000" .
+<http://feekg.org/lehman/evt_002_to_evt_003> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_002> .
+<http://feekg.org/lehman/evt_001_to_evt_006> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/evt_003_to_evt_004> <http://feekg.org/ontology#semanticScore> "0.05833333333333333"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Event> .
+<http://feekg.org/lehman/ent_009> <http://feekg.org/ontology#name> "Lehman Brothers" .
+<http://feekg.org/lehman/risk_evt_002> <http://feekg.org/ontology#description> "Risk stemming from: Lehman reports $2.8B loss" .
+<http://feekg.org/lehman/evt_002_to_evt_005> <http://feekg.org/ontology#semanticScore> "0.049999999999999996"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#source> "Capital IQ" .
+<http://feekg.org/lehman/risk_evt_006> <http://feekg.org/ontology#severity> "high" .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#sentiment> "0.0"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_001_to_evt_003> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/ent_009> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/risk_evt_000> <http://feekg.org/ontology#likelihood> "0.7"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000_to_evt_002> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_000> .
+<http://feekg.org/lehman/ent_009> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_001_to_evt_002> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/evt_003_to_evt_004> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/ent_007> <http://feekg.org/ontology#entityId> "ent_007" .
+<http://feekg.org/lehman/ent_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#eventType> "bankruptcy" .
+<http://feekg.org/lehman/evt_005_to_evt_006> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/risk_evt_004> <http://feekg.org/ontology#likelihood> "0.95"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#description> "Federal Reserve provided $85 billion bailout to AIG" .
+<http://feekg.org/lehman/evt_005> <http://feekg.org/ontology#source> "Capital IQ" .
+<http://feekg.org/lehman/ent_005> <http://feekg.org/ontology#name> "FTSE" .
+<http://feekg.org/lehman/evt_002_to_evt_005> <http://feekg.org/ontology#score> "0.35250000000000004"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_004> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Event> .
+<http://feekg.org/lehman/risk_evt_006> <http://feekg.org/ontology#likelihood> "0.85"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000_to_evt_006> <http://feekg.org/ontology#score> "0.34500000000000003"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_003_to_evt_006> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/ent_011> <http://feekg.org/ontology#entityId> "ent_011" .
+<http://feekg.org/lehman/evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Event> .
+<http://feekg.org/lehman/ent_001> <http://feekg.org/ontology#name> "Bank of America" .
+<http://feekg.org/lehman/ent_007> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#sentiment> "0.0"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#actor> "unknown" .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#eventId> "evt_001" .
+<http://feekg.org/lehman/evt_001_to_evt_005> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/evt_002_to_evt_004> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/ent_004> <http://feekg.org/ontology#entityType> "company" .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#date> "2008-09-15" .
+<http://feekg.org/lehman/evt_002> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Event> .
+<http://feekg.org/lehman/evt_003_to_evt_006> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/evt_001_to_evt_006> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_003_to_evt_005> <http://feekg.org/ontology#temporalScore> "0.5488116360940264"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#sentiment> "0.0"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_003_to_evt_004> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/ent_008> <http://feekg.org/ontology#name> "JPMorgan" .
+<http://feekg.org/lehman/risk_evt_006> <http://feekg.org/ontology#riskId> "risk_evt_006" .
+<http://feekg.org/lehman/evt_002_to_evt_004> <http://feekg.org/ontology#semanticScore> "0.12727272727272726"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_002_to_evt_005> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/ent_010> <http://feekg.org/ontology#entityId> "ent_010" .
+<http://feekg.org/lehman/risk_evt_004> <http://feekg.org/ontology#severity> "critical" .
+<http://feekg.org/lehman/evt_004_to_evt_006> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/ent_008> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/risk_evt_002> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Risk> .
+<http://feekg.org/lehman/evt_000_to_evt_006> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_000_to_evt_002> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_000_to_evt_004> <http://feekg.org/ontology#score> "0.36115384615384616"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_005> <http://feekg.org/ontology#entityId> "ent_005" .
+<http://feekg.org/lehman/ent_011> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/evt_001_to_evt_005> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_001_to_evt_002> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_003_to_evt_005> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/ent_002> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/ent_009> <http://feekg.org/ontology#entityType> "investment_bank" .
+<http://feekg.org/lehman/evt_001_to_evt_004> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/evt_000_to_evt_004> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#eventId> "evt_006" .
+<http://feekg.org/lehman/evt_004_to_evt_005> <http://feekg.org/ontology#semanticScore> "0.09999999999999999"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_004_to_evt_005> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_005> .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#actor> "unknown" .
+<http://feekg.org/lehman/ent_001> <http://feekg.org/ontology#entityType> "bank" .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#headline> "Lehman reports $2.8B loss" .
+<http://feekg.org/lehman/evt_002_to_evt_006> <http://feekg.org/ontology#score> "0.35550000000000004"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#sentiment> "0.0"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/risk_evt_002> <http://feekg.org/ontology#riskId> "risk_evt_002" .
+<http://feekg.org/lehman/evt_002_to_evt_005> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_004_to_evt_006> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/evt_004_to_evt_006> <http://feekg.org/ontology#temporalScore> "0.9048374180359595"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_010> <http://feekg.org/ontology#name> "S&P 500" .
+<http://feekg.org/lehman/evt_001_to_evt_004> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_000_to_evt_001> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_002_to_evt_004> <http://feekg.org/ontology#score> "0.36409090909090913"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#triggers> <http://feekg.org/lehman/risk_evt_002> .
+<http://feekg.org/lehman/evt_005_to_evt_006> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_006> .
+<http://feekg.org/lehman/evt_001_to_evt_005> <http://feekg.org/ontology#score> "0.39"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_004_to_evt_005> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/ent_006> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/evt_001_to_evt_002> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_002> .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#actor> "unknown" .
+<http://feekg.org/lehman/evt_001_to_evt_006> <http://feekg.org/ontology#score> "0.366"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_000_to_evt_003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_000_to_evt_004> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_004> .
+<http://feekg.org/lehman/ent_007> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/evt_003_to_evt_004> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_001_to_evt_006> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/evt_004> <http://feekg.org/ontology#source> "Capital IQ" .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#triggers> <http://feekg.org/lehman/risk_evt_000> .
+<http://feekg.org/lehman/evt_003_to_evt_004> <http://feekg.org/ontology#temporalScore> "0.6065306597126334"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_005> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#triggers> <http://feekg.org/lehman/risk_evt_006> .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#description> "Lehman Brothers warned investors of potential fourth-quarter losses" .
+<http://feekg.org/lehman/evt_003> <http://feekg.org/ontology#headline> "BofA backs out of Lehman deal" .
+<http://feekg.org/lehman/evt_000_to_evt_005> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#EvolutionLink> .
+<http://feekg.org/lehman/evt_000_to_evt_005> <http://feekg.org/ontology#semanticScore> "0.04375"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/risk_evt_002> <http://feekg.org/ontology#riskType> "None" .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#eventId> "evt_000" .
+<http://feekg.org/lehman/ent_004> <http://feekg.org/ontology#entityId> "ent_004" .
+<http://feekg.org/lehman/ent_008> <http://feekg.org/ontology#involves> <http://feekg.org/lehman/evt_001> .
+<http://feekg.org/lehman/evt_006> <http://feekg.org/ontology#eventType> "government_intervention" .
+<http://feekg.org/lehman/evt_000> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Event> .
+<http://feekg.org/lehman/evt_001> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Event> .
+<http://feekg.org/lehman/evt_000_to_evt_003> <http://feekg.org/ontology#toEvent> <http://feekg.org/lehman/evt_003> .
+<http://feekg.org/lehman/evt_000_to_evt_004> <http://feekg.org/ontology#method> "composite" .
+<http://feekg.org/lehman/ent_004> <http://feekg.org/ontology#name> "Dow Jones" .
+<http://feekg.org/lehman/ent_010> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_000_to_evt_006> <http://feekg.org/ontology#fromEvent> <http://feekg.org/lehman/evt_000> .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#sentiment> "0.0"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/evt_001> <http://feekg.org/ontology#sentiment> "0.0"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://feekg.org/lehman/ent_007> <http://feekg.org/ontology#name> "Federal Reserve" .
+<http://feekg.org/lehman/ent_001> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/evt_002> <http://feekg.org/ontology#date> "2008-06-09" .
+<http://feekg.org/lehman/ent_001> <http://feekg.org/ontology#entityId> "ent_001" .
+<http://feekg.org/lehman/evt_000> <http://feekg.org/ontology#eventType> "earnings_announcement" .
+<http://feekg.org/lehman/ent_003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://feekg.org/ontology#Entity> .
+<http://feekg.org/lehman/risk_evt_004> <http://feekg.org/ontology#riskId> "risk_evt_004" .

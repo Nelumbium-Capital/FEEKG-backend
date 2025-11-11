@@ -1,0 +1,383 @@
+@prefix feekg: <http://feekg.org/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+feekg:ent_hui_ka_yan a feekg:Entity ;
+    feekg:entityType "Person" ;
+    feekg:name "Hui Ka Yan" .
+
+feekg:evt_001_to_evt_002 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.37"^^xsd:float ;
+    feekg:toEvent feekg:evt_002 .
+
+feekg:evt_001_to_evt_003 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.38666666666666666"^^xsd:float ;
+    feekg:toEvent feekg:evt_003 .
+
+feekg:evt_001_to_evt_004 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.2916666666666667"^^xsd:float ;
+    feekg:toEvent feekg:evt_004 .
+
+feekg:evt_001_to_evt_005 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.3416666666666667"^^xsd:float ;
+    feekg:toEvent feekg:evt_005 .
+
+feekg:evt_001_to_evt_006 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.365"^^xsd:float ;
+    feekg:toEvent feekg:evt_006 .
+
+feekg:evt_001_to_evt_007 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.38666666666666666"^^xsd:float ;
+    feekg:toEvent feekg:evt_007 .
+
+feekg:evt_001_to_evt_008 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.27166666666666667"^^xsd:float ;
+    feekg:toEvent feekg:evt_008 .
+
+feekg:evt_001_to_evt_009 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.215"^^xsd:float ;
+    feekg:toEvent feekg:evt_009 .
+
+feekg:evt_001_to_evt_010 a feekg:EvolutionLink ;
+    feekg:causality "0.0"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.36"^^xsd:float ;
+    feekg:toEvent feekg:evt_010 .
+
+feekg:evt_001_to_evt_011 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.365"^^xsd:float ;
+    feekg:toEvent feekg:evt_011 .
+
+feekg:evt_001_to_evt_012 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.38666666666666666"^^xsd:float ;
+    feekg:toEvent feekg:evt_012 .
+
+feekg:evt_001_to_evt_013 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.375"^^xsd:float ;
+    feekg:toEvent feekg:evt_013 .
+
+feekg:evt_001_to_evt_016 a feekg:EvolutionLink ;
+    feekg:causality "0.0"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.22117647058823528"^^xsd:float ;
+    feekg:toEvent feekg:evt_016 .
+
+feekg:evt_001_to_evt_017 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.38666666666666666"^^xsd:float ;
+    feekg:toEvent feekg:evt_017 .
+
+feekg:evt_001_to_evt_018 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.215"^^xsd:float ;
+    feekg:toEvent feekg:evt_018 .
+
+feekg:evt_001_to_evt_020 a feekg:EvolutionLink ;
+    feekg:causality "0.0"^^xsd:float ;
+    feekg:fromEvent feekg:evt_001 ;
+    feekg:score "0.495"^^xsd:float ;
+    feekg:toEvent feekg:evt_020 .
+
+feekg:evt_002_to_evt_003 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_002 ;
+    feekg:score "0.3775"^^xsd:float ;
+    feekg:toEvent feekg:evt_003 .
+
+feekg:evt_002_to_evt_004 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_002 ;
+    feekg:score "0.3875"^^xsd:float ;
+    feekg:toEvent feekg:evt_004 .
+
+feekg:evt_002_to_evt_005 a feekg:EvolutionLink ;
+    feekg:causality "0.9"^^xsd:float ;
+    feekg:fromEvent feekg:evt_002 ;
+    feekg:score "0.41583333333333333"^^xsd:float ;
+    feekg:toEvent feekg:evt_005 .
+
+feekg:evt_002_to_evt_006 a feekg:EvolutionLink ;
+    feekg:causality "0.6"^^xsd:float ;
+    feekg:fromEvent feekg:evt_002 ;
+    feekg:score "0.42812500000000003"^^xsd:float ;
+    feekg:toEvent feekg:evt_006 .
+
+feekg:evt_014 a feekg:Event ;
+    feekg:date "2021-12-03"^^xsd:date ;
+    feekg:description "Evergrande shares suspended from trading on Hong Kong Stock Exchange" ;
+    feekg:eventType "trading_halt" ;
+    feekg:hasActor feekg:ent_hkex ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_015 a feekg:Event ;
+    feekg:date "2021-12-06"^^xsd:date ;
+    feekg:description "Evergrande announced it hired financial advisers for offshore debt restructuring" ;
+    feekg:eventType "restructuring_announcement" ;
+    feekg:hasActor feekg:ent_evergrande ;
+    feekg:hasTarget feekg: .
+
+feekg:evt_019 a feekg:Event ;
+    feekg:date "2022-07-11"^^xsd:date ;
+    feekg:description "Evergrande formally proposed $300 billion debt restructuring plan" ;
+    feekg:eventType "debt_restructuring" ;
+    feekg:hasActor feekg:ent_evergrande ;
+    feekg:hasTarget feekg: .
+
+feekg:risk_001 a feekg:Risk ;
+    feekg:riskType "LiquidityRisk" ;
+    feekg:score "0.7"^^xsd:float ;
+    feekg:severity "high" ;
+    feekg:targetsEntity feekg:ent_evergrande .
+
+feekg:risk_002 a feekg:Risk ;
+    feekg:riskType "CreditRisk" ;
+    feekg:score "0.8"^^xsd:float ;
+    feekg:severity "critical" ;
+    feekg:targetsEntity feekg:ent_evergrande .
+
+feekg:risk_003 a feekg:Risk ;
+    feekg:riskType "MarketRisk" ;
+    feekg:score "0.65"^^xsd:float ;
+    feekg:severity "high" ;
+    feekg:targetsEntity feekg:ent_evergrande .
+
+feekg:risk_004 a feekg:Risk ;
+    feekg:riskType "SolvencyRisk" ;
+    feekg:score "0.85"^^xsd:float ;
+    feekg:severity "critical" ;
+    feekg:targetsEntity feekg:ent_evergrande .
+
+feekg:risk_005 a feekg:Risk ;
+    feekg:riskType "ContagionRisk" ;
+    feekg:score "0.45"^^xsd:float ;
+    feekg:severity "medium" ;
+    feekg:targetsEntity feekg:ent_country_garden .
+
+feekg:risk_006 a feekg:Risk ;
+    feekg:riskType "SystemicRisk" ;
+    feekg:score "0.55"^^xsd:float ;
+    feekg:severity "high" ;
+    feekg:targetsEntity feekg:ent_minsheng_bank .
+
+feekg:risk_007 a feekg:Risk ;
+    feekg:riskType "ReputationalRisk" ;
+    feekg:score "0.75"^^xsd:float ;
+    feekg:severity "high" ;
+    feekg:targetsEntity feekg:ent_evergrande .
+
+feekg:risk_008 a feekg:Risk ;
+    feekg:riskType "RegulatoryRisk" ;
+    feekg:score "0.6"^^xsd:float ;
+    feekg:severity "medium" ;
+    feekg:targetsEntity feekg:ent_evergrande .
+
+feekg:risk_009 a feekg:Risk ;
+    feekg:riskType "OperationalRisk" ;
+    feekg:score "0.7"^^xsd:float ;
+    feekg:severity "high" ;
+    feekg:targetsEntity feekg:ent_evergrande .
+
+feekg:risk_010 a feekg:Risk ;
+    feekg:riskType "ContagionRisk" ;
+    feekg:score "0.5"^^xsd:float ;
+    feekg:severity "medium" ;
+    feekg:targetsEntity feekg:ent_anbang .
+
+feekg:ent_moodys a feekg:Entity ;
+    feekg:entityType "RatingAgency" ;
+    feekg:name "Moody's" .
+
+feekg:ent_sp a feekg:Entity ;
+    feekg:entityType "RatingAgency" ;
+    feekg:name "S&P Global Ratings" .
+
+feekg:ent_anbang a feekg:Entity ;
+    feekg:entityType "Company" ;
+    feekg:name "Anbang Insurance" .
+
+feekg:ent_country_garden a feekg:Entity ;
+    feekg:entityType "Company" ;
+    feekg:name "Country Garden Holdings" .
+
+feekg:ent_fitch a feekg:Entity ;
+    feekg:entityType "RatingAgency" ;
+    feekg:name "Fitch Ratings" .
+
+feekg:ent_minsheng_bank a feekg:Entity ;
+    feekg:entityType "Bank" ;
+    feekg:name "China Minsheng Bank" .
+
+feekg:evt_007 a feekg:Event ;
+    feekg:date "2021-09-21"^^xsd:date ;
+    feekg:description "Fitch downgraded Evergrande to CC from CCC+, indicating default imminent" ;
+    feekg:eventType "credit_downgrade" ;
+    feekg:hasActor feekg:ent_fitch ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_008 a feekg:Event ;
+    feekg:date "2021-09-22"^^xsd:date ;
+    feekg:description "Evergrande stock plunged 19%, hitting 11-year low" ;
+    feekg:eventType "stock_crash" ;
+    feekg:hasActor feekg:ent_hkex ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_009 a feekg:Event ;
+    feekg:date "2021-09-23"^^xsd:date ;
+    feekg:description "Country Garden stock fell 12% on contagion fears from Evergrande crisis" ;
+    feekg:eventType "contagion" ;
+    feekg:hasActor feekg:ent_hkex ;
+    feekg:hasTarget feekg:ent_country_garden .
+
+feekg:evt_010 a feekg:Event ;
+    feekg:date "2021-09-24"^^xsd:date ;
+    feekg:description "PBOC injected 120 billion yuan into banking system to ease liquidity concerns" ;
+    feekg:eventType "regulatory_intervention" ;
+    feekg:hasActor feekg:ent_pboc ;
+    feekg:hasTarget feekg: .
+
+feekg:evt_011 a feekg:Event ;
+    feekg:date "2021-10-20"^^xsd:date ;
+    feekg:description "Grace period expired on $83.5M payment - official default declared" ;
+    feekg:eventType "debt_default" ;
+    feekg:hasActor feekg:ent_evergrande ;
+    feekg:hasTarget feekg: .
+
+feekg:evt_012 a feekg:Event ;
+    feekg:date "2021-10-21"^^xsd:date ;
+    feekg:description "Moody's downgraded Evergrande to Ca from Caa1 (substantial default risk)" ;
+    feekg:eventType "credit_downgrade" ;
+    feekg:hasActor feekg:ent_moodys ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_013 a feekg:Event ;
+    feekg:date "2021-11-10"^^xsd:date ;
+    feekg:description "Missed another $148 million in offshore bond coupon payments" ;
+    feekg:eventType "missed_payment" ;
+    feekg:hasActor feekg:ent_evergrande ;
+    feekg:hasTarget feekg: .
+
+feekg:evt_016 a feekg:Event ;
+    feekg:date "2022-01-15"^^xsd:date ;
+    feekg:description "Chinese court seized Evergrande bank deposits worth $20 million" ;
+    feekg:eventType "asset_seizure" ;
+    feekg:hasActor feekg: ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_017 a feekg:Event ;
+    feekg:date "2022-03-18"^^xsd:date ;
+    feekg:description "Fitch downgraded Evergrande to 'Restricted Default' (RD)" ;
+    feekg:eventType "credit_downgrade" ;
+    feekg:hasActor feekg:ent_fitch ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_018 a feekg:Event ;
+    feekg:date "2022-04-10"^^xsd:date ;
+    feekg:description "Anbang Insurance reported significant losses due to Evergrande exposure" ;
+    feekg:eventType "contagion" ;
+    feekg:hasActor feekg: ;
+    feekg:hasTarget feekg:ent_anbang .
+
+feekg:evt_020 a feekg:Event ;
+    feekg:date "2022-08-19"^^xsd:date ;
+    feekg:description "Regulators ordered Evergrande to maintain financial stability and prioritize project delivery" ;
+    feekg:eventType "regulatory_pressure" ;
+    feekg:hasActor feekg:ent_pboc ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:ent_pboc a feekg:Entity ;
+    feekg:entityType "Regulator" ;
+    feekg:name "People's Bank of China" .
+
+feekg:ent_hkex a feekg:Entity ;
+    feekg:entityType "Exchange" ;
+    feekg:name "Hong Kong Stock Exchange" .
+
+feekg:evt_003 a feekg:Event ;
+    feekg:date "2021-06-15"^^xsd:date ;
+    feekg:description "S&P downgraded Evergrande credit rating to B+ with negative outlook" ;
+    feekg:eventType "credit_downgrade" ;
+    feekg:hasActor feekg:ent_sp ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_004 a feekg:Event ;
+    feekg:date "2021-07-12"^^xsd:date ;
+    feekg:description "Evergrande stock fell 15% in one day amid liquidity concerns" ;
+    feekg:eventType "stock_decline" ;
+    feekg:hasActor feekg:ent_hkex ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:evt_005 a feekg:Event ;
+    feekg:date "2021-09-08"^^xsd:date ;
+    feekg:description "Evergrande missed interest payment deadline for Minsheng Bank wealth management products" ;
+    feekg:eventType "missed_payment" ;
+    feekg:hasActor feekg:ent_evergrande ;
+    feekg:hasTarget feekg:ent_minsheng_bank .
+
+feekg:evt_006 a feekg:Event ;
+    feekg:date "2021-09-20"^^xsd:date ;
+    feekg:description "Evergrande missed $83.5 million bond coupon payment (30-day grace period started)" ;
+    feekg:eventType "debt_default" ;
+    feekg:hasActor feekg:ent_evergrande ;
+    feekg:hasTarget feekg: .
+
+feekg:evt_002 a feekg:Event ;
+    feekg:date "2021-05-10"^^xsd:date ;
+    feekg:description "Evergrande reported cash crunch, started selling assets and offering discounts" ;
+    feekg:eventType "liquidity_warning" ;
+    feekg:evolvesTo feekg:evt_003,
+        feekg:evt_004,
+        feekg:evt_005,
+        feekg:evt_006 ;
+    feekg:hasActor feekg:ent_evergrande ;
+    feekg:hasTarget feekg: .
+
+feekg:evt_001 a feekg:Event ;
+    feekg:date "2020-08-20"^^xsd:date ;
+    feekg:description "Chinese government introduced 'Three Red Lines' policy to limit real estate borrowing" ;
+    feekg:eventType "regulatory_pressure" ;
+    feekg:evolvesTo feekg:evt_002,
+        feekg:evt_003,
+        feekg:evt_004,
+        feekg:evt_005,
+        feekg:evt_006,
+        feekg:evt_007,
+        feekg:evt_008,
+        feekg:evt_009,
+        feekg:evt_010,
+        feekg:evt_011,
+        feekg:evt_012,
+        feekg:evt_013,
+        feekg:evt_016,
+        feekg:evt_017,
+        feekg:evt_018,
+        feekg:evt_020 ;
+    feekg:hasActor feekg:ent_pboc ;
+    feekg:hasTarget feekg:ent_evergrande .
+
+feekg:ent_evergrande a feekg:Entity ;
+    feekg:entityType "Company" ;
+    feekg:name "China Evergrande Group" .
+

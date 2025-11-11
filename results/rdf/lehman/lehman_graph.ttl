@@ -1,0 +1,326 @@
+@prefix feekg: <http://feekg.org/ontology#> .
+@prefix lehman: <http://feekg.org/lehman/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+lehman:ent_000 a feekg:Entity ;
+    feekg:entityId "ent_000" ;
+    feekg:entityType "insurance" ;
+    feekg:involves lehman:evt_006 ;
+    feekg:name "AIG" .
+
+lehman:ent_001 a feekg:Entity ;
+    feekg:entityId "ent_001" ;
+    feekg:entityType "bank" ;
+    feekg:involves lehman:evt_003 ;
+    feekg:name "Bank of America" .
+
+lehman:ent_002 a feekg:Entity ;
+    feekg:entityId "ent_002" ;
+    feekg:entityType "company" ;
+    feekg:involves lehman:evt_004 ;
+    feekg:name "Barclays" .
+
+lehman:ent_003 a feekg:Entity ;
+    feekg:entityId "ent_003" ;
+    feekg:entityType "company" ;
+    feekg:involves lehman:evt_001 ;
+    feekg:name "Bear Stearns" .
+
+lehman:ent_004 a feekg:Entity ;
+    feekg:entityId "ent_004" ;
+    feekg:entityType "company" ;
+    feekg:involves lehman:evt_005 ;
+    feekg:name "Dow Jones" .
+
+lehman:ent_005 a feekg:Entity ;
+    feekg:entityId "ent_005" ;
+    feekg:entityType "company" ;
+    feekg:involves lehman:evt_005 ;
+    feekg:name "FTSE" .
+
+lehman:ent_006 a feekg:Entity ;
+    feekg:entityId "ent_006" ;
+    feekg:entityType "regulator" ;
+    feekg:involves lehman:evt_004 ;
+    feekg:name "Fed" .
+
+lehman:ent_007 a feekg:Entity ;
+    feekg:entityId "ent_007" ;
+    feekg:entityType "regulator" ;
+    feekg:involves lehman:evt_001,
+        lehman:evt_006 ;
+    feekg:name "Federal Reserve" .
+
+lehman:ent_008 a feekg:Entity ;
+    feekg:entityId "ent_008" ;
+    feekg:entityType "bank" ;
+    feekg:involves lehman:evt_001 ;
+    feekg:name "JPMorgan" .
+
+lehman:ent_009 a feekg:Entity ;
+    feekg:entityId "ent_009" ;
+    feekg:entityType "investment_bank" ;
+    feekg:involves lehman:evt_000,
+        lehman:evt_002,
+        lehman:evt_003,
+        lehman:evt_004 ;
+    feekg:name "Lehman Brothers" .
+
+lehman:ent_010 a feekg:Entity ;
+    feekg:entityId "ent_010" ;
+    feekg:entityType "company" ;
+    feekg:involves lehman:evt_005 ;
+    feekg:name "S&P 500" .
+
+lehman:ent_011 a feekg:Entity ;
+    feekg:entityId "ent_011" ;
+    feekg:entityType "regulator" ;
+    feekg:involves lehman:evt_006 ;
+    feekg:name "Treasury" .
+
+lehman:evt_000_to_evt_001 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_000 ;
+    feekg:method "composite" ;
+    feekg:score "0.34500000000000003"^^xsd:float ;
+    feekg:toEvent lehman:evt_001 .
+
+lehman:evt_000_to_evt_002 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_000 ;
+    feekg:method "composite" ;
+    feekg:score "0.40750000000000003"^^xsd:float ;
+    feekg:semanticScore "0.41666666666666663"^^xsd:float ;
+    feekg:toEvent lehman:evt_002 .
+
+lehman:evt_000_to_evt_003 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_000 ;
+    feekg:method "composite" ;
+    feekg:score "0.35307692307692307"^^xsd:float ;
+    feekg:semanticScore "0.05384615384615385"^^xsd:float ;
+    feekg:toEvent lehman:evt_003 .
+
+lehman:evt_000_to_evt_004 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_000 ;
+    feekg:method "composite" ;
+    feekg:score "0.36115384615384616"^^xsd:float ;
+    feekg:semanticScore "0.1076923076923077"^^xsd:float ;
+    feekg:toEvent lehman:evt_004 .
+
+lehman:evt_000_to_evt_005 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_000 ;
+    feekg:method "composite" ;
+    feekg:score "0.3515625"^^xsd:float ;
+    feekg:semanticScore "0.04375"^^xsd:float ;
+    feekg:toEvent lehman:evt_005 .
+
+lehman:evt_000_to_evt_006 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_000 ;
+    feekg:method "composite" ;
+    feekg:score "0.34500000000000003"^^xsd:float ;
+    feekg:toEvent lehman:evt_006 .
+
+lehman:evt_001_to_evt_002 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_001 ;
+    feekg:method "composite" ;
+    feekg:score "0.34500000000000003"^^xsd:float ;
+    feekg:toEvent lehman:evt_002 .
+
+lehman:evt_001_to_evt_003 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_001 ;
+    feekg:method "composite" ;
+    feekg:score "0.34500000000000003"^^xsd:float ;
+    feekg:toEvent lehman:evt_003 .
+
+lehman:evt_001_to_evt_004 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_001 ;
+    feekg:method "composite" ;
+    feekg:score "0.34500000000000003"^^xsd:float ;
+    feekg:toEvent lehman:evt_004 .
+
+lehman:evt_001_to_evt_005 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_001 ;
+    feekg:method "composite" ;
+    feekg:score "0.39"^^xsd:float ;
+    feekg:semanticScore "0.3"^^xsd:float ;
+    feekg:toEvent lehman:evt_005 .
+
+lehman:evt_001_to_evt_006 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_001 ;
+    feekg:method "composite" ;
+    feekg:score "0.366"^^xsd:float ;
+    feekg:semanticScore "0.13999999999999999"^^xsd:float ;
+    feekg:toEvent lehman:evt_006 .
+
+lehman:evt_002_to_evt_003 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_002 ;
+    feekg:method "composite" ;
+    feekg:score "0.35454545454545455"^^xsd:float ;
+    feekg:semanticScore "0.06363636363636363"^^xsd:float ;
+    feekg:toEvent lehman:evt_003 .
+
+lehman:evt_002_to_evt_004 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_002 ;
+    feekg:method "composite" ;
+    feekg:score "0.36409090909090913"^^xsd:float ;
+    feekg:semanticScore "0.12727272727272726"^^xsd:float ;
+    feekg:toEvent lehman:evt_004 .
+
+lehman:evt_002_to_evt_005 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_002 ;
+    feekg:method "composite" ;
+    feekg:score "0.35250000000000004"^^xsd:float ;
+    feekg:semanticScore "0.049999999999999996"^^xsd:float ;
+    feekg:toEvent lehman:evt_005 .
+
+lehman:evt_002_to_evt_006 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_002 ;
+    feekg:method "composite" ;
+    feekg:score "0.35550000000000004"^^xsd:float ;
+    feekg:semanticScore "0.06999999999999999"^^xsd:float ;
+    feekg:toEvent lehman:evt_006 .
+
+lehman:evt_003_to_evt_004 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_003 ;
+    feekg:method "composite" ;
+    feekg:score "0.5053826649281584"^^xsd:float ;
+    feekg:semanticScore "0.05833333333333333"^^xsd:float ;
+    feekg:temporalScore "0.6065306597126334"^^xsd:float ;
+    feekg:toEvent lehman:evt_004 .
+
+lehman:evt_003_to_evt_005 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_003 ;
+    feekg:method "composite" ;
+    feekg:score "0.4897029090235066"^^xsd:float ;
+    feekg:semanticScore "0.049999999999999996"^^xsd:float ;
+    feekg:temporalScore "0.5488116360940264"^^xsd:float ;
+    feekg:toEvent lehman:evt_005 .
+
+lehman:evt_003_to_evt_006 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_003 ;
+    feekg:method "composite" ;
+    feekg:score "0.4822029090235066"^^xsd:float ;
+    feekg:temporalScore "0.5488116360940264"^^xsd:float ;
+    feekg:toEvent lehman:evt_006 .
+
+lehman:evt_004_to_evt_005 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_004 ;
+    feekg:method "composite" ;
+    feekg:score "0.5862093545089899"^^xsd:float ;
+    feekg:semanticScore "0.09999999999999999"^^xsd:float ;
+    feekg:temporalScore "0.9048374180359595"^^xsd:float ;
+    feekg:toEvent lehman:evt_005 .
+
+lehman:evt_004_to_evt_006 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_004 ;
+    feekg:method "composite" ;
+    feekg:score "0.5712093545089899"^^xsd:float ;
+    feekg:temporalScore "0.9048374180359595"^^xsd:float ;
+    feekg:toEvent lehman:evt_006 .
+
+lehman:evt_005_to_evt_006 a feekg:EvolutionLink ;
+    feekg:fromEvent lehman:evt_005 ;
+    feekg:method "composite" ;
+    feekg:score "0.34500000000000003"^^xsd:float ;
+    feekg:toEvent lehman:evt_006 .
+
+lehman:risk_evt_000 a feekg:Risk ;
+    feekg:description "Risk stemming from: Lehman warns of Q4 losses" ;
+    feekg:likelihood "0.7"^^xsd:float ;
+    feekg:riskId "risk_evt_000" ;
+    feekg:riskType "None" ;
+    feekg:severity "medium" .
+
+lehman:risk_evt_002 a feekg:Risk ;
+    feekg:description "Risk stemming from: Lehman reports $2.8B loss" ;
+    feekg:likelihood "0.7"^^xsd:float ;
+    feekg:riskId "risk_evt_002" ;
+    feekg:riskType "None" ;
+    feekg:severity "medium" .
+
+lehman:risk_evt_004 a feekg:Risk ;
+    feekg:description "Risk stemming from: Lehman Brothers files for bankruptcy" ;
+    feekg:likelihood "0.95"^^xsd:float ;
+    feekg:riskId "risk_evt_004" ;
+    feekg:riskType "None" ;
+    feekg:severity "critical" .
+
+lehman:risk_evt_006 a feekg:Risk ;
+    feekg:description "Risk stemming from: Fed bails out AIG" ;
+    feekg:likelihood "0.85"^^xsd:float ;
+    feekg:riskId "risk_evt_006" ;
+    feekg:riskType "None" ;
+    feekg:severity "high" .
+
+lehman:evt_000 a feekg:Event ;
+    feekg:actor "unknown" ;
+    feekg:date "2008-01-02" ;
+    feekg:description "Lehman Brothers warned investors of potential fourth-quarter losses" ;
+    feekg:eventId "evt_000" ;
+    feekg:eventType "earnings_announcement" ;
+    feekg:headline "Lehman warns of Q4 losses" ;
+    feekg:sentiment "0.0"^^xsd:float ;
+    feekg:source "Capital IQ" ;
+    feekg:triggers lehman:risk_evt_000 .
+
+lehman:evt_002 a feekg:Event ;
+    feekg:actor "unknown" ;
+    feekg:date "2008-06-09" ;
+    feekg:description "Lehman Brothers reported a $2.8 billion quarterly loss" ;
+    feekg:eventId "evt_002" ;
+    feekg:eventType "earnings_announcement" ;
+    feekg:headline "Lehman reports $2.8B loss" ;
+    feekg:sentiment "0.0"^^xsd:float ;
+    feekg:source "Capital IQ" ;
+    feekg:triggers lehman:risk_evt_002 .
+
+lehman:evt_003 a feekg:Event ;
+    feekg:actor "unknown" ;
+    feekg:date "2008-09-10" ;
+    feekg:description "Bank of America withdrew from negotiations to acquire Lehman" ;
+    feekg:eventId "evt_003" ;
+    feekg:eventType "merger_acquisition" ;
+    feekg:headline "BofA backs out of Lehman deal" ;
+    feekg:sentiment "0.0"^^xsd:float ;
+    feekg:source "Capital IQ" .
+
+lehman:evt_001 a feekg:Event ;
+    feekg:actor "unknown" ;
+    feekg:date "2008-03-14" ;
+    feekg:description "JPMorgan acquired Bear Stearns with Federal Reserve backing" ;
+    feekg:eventId "evt_001" ;
+    feekg:eventType "unknown" ;
+    feekg:headline "Bear Stearns rescued by JPMorgan" ;
+    feekg:sentiment "0.0"^^xsd:float ;
+    feekg:source "Capital IQ" .
+
+lehman:evt_004 a feekg:Event ;
+    feekg:actor "unknown" ;
+    feekg:date "2008-09-15" ;
+    feekg:description "Lehman Brothers Holdings Inc filed for Chapter 11 bankruptcy protection" ;
+    feekg:eventId "evt_004" ;
+    feekg:eventType "bankruptcy" ;
+    feekg:headline "Lehman Brothers files for bankruptcy" ;
+    feekg:sentiment "0.0"^^xsd:float ;
+    feekg:source "Capital IQ" ;
+    feekg:triggers lehman:risk_evt_004 .
+
+lehman:evt_005 a feekg:Event ;
+    feekg:actor "unknown" ;
+    feekg:date "2008-09-16" ;
+    feekg:description "Global stock markets fell sharply following Lehman's bankruptcy filing" ;
+    feekg:eventId "evt_005" ;
+    feekg:eventType "unknown" ;
+    feekg:headline "Markets plunge on Lehman bankruptcy" ;
+    feekg:sentiment "0.0"^^xsd:float ;
+    feekg:source "Capital IQ" .
+
+lehman:evt_006 a feekg:Event ;
+    feekg:actor "unknown" ;
+    feekg:date "2008-09-16" ;
+    feekg:description "Federal Reserve provided $85 billion bailout to AIG" ;
+    feekg:eventId "evt_006" ;
+    feekg:eventType "government_intervention" ;
+    feekg:headline "Fed bails out AIG" ;
+    feekg:sentiment "0.0"^^xsd:float ;
+    feekg:source "Capital IQ" ;
+    feekg:triggers lehman:risk_evt_006 .
+
