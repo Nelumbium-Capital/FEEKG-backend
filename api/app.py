@@ -29,6 +29,25 @@ def create_app():
     CORS(app)  # Enable CORS for frontend access
 
     # ==========================================================================
+    # STATIC FILE ROUTES
+    # ==========================================================================
+
+    @app.route('/')
+    def index():
+        """Serve timeline visualization by default"""
+        return send_file('timeline.html')
+
+    @app.route('/timeline.html')
+    def timeline():
+        """Serve timeline visualization"""
+        return send_file('timeline.html')
+
+    @app.route('/demo.html')
+    def demo():
+        """Serve API demo page"""
+        return send_file('demo.html')
+
+    # ==========================================================================
     # HEALTH & INFO ENDPOINTS
     # ==========================================================================
 
@@ -648,6 +667,184 @@ def create_app():
                 'message': str(e)
             }), 500
 
+    @app.route('/api/graph/timeline', methods=['GET'])
+    def get_timeline_graph():
+        """Get time-filtered graph data for timeline visualization"""
+        try:
+            end_date = request.args.get('end_date')  # Filter up to this date
+            min_score = float(request.args.get('min_score', 0.3))
+
+            if not end_date:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'end_date parameter required (format: YYYY-MM-DD)'
+                }), 400
+
+            analyzer = RiskAnalyzer()
+
+            # Get events up to end_date
+            events_query = """
+            MATCH (e:Event)
+            WHERE e.date <= date($endDate)
+            OPTIONAL MATCH (e)-[:HAS_ACTOR]->(actor:Entity)
+            OPTIONAL MATCH (e)-[:HAS_TARGET]->(target:Entity)
+            RETURN e.eventId as id, e.type as type, toString(e.date) as date,
+                   e.description as description, e.confidence as confidence,
+                   actor.entityId as actorId, actor.name as actorName,
+                   target.entityId as targetId, target.name as targetName
+            ORDER BY e.date
+            """
+            events = analyzer.backend.execute_query(events_query, {'endDate': end_date})
+
+            # Get evolution links between events up to end_date
+            evolution_query = """
+            MATCH (e1:Event)-[r:EVOLVES_TO]->(e2:Event)
+            WHERE e1.date <= date($endDate) AND e2.date <= date($endDate)
+              AND r.score >= $minScore
+            RETURN e1.eventId as source, e2.eventId as target,
+                   r.score as score, r.temporal as temporal,
+                   r.entity_overlap as entityOverlap, r.semantic as semantic,
+                   r.topic as topic, r.causality as causality,
+                   r.emotional as emotional
+            ORDER BY r.score DESC
+            """
+            evolution_links = analyzer.backend.execute_query(
+                evolution_query,
+                {'endDate': end_date, 'minScore': min_score}
+            )
+
+            # Get all entities (they exist throughout the timeline)
+            entities_query = """
+            MATCH (ent:Entity)
+            RETURN ent.entityId as id, ent.name as name,
+                   ent.type as type, ent.description as description
+            ORDER BY ent.name
+            """
+            entities = analyzer.backend.execute_query(entities_query)
+
+            # Get risks associated with events up to end_date
+            risks_query = """
+            MATCH (r:Risk)-[:TARGETS_ENTITY]->(e:Entity)
+            MATCH (r)-[:HAS_RISK_TYPE]->(rt:RiskType)
+            OPTIONAL MATCH (evt:Event)-[:HAS_TARGET|HAS_ACTOR]->(e)
+            WHERE evt.date <= date($endDate)
+            WITH r, rt, e, count(DISTINCT evt) as eventCount
+            WHERE eventCount > 0
+            RETURN DISTINCT r.riskId as id, rt.label as type,
+                   r.score as score, r.severity as severity,
+                   e.entityId as targetEntityId, e.name as targetEntityName
+            ORDER BY r.score DESC
+            """
+            risks = analyzer.backend.execute_query(risks_query, {'endDate': end_date})
+
+            analyzer.close()
+
+            # Build nodes/edges structure
+            nodes = []
+            edges = []
+
+            # Add entity nodes
+            for entity in entities:
+                nodes.append({
+                    'id': entity['id'],
+                    'label': entity['name'],
+                    'type': 'entity',
+                    'group': 'entity',
+                    'title': f"{entity['name']}<br>{entity['type']}",
+                    'data': entity
+                })
+
+            # Add event nodes
+            for event in events:
+                nodes.append({
+                    'id': event['id'],
+                    'label': event['type'],
+                    'type': 'event',
+                    'group': 'event',
+                    'title': f"{event['type']}<br>{event['date']}<br>{event['description'][:50]}...",
+                    'data': event
+                })
+
+                # Add event-entity edges
+                if event.get('actorId'):
+                    edges.append({
+                        'from': event['id'],
+                        'to': event['actorId'],
+                        'type': 'has_actor',
+                        'arrows': 'to',
+                        'dashes': False,
+                        'color': {'color': '#64748b', 'opacity': 0.6},  # Slate gray
+                        'width': 1.5
+                    })
+                if event.get('targetId'):
+                    edges.append({
+                        'from': event['id'],
+                        'to': event['targetId'],
+                        'type': 'has_target',
+                        'arrows': 'to',
+                        'dashes': False,
+                        'color': {'color': '#64748b', 'opacity': 0.6},  # Slate gray
+                        'width': 1.5
+                    })
+
+            # Add risk nodes
+            for risk in risks:
+                nodes.append({
+                    'id': risk['id'],
+                    'label': risk['type'],
+                    'type': 'risk',
+                    'group': 'risk',
+                    'title': f"{risk['type']}<br>Score: {risk['score']}<br>Severity: {risk['severity']}",
+                    'data': risk
+                })
+
+                # Add risk-entity edges
+                if risk.get('targetEntityId'):
+                    edges.append({
+                        'from': risk['id'],
+                        'to': risk['targetEntityId'],
+                        'type': 'targets',
+                        'arrows': 'to',
+                        'dashes': True,
+                        'color': {'color': '#f472b6', 'opacity': 0.5},  # Pink (lighter)
+                        'width': 1.5
+                    })
+
+            # Add evolution edges
+            for link in evolution_links:
+                edges.append({
+                    'from': link['source'],
+                    'to': link['target'],
+                    'type': 'evolves_to',
+                    'arrows': 'to',
+                    'width': max(1.5, link['score'] * 3),  # Min width 1.5
+                    'color': {
+                        'color': '#8b5cf6',  # Purple (matches app theme)
+                        'opacity': 0.7 + (link['score'] * 0.3)  # Opacity based on score
+                    },
+                    'title': f"Score: {link['score']:.3f}<br>Causality: {link['causality']:.3f}",
+                    'data': link
+                })
+
+            return jsonify({
+                'status': 'success',
+                'endDate': end_date,
+                'nodes': nodes,
+                'edges': edges,
+                'stats': {
+                    'entities': len(entities),
+                    'events': len(events),
+                    'risks': len(risks),
+                    'evolution_links': len(evolution_links)
+                }
+            })
+
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+
     return app
 
 
@@ -656,7 +853,7 @@ if __name__ == '__main__':
     print("\n" + "=" * 70)
     print("FE-EKG REST API Server")
     print("=" * 70)
-    print("\nStarting server on http://localhost:5000")
+    print("\nStarting server on http://localhost:5001")
     print("\nAPI Documentation:")
     print("  Health:       GET  /health")
     print("  Info:         GET  /api/info")
@@ -665,8 +862,12 @@ if __name__ == '__main__':
     print("  Evolution:    GET  /api/evolution/links")
     print("  Risks:        GET  /api/risks")
     print("  Graph Data:   GET  /api/graph/data")
+    print("  Timeline:     GET  /api/graph/timeline?end_date=YYYY-MM-DD")
     print("  Viz (3-layer):GET  /api/visualizations/three-layer")
+    print("\nInteractive Demos:")
+    print("  API Demo:     http://localhost:5001/demo.html")
+    print("  Timeline:     http://localhost:5001/timeline.html")
     print("\nPress Ctrl+C to stop")
     print("=" * 70 + "\n")
 
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5001)
