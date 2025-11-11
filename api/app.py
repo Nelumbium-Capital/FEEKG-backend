@@ -47,6 +47,11 @@ def create_app():
         """Serve API demo page"""
         return send_file('demo.html')
 
+    @app.route('/triple_example.html')
+    def triple_example():
+        """Serve triple conversion example"""
+        return send_file('triple_example.html')
+
     # ==========================================================================
     # HEALTH & INFO ENDPOINTS
     # ==========================================================================

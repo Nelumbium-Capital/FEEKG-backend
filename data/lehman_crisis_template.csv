@@ -1,0 +1,8 @@
+date,event_type,actor,target,headline,description,source,entities,impact
+2008-01-02,earnings_warning,Lehman Brothers,market,"Lehman warns of Q4 losses","Lehman Brothers warned investors of potential fourth-quarter losses",Capital IQ,"Lehman Brothers",medium
+2008-03-14,market_shock,Bear Stearns,financial_sector,"Bear Stearns rescued by JPMorgan","JPMorgan acquired Bear Stearns with Federal Reserve backing",Capital IQ,"Bear Stearns;JPMorgan;Federal Reserve",high
+2008-06-09,earnings_loss,Lehman Brothers,self,"Lehman reports $2.8B loss","Lehman Brothers reported a $2.8 billion quarterly loss",Capital IQ,"Lehman Brothers",high
+2008-09-10,acquisition_failed,Bank of America,Lehman Brothers,"BofA backs out of Lehman deal","Bank of America withdrew from negotiations to acquire Lehman",Capital IQ,"Bank of America;Lehman Brothers",high
+2008-09-15,bankruptcy,Lehman Brothers,self,"Lehman Brothers files for bankruptcy","Lehman Brothers Holdings Inc filed for Chapter 11 bankruptcy protection",Capital IQ,"Lehman Brothers;Barclays;Fed",critical
+2008-09-16,market_crash,Market,global,"Markets plunge on Lehman bankruptcy","Global stock markets fell sharply following Lehman's bankruptcy filing",Capital IQ,"Dow Jones;S&P 500;FTSE",critical
+2008-09-16,bailout,AIG,government,"Fed bails out AIG","Federal Reserve provided $85 billion bailout to AIG",Capital IQ,"AIG;Federal Reserve;Treasury",critical

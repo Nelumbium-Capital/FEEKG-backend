@@ -31,6 +31,11 @@ ujson>=5.0.0
 Flask>=2.3.0
 flask-cors>=4.0.0
 
+# LLM/Nemotron Integration (NVIDIA NIM)
+# No additional packages needed - uses requests for API calls
+# Optional: install openai package for alternative API clients
+# openai>=1.0.0
+
 # Testing
 pytest>=7.0.0
 pytest-cov>=4.0.0
