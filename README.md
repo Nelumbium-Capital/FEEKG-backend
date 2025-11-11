@@ -2,6 +2,89 @@
 
 Implementation of the FEEKG paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
 
+## 🚀 How to View Everything
+
+### Option 1: View Visualizations (PNG Images)
+
+```bash
+# Generate all visualizations
+./venv/bin/python scripts/demo_visualizations.py
+
+# View the images (Mac)
+open results/three_layer_graph.png
+open results/evolution_network.png
+
+# Or view all at once
+open results/*.png
+
+# On Linux
+xdg-open results/three_layer_graph.png
+
+# On Windows
+start results\three_layer_graph.png
+```
+
+**Generated files** (in `results/` folder):
+- `three_layer_graph.png` - Full 3-layer architecture
+- `evolution_network.png` - Event evolution network
+- `risk_propagation.png` - Risk-entity connections
+- `evolution_heatmap.png` - Event type matrix
+- `component_breakdown.png` - Evolution method contributions
+- And 3 more...
+
+### Option 2: Interactive API Demo (Web Browser)
+
+```bash
+# 1. Start the API server
+./venv/bin/python api/app.py
+
+# 2. Open the demo page in your browser
+# Mac: open api/demo.html
+# Or navigate to: file:///Users/hansonxiong/Desktop/DDP/feekg/api/demo.html
+```
+
+The demo page provides:
+- ✅ Interactive buttons to test all API endpoints
+- ✅ Live visualization generation
+- ✅ Database statistics
+- ✅ Query results display
+
+### Option 3: Neo4j Browser (Interactive Graph Database)
+
+```bash
+# Open Neo4j Browser
+open http://localhost:7474
+
+# Login with:
+# Username: neo4j
+# Password: feekg2024
+
+# Try these queries:
+# 1. View evolution network
+MATCH (e1:Event)-[r:EVOLVES_TO]->(e2:Event)
+RETURN e1, r, e2
+LIMIT 50
+
+# 2. View entity risks
+MATCH (e:Entity {name: 'China Evergrande Group'})<-[:TARGETS_ENTITY]-(r:Risk)
+MATCH (r)-[:HAS_RISK_TYPE]->(rt:RiskType)
+RETURN e, r, rt
+```
+
+### Option 4: Run Query Demos (Terminal)
+
+```bash
+# Interactive risk analysis demo
+./venv/bin/python scripts/demo_risk_queries.py
+
+# This shows:
+# - Database overview
+# - Entity risk profiles
+# - Evolution analysis
+# - Pattern detection
+# - Statistics
+```
+
 ## Project Structure
 
 ```
@@ -91,7 +174,7 @@ Entity Layer:   [Evergrande] ─────────────> [Minsheng 
 - [x] **Stage 3**: Sample Evergrande data (20 events, 10 entities, 10 risks, 154 enhanced evolution links) ✅
 - [x] **Stage 4**: Event evolution methods (6 algorithms: temporal, entity, semantic, topic, causal, emotional) ✅
 - [x] **Stage 5**: Risk queries (80+ Cypher templates, Python API, interactive demo) ✅
-- [ ] **Stage 6**: Three-layer visualization
+- [x] **Stage 6**: Visualizations (NetworkX/Matplotlib graphs, REST API with 20+ endpoints) ✅
 - [ ] **Stage 7**: Mini ABM (optional)
 
 ## Usage Guide
@@ -115,6 +198,56 @@ Entity Layer:   [Evergrande] ─────────────> [Minsheng 
 
 # Verify Stage 5 (Risk Queries)
 ./venv/bin/python scripts/verify_stage5.py
+
+# Verify Stage 6 (Visualizations & API)
+./venv/bin/python scripts/verify_stage6.py
+```
+
+### Generating Visualizations
+
+```bash
+# Generate all visualizations (saved to results/)
+./venv/bin/python scripts/demo_visualizations.py
+```
+
+This creates 8 visualization files:
+- `three_layer_graph.png` - Full 3-layer architecture
+- `evolution_network.png` - Event evolution network
+- `risk_propagation.png` - Risk → Entity connections
+- `risk_timeline.png` - Risk evolution over time
+- `evolution_heatmap.png` - Event type evolution matrix
+- `event_network_timeline.png` - Temporal event network
+- `component_breakdown.png` - Evolution method contributions
+- `risk_distribution.png` - Risk severity distribution
+
+### Starting the REST API
+
+```bash
+# Start the API server
+./venv/bin/python api/app.py
+
+# Or use Python directly
+python api/app.py
+```
+
+The API will be available at **http://localhost:5000**
+
+Test it:
+```bash
+# Health check
+curl http://localhost:5000/health
+
+# Get all entities
+curl http://localhost:5000/api/entities
+
+# Get evolution links
+curl "http://localhost:5000/api/evolution/links?min_score=0.5"
+
+# Get graph data for frontend visualization
+curl http://localhost:5000/api/graph/data
+```
+
+See [api/README.md](api/README.md) for complete API documentation.
 ```
 
 ### Using the Python API
@@ -163,6 +296,122 @@ MATCH (r)-[:HAS_RISK_TYPE]->(rt:RiskType)
 RETURN rt.label, r.score, r.severity
 ORDER BY r.score DESC;
 ```
+
+## 📋 Quick Reference
+
+### All Important Commands
+
+```bash
+# =============================================================================
+# VIEWING & VISUALIZATION
+# =============================================================================
+
+# Generate all visualizations → results/*.png
+./venv/bin/python scripts/demo_visualizations.py
+
+# View a specific visualization (Mac)
+open results/three_layer_graph.png
+
+# View all visualizations
+open results/*.png
+
+# Run query demos (terminal output)
+./venv/bin/python scripts/demo_risk_queries.py
+
+# =============================================================================
+# REST API
+# =============================================================================
+
+# Start API server → http://localhost:5000
+./venv/bin/python api/app.py
+
+# Test API
+curl http://localhost:5000/health
+curl http://localhost:5000/api/info
+curl http://localhost:5000/api/entities
+
+# Open interactive demo page (in browser)
+# Navigate to: file:///Users/hansonxiong/Desktop/DDP/feekg/api/demo.html
+
+# =============================================================================
+# NEO4J BROWSER
+# =============================================================================
+
+# Open Neo4j Browser → http://localhost:7474
+open http://localhost:7474
+
+# Credentials:
+# Username: neo4j
+# Password: feekg2024
+
+# =============================================================================
+# VERIFICATION
+# =============================================================================
+
+# Verify Stage 4 (Evolution Methods)
+./venv/bin/python scripts/verify_stage4.py
+
+# Verify Stage 5 (Risk Queries)
+./venv/bin/python scripts/verify_stage5.py
+
+# Verify Stage 6 (Visualizations & API)
+./venv/bin/python scripts/verify_stage6.py
+
+# =============================================================================
+# DATA MANAGEMENT
+# =============================================================================
+
+# Reload data into Neo4j
+./venv/bin/python ingestion/load_evergrande.py
+
+# Recompute evolution links
+./venv/bin/python evolution/run_evolution.py
+
+# =============================================================================
+# NEO4J DOCKER
+# =============================================================================
+
+# Start Neo4j container
+./scripts/start_neo4j.sh
+
+# Check if running
+docker ps | grep feekg-neo4j
+
+# Stop Neo4j
+docker stop feekg-neo4j
+
+# Restart Neo4j
+docker start feekg-neo4j
+```
+
+### Important Files & Locations
+
+| What | Where | Description |
+|------|-------|-------------|
+| **Visualizations** | `results/*.png` | 8 generated PNG images |
+| **API Demo** | `api/demo.html` | Interactive web interface |
+| **API Docs** | `api/README.md` | Complete API documentation |
+| **Project Guide** | `CLAUDE.md` | Comprehensive project guide |
+| **Stage Summary** | `STAGE6_SUMMARY.md` | Latest implementation details |
+| **Input Data** | `data/evergrande_crisis.json` | All events, entities, risks |
+| **Evolution Results** | `results/evolution_links.json` | Computed evolution links |
+| **Query Templates** | `query/risk_queries.cypher` | 80+ Cypher query examples |
+
+### Quick API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /health` | Health check |
+| `GET /api/info` | Database overview |
+| `GET /api/entities` | All entities |
+| `GET /api/events` | All events |
+| `GET /api/evolution/links?min_score=0.5` | Evolution links |
+| `GET /api/evolution/chains` | Causal chains |
+| `GET /api/risks` | All risks |
+| `GET /api/graph/data` | Graph data for D3.js |
+| `GET /api/visualizations/three-layer` | Generate 3-layer viz |
+
+See `api/README.md` for complete API documentation.
 
 ## Security Notes
 
