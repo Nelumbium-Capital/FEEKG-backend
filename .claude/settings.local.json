@@ -68,7 +68,8 @@
       "Bash(docker stop:*)",
       "Bash(pkill:*)",
       "Bash(timeout 60 ./venv/bin/python:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []
