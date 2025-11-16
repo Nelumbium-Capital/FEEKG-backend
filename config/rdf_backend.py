@@ -28,22 +28,28 @@ class RDFBackend:
         self.ag_pass = os.getenv('AG_PASS')
         self.ag_repo = os.getenv('AG_REPO', 'feekg_dev')
 
+        # Ensure URL has explicit port 443 for HTTPS
+        if ':443' not in self.ag_url and self.ag_url.startswith('https://'):
+            self.ag_url = self.ag_url.rstrip('/') + ':443'
+
         # FE-EKG namespace
         self.FEEKG = "http://feekg.org/ontology#"
 
         self.conn = None
 
     def connect(self):
-        """Establish connection to AllegroGraph"""
+        """Establish connection to AllegroGraph using HTTPS (port 443)"""
         try:
+            # Use ag_connect with full HTTPS URL including port 443
+            # This works through firewalls that block port 10035
             self.conn = ag_connect(
                 self.ag_repo,
-                host=self.ag_url.replace('https://', '').replace('http://', '').rstrip('/'),
-                port=10035,
                 user=self.ag_user,
+                host=self.ag_url,  # Full URL with :443
                 password=self.ag_pass
             )
             print(f"✅ Connected to AllegroGraph: {self.ag_repo}")
+            print(f"✅ Triple count: {self.conn.size()}")
             return True
         except Exception as e:
             print(f"❌ AllegroGraph connection failed: {e}")

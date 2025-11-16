@@ -1,0 +1,245 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+            #header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            #header h1 {
+                margin: 0;
+                font-size: 28px;
+            }
+            #header p {
+                margin: 10px 0 0 0;
+                font-size: 14px;
+                opacity: 0.9;
+            }
+            #legend {
+                position: absolute;
+                top: 80px;
+                right: 20px;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+                z-index: 1000;
+                min-width: 200px;
+            }
+            #legend h3 {
+                margin: 0 0 10px 0;
+                font-size: 16px;
+                border-bottom: 2px solid #667eea;
+                padding-bottom: 5px;
+            }
+            .legend-item {
+                display: flex;
+                align-items: center;
+                margin: 8px 0;
+                font-size: 13px;
+            }
+            .legend-color {
+                width: 20px;
+                height: 20px;
+                border-radius: 3px;
+                margin-right: 10px;
+                border: 1px solid #ddd;
+            }
+            #controls {
+                position: absolute;
+                top: 80px;
+                left: 20px;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+                z-index: 1000;
+            }
+            #controls h3 {
+                margin: 0 0 10px 0;
+                font-size: 16px;
+            }
+            #controls button {
+                margin: 5px 0;
+                padding: 8px 15px;
+                border: none;
+                background: #667eea;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+                width: 100%;
+                font-size: 13px;
+            }
+            #controls button:hover {
+                background: #764ba2;
+            }
+        </style>
+
+        <div id="header">
+            <h1>Lehman Brothers Case Study Knowledge Graph</h1>
+            <p>21 Entities • 50 Events | Drag nodes • Zoom • Click for details</p>
+        </div>
+
+        <div id="legend">
+            <h3>Legend</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #3498db;"></div>
+                <span>Entities / Banks</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #e74c3c;"></div>
+                <span>Events / Inv. Banks</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #9b59b6;"></div>
+                <span>Regulators</span>
+            </div>
+        </div>
+
+        <div id="controls">
+            <h3>Controls</h3>
+            <button onclick="network.fit()">Fit to Screen</button>
+            <button onclick="network.moveTo({scale: 1.0})">Reset Zoom</button>
+            <button onclick="togglePhysics()">Toggle Physics</button>
+        </div>
+
+        <script>
+            var physicsEnabled = true;
+            function togglePhysics() {
+                physicsEnabled = !physicsEnabled;
+                network.setOptions({physics: {enabled: physicsEnabled}});
+            }
+        </script>
+        
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"color": "#000000"}, "group": "entity", "id": "\"Treasury\"", "label": "\"Treasury\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Treasury\"\u003c/b\u003e\u003cbr\u003eType: \"regulator\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"SEC\"", "label": "\"SEC\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"SEC\"\u003c/b\u003e\u003cbr\u003eType: \"regulator\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Morgan Stanley\"", "label": "\"Morgan Stanley\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Morgan Stanley\"\u003c/b\u003e\u003cbr\u003eType: \"investment_bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Merrill Lynch\"", "label": "\"Merrill Lynch\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Merrill Lynch\"\u003c/b\u003e\u003cbr\u003eType: \"investment_bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Lehman Brothers\"", "label": "\"Lehman Brothers\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Lehman Brothers\"\u003c/b\u003e\u003cbr\u003eType: \"investment_bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"JPMorgan\"", "label": "\"JPMorgan\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"JPMorgan\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"JP Morgan\"", "label": "\"JP Morgan\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"JP Morgan\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"S\u0026P 500\"", "label": "\"S\u0026P 500\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"S\u0026P 500\"\u003c/b\u003e\u003cbr\u003eType: \"investment_bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Goldman Sachs\"", "label": "\"Goldman Sachs\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Goldman Sachs\"\u003c/b\u003e\u003cbr\u003eType: \"investment_bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Federal Reserve\"", "label": "\"Federal Reserve\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Federal Reserve\"\u003c/b\u003e\u003cbr\u003eType: \"regulator\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Fed\"", "label": "\"Fed\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Fed\"\u003c/b\u003e\u003cbr\u003eType: \"regulator\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Citigroup\"", "label": "\"Citigroup\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Citigroup\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Citi\"", "label": "\"Citi\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Citi\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"FTSE\"", "label": "\"FTSE\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"FTSE\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"BofA\"", "label": "\"BofA\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"BofA\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Dow Jones\"", "label": "\"Dow Jones\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Dow Jones\"\u003c/b\u003e\u003cbr\u003eType: \"investment_bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Bear Stearns\"", "label": "\"Bear Stearns\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Bear Stearns\"\u003c/b\u003e\u003cbr\u003eType: \"investment_bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Barclays\"", "label": "\"Barclays\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Barclays\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"Bank of America\"", "label": "\"Bank of America\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"Bank of America\"\u003c/b\u003e\u003cbr\u003eType: \"bank\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"American International Group\"", "label": "\"American International Group\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"American International Group\"\u003c/b\u003e\u003cbr\u003eType: \"insurance\""}, {"font": {"color": "#000000"}, "group": "entity", "id": "\"AIG\"", "label": "\"AIG\"", "shape": "box", "size": 30, "title": "\u003cb\u003eEntity: \"AIG\"\u003c/b\u003e\u003cbr\u003eType: \"insurance\""}, {"font": {"color": "#000000"}, "group": "event", "id": "event_0", "label": "\"Morgan Stanley (NYSE: MS) acq", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Morgan Stanley (NYSE: MS) acquired retail portfolio of Banco Mercantil do Brasil S.A.\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-01\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Morgan Stanley (NYSE: MS) acquired retail portfolio of Banco Mercantil do Brasil S.A.\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_1", "label": "\"Huawei-3Com Technology Co. an", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Huawei-3Com Technology Co. and Microsoft Corp. to Jointly Provide Security Solutions\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-02\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Huawei-3Com Technology Co. and Microsoft Corp. to Jointly Provide Security Solutions\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_2", "label": "\"Deutsche Bank completed the a", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Deutsche Bank completed the acquisition of MortgageIT Holdings, Inc.\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-03\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Deutsche Bank completed the acquisition of MortgageIT Holdings, Inc.\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_3", "label": "\"Ex-Executive Files Age Discri", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Ex-Executive Files Age Discrimination Suit Against Morgan Stanley\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-03\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Ex-Executive Files Age Discrimination Suit Against Morgan Stanley\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_4", "label": "\"Federal Trade Commission Fine", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Federal Trade Commission Fines the Marketers of Four Weight Loss Pills $25 Million for Making False \"\u003c/b\u003e\u003cbr\u003e\n            Type: \"earnings_loss\"\u003cbr\u003e\n            Date: \"2007-01-04\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Federal Trade Commission Fines the Marketers of Four Weight Loss Pills $25 Million for Making False..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_5", "label": "\"Citi Institutional Liquidity ", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Citi Institutional Liquidity Fund plc Announces Resignation of KPMG LLP as Auditor\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-04\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Citi Institutional Liquidity Fund plc Announces Resignation of KPMG LLP as Auditor\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_6", "label": "\"Merrill Lynch \u0026 Co. Inc. to R", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Merrill Lynch \u0026 Co. Inc. to Report Q4, 2006 Results on January 18, 2007\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"earnings_announcement\"\u003cbr\u003e\n            Date: \"2007-01-05\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Merrill Lynch \u0026 Co. Inc. to Report Q4, 2006 Results on January 18, 2007\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_7", "label": "\"BofA Merrill Lynch, Q4 2006 E", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"BofA Merrill Lynch, Q4 2006 Earnings Call, Jan-18-2007\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"earnings_announcement\"\u003cbr\u003e\n            Date: \"2007-01-05\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"BofA Merrill Lynch, Q4 2006 Earnings Call, Jan-18-2007\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_8", "label": "\"Gap Inc. Selects Goldman Sach", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Gap Inc. Selects Goldman Sachs Group Inc. to Explore Strategic Alternatives\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-08\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Gap Inc. Selects Goldman Sachs Group Inc. to Explore Strategic Alternatives\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_9", "label": "\"China Everbright Bank Selects", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"China Everbright Bank Selects Morgan Stanley and China International Capital as Advisers\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-08\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"China Everbright Bank Selects Morgan Stanley and China International Capital as Advisers\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_10", "label": "\"FirstMerit Corp. Dismisses Pr", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"FirstMerit Corp. Dismisses PricewaterhouseCoopers, LLP as Independent Auditor and Hires Ernst \u0026 Youn\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-08\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"FirstMerit Corp. Dismisses PricewaterhouseCoopers, LLP as Independent Auditor and Hires Ernst \u0026 You..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_11", "label": "\"IBM and Sears Build Second Li", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"IBM and Sears Build Second Life Store\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-08\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"IBM and Sears Build Second Life Store\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_12", "label": "\"The Goldman Sachs Group, Inc.", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"The Goldman Sachs Group, Inc. acquired a 14.51% stake in Kensington Group plc.\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-09\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"The Goldman Sachs Group, Inc. acquired a 14.51% stake in Kensington Group plc.\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_13", "label": "\"AES Corp. Seeks Federal Appro", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"AES Corp. Seeks Federal Approval to Build Liquefied Natural Gas Terminal At Sparrows Point\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-09\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"AES Corp. Seeks Federal Approval to Build Liquefied Natural Gas Terminal At Sparrows Point\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_14", "label": "\"Credit Suisse, Morgan Stanley", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Credit Suisse, Morgan Stanley Interested In EADS Stake\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-10\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Credit Suisse, Morgan Stanley Interested In EADS Stake\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_15", "label": "\"Kodak Retains Goldman Sachs G", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Kodak Retains Goldman Sachs Group Inc. to Find Buyer for the Business\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-10\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Kodak Retains Goldman Sachs Group Inc. to Find Buyer for the Business\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_16", "label": "\"Tyler Technologies and Micros", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Tyler Technologies and Microsoft Team Up to Develop Microsoft Dynamics AX For Public Sector\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-10\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Tyler Technologies and Microsoft Team Up to Develop Microsoft Dynamics AX For Public Sector\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_17", "label": "\"Bear Stearns Co. Names Michae", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Bear Stearns Co. Names Michael Goldstein to its Board of Directors\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-10\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Bear Stearns Co. Names Michael Goldstein to its Board of Directors\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_18", "label": "\"American International Group,", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"American International Group, Inc. Appoints Terri D. Austin as Chief Diversity Officer\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-12\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"American International Group, Inc. Appoints Terri D. Austin as Chief Diversity Officer\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_19", "label": "\"Microsoft Corp. Plans to Inve", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Microsoft Corp. Plans to Invest Heavily in its Security Channel in 2007\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-15\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Microsoft Corp. Plans to Invest Heavily in its Security Channel in 2007\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_20", "label": "\"Honda Motor Co. Ltd. to Build", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Honda Motor Co. Ltd. to Build Second Plant in India\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-15\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Honda Motor Co. Ltd. to Build Second Plant in India\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_21", "label": "\"Merrill Lynch \u0026 Co. Inc. Appo", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Merrill Lynch \u0026 Co. Inc. Appoints Inderjeet Hora as Market Director\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-15\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Merrill Lynch \u0026 Co. Inc. Appoints Inderjeet Hora as Market Director\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_22", "label": "\"AIG Small Business Launches T", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"AIG Small Business Launches The AIG EdgeSM, a Gateway to Products and Services for Small Businesses\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-16\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"AIG Small Business Launches The AIG EdgeSM, a Gateway to Products and Services for Small Businesses..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_23", "label": "\"Morgan Stanley Appoints Nick ", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Morgan Stanley Appoints Nick Wiles as Senior Adviser\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-16\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Morgan Stanley Appoints Nick Wiles as Senior Adviser\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_24", "label": "\"Huawei 3Com, Microsoft to Pro", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Huawei 3Com, Microsoft to Provide Enhanced Networking and Endpoint Security Solutions\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-16\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Huawei 3Com, Microsoft to Provide Enhanced Networking and Endpoint Security Solutions\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_25", "label": "\"American International Group ", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"American International Group Inc. Announces New Appointments\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-17\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"American International Group Inc. Announces New Appointments\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_26", "label": "\"The Carlyle Group completed t", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"The Carlyle Group completed the acquisition of a 2.77% stake in Allsec Technologies Limited for INR \"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-17\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"The Carlyle Group completed the acquisition of a 2.77% stake in Allsec Technologies Limited for INR..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_27", "label": "\"Merrill Lynch \u0026 Co., Canada L", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Merrill Lynch \u0026 Co., Canada Ltd., Board Meeting, Jan 18, 2007\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-18\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Merrill Lynch \u0026 Co., Canada Ltd., Board Meeting, Jan 18, 2007\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_28", "label": "\"Morgan Stanley Announces Join", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Morgan Stanley Announces Joint Venture in Saudi Arabia with the Capital Group\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-18\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Morgan Stanley Announces Joint Venture in Saudi Arabia with the Capital Group\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_29", "label": "\"Merrill Lynch Eyes Internatio", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Merrill Lynch Eyes International Acquisitions\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-18\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Merrill Lynch Eyes International Acquisitions\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_30", "label": "\"American International Group ", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"American International Group Inc. Announces Amendment to Articles of Incorporation or Bylaws\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-19\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"American International Group Inc. Announces Amendment to Articles of Incorporation or Bylaws\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_31", "label": "\"Update to Merrill Lynch \u0026 Co.", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Update to Merrill Lynch \u0026 Co. Inc.\u0092s Equity Buyback on January 18, 2007\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-19\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Update to Merrill Lynch \u0026 Co. Inc.\u0092s Equity Buyback on January 18, 2007\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_32", "label": "\"Goldman Sachs Mulls Opening I", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Goldman Sachs Mulls Opening Israel Branch\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-21\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Goldman Sachs Mulls Opening Israel Branch\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_33", "label": "\"Merrill Lynch Eyes APBT\"", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Merrill Lynch Eyes APBT\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-22\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Merrill Lynch Eyes APBT\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_34", "label": "\"Resolution Shares Rise On AIG", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Resolution Shares Rise On AIG Bid Talk\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-22\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Resolution Shares Rise On AIG Bid Talk\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_35", "label": "\"Changjiang Securities Co. Ltd", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Changjiang Securities Co. Ltd. entered into an agreement to acquire remaining 33.30% stake in Changj\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-22\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Changjiang Securities Co. Ltd. entered into an agreement to acquire remaining 33.30% stake in Chang..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_36", "label": "\"Morgan Stanley Appoints David", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Morgan Stanley Appoints David Cantillon as Managing Director and Head of European Prime Brokerage\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"management_change\"\u003cbr\u003e\n            Date: \"2007-01-22\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Morgan Stanley Appoints David Cantillon as Managing Director and Head of European Prime Brokerage\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_37", "label": "\"Total SA to Invest $6 billion", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Total SA to Invest $6 billion in Indonesia Oil and Gas Sector\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-22\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Total SA to Invest $6 billion in Indonesia Oil and Gas Sector\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_38", "label": "\"Microsoft to Launch New Opera", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Microsoft to Launch New Operating System\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-22\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Microsoft to Launch New Operating System\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_39", "label": "\"Honda Motor Co. Ltd. Plans to", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Honda Motor Co. Ltd. Plans to Set Up Second Car Plant in Rajasthan\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-23\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Honda Motor Co. Ltd. Plans to Set Up Second Car Plant in Rajasthan\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_40", "label": "\"Goldman; Morgan Stanley Among", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Goldman; Morgan Stanley Among Others Seeking Dominion Deal\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-24\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Goldman; Morgan Stanley Among Others Seeking Dominion Deal\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_41", "label": "\"Morgan Stanley Amends its Res", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Morgan Stanley Amends its Restated Bylaws\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-24\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Morgan Stanley Amends its Restated Bylaws\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_42", "label": "\"American International Group,", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"American International Group, Inc. (NYSE: AIG) (AIG) made an offer to acquire the 39.21% equity stak\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-24\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"American International Group, Inc. (NYSE: AIG) (AIG) made an offer to acquire the 39.21% equity sta..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_43", "label": "\"Foreign Brokerages Seeking St", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Foreign Brokerages Seeking Stakes In Changjiang Securities\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"merger_acquisition\"\u003cbr\u003e\n            Date: \"2007-01-24\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Foreign Brokerages Seeking Stakes In Changjiang Securities\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_44", "label": "\"American Stock Exchange Appoi", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"American Stock Exchange Appoints Morgan Stanley to Assist on Demutualization Plan\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-25\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"American Stock Exchange Appoints Morgan Stanley to Assist on Demutualization Plan\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_45", "label": "\"Microsoft Corp. Reports Earni", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Microsoft Corp. Reports Earnings Results for the Second Quarter Ended December 31, 2006 ; Provides E\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"earnings_announcement\"\u003cbr\u003e\n            Date: \"2007-01-25\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Microsoft Corp. Reports Earnings Results for the Second Quarter Ended December 31, 2006 ; Provides ..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_46", "label": "\"Geomet Inc. Engages Merrill L", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Geomet Inc. Engages Merrill Lynch \u0026 Co. as Financial Advisor\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-26\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Geomet Inc. Engages Merrill Lynch \u0026 Co. as Financial Advisor\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_47", "label": "\"Morgan Stanley - Conference P", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Morgan Stanley - Conference Presentation Call\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-26\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Morgan Stanley - Conference Presentation Call\"..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_48", "label": "\"Allsec Technologies Limited a", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Allsec Technologies Limited announced that it has received INR 785.46 million in funding from The Ca\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"capital_raising\"\u003cbr\u003e\n            Date: \"2007-01-26\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Allsec Technologies Limited announced that it has received INR 785.46 million in funding from The C..."}, {"font": {"color": "#000000"}, "group": "event", "id": "event_49", "label": "\"Alexander \u0026 Baldwin Inc. Amen", "shape": "ellipse", "size": 20, "title": "\u003cb\u003eEvent: \"Alexander \u0026 Baldwin Inc. Amends Portion of Article III, Section 1\"\u003c/b\u003e\u003cbr\u003e\n            Type: \"unknown\"\u003cbr\u003e\n            Date: \"2007-01-26\"^^\u003chttp://www.w3.org/2001/XMLSchema#date\u003e\u003cbr\u003e\n            Description: \"Alexander \u0026 Baldwin Inc. Amends Portion of Article III, Section 1\"..."}]);
+                  edges = new vis.DataSet([]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"font": {"size": 14, "face": "Arial"}, "borderWidth": 2, "shadow": true}, "edges": {"arrows": {"to": {"enabled": true, "scaleFactor": 0.5}}, "color": {"inherit": "from"}, "smooth": {"type": "curvedCW", "roundness": 0.2}, "shadow": true}, "physics": {"enabled": true, "stabilization": {"iterations": 200}, "barnesHut": {"gravitationalConstant": -5000, "centralGravity": 0.2, "springLength": 150, "springConstant": 0.02, "damping": 0.09, "avoidOverlap": 0.1}}, "interaction": {"hover": true, "tooltipDelay": 100, "zoomView": true, "dragView": true, "navigationButtons": true, "keyboard": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

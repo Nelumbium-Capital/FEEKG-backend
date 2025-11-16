@@ -53,7 +53,14 @@ class CapitalIQProcessor:
         if self.input_file.endswith('.xlsx'):
             self.df = pd.read_excel(self.input_file)
         elif self.input_file.endswith('.csv'):
-            self.df = pd.read_csv(self.input_file)
+            # Try different encodings and handle CSV parsing issues
+            try:
+                self.df = pd.read_csv(self.input_file, encoding='utf-8', on_bad_lines='skip')
+            except:
+                try:
+                    self.df = pd.read_csv(self.input_file, encoding='latin-1', on_bad_lines='skip')
+                except:
+                    self.df = pd.read_csv(self.input_file, encoding='ISO-8859-1', on_bad_lines='skip')
         else:
             raise ValueError("File must be .xlsx or .csv")
 
@@ -72,6 +79,7 @@ class CapitalIQProcessor:
             'event date': 'date',
             'eventdate': 'date',
             'announcement date': 'date',
+            'announcedate': 'date',  # Real Capital IQ format
             'event type': 'event_type',
             'eventtype': 'event_type',
             'key development type': 'event_type',
@@ -82,7 +90,9 @@ class CapitalIQProcessor:
             'event description': 'description',
             'key parties': 'entities',
             'related companies': 'entities',
-            'source': 'source'
+            'source': 'source',
+            'sourcetypename': 'source',  # Real Capital IQ format
+            'objectroletype': 'role'  # Real Capital IQ format
         }
 
         col_lower = col.lower().strip()
@@ -90,14 +100,18 @@ class CapitalIQProcessor:
 
     def get_statistics(self) -> Dict:
         """Get dataset statistics"""
+        # Convert date column to datetime first
+        if 'date' in self.df.columns:
+            self.df['date'] = pd.to_datetime(self.df['date'], errors='coerce')
+
         stats = {
             'total_events': len(self.df),
             'date_range': {
-                'start': str(self.df['date'].min()) if 'date' in self.df.columns else 'N/A',
-                'end': str(self.df['date'].max()) if 'date' in self.df.columns else 'N/A'
+                'start': str(self.df['date'].min()) if 'date' in self.df.columns and not self.df['date'].isna().all() else 'N/A',
+                'end': str(self.df['date'].max()) if 'date' in self.df.columns and not self.df['date'].isna().all() else 'N/A'
             },
             'unique_companies': self.df['company'].nunique() if 'company' in self.df.columns else 0,
-            'event_types': self.df['event_type'].value_counts().to_dict() if 'event_type' in self.df.columns else {},
+            'event_types': self.df['event_type'].value_counts().head(10).to_dict() if 'event_type' in self.df.columns else {},
             'columns': list(self.df.columns)
         }
 

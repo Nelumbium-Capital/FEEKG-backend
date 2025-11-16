@@ -93,6 +93,10 @@ def load_lehman_case_study(input_file: str = 'data/capital_iq_processed/lehman_c
     # Load events
     print(f"\n5. Loading {len(data['events'])} events...")
     event_count = 0
+
+    # Build entity name to ID map for faster lookup
+    entity_map = {e['name']: e['entityId'] for e in data['entities']}
+
     for event in data['events']:
         query = """
         MERGE (ev:Event {eventId: $eventId})
@@ -102,6 +106,7 @@ def load_lehman_case_study(input_file: str = 'data/capital_iq_processed/lehman_c
             ev.description = $description,
             ev.source = $source,
             ev.actor = $actor,
+            ev.severity = $severity,
             ev.sentiment = $sentiment,
             ev.createdAt = datetime()
         RETURN ev.eventId as id
@@ -115,16 +120,16 @@ def load_lehman_case_study(input_file: str = 'data/capital_iq_processed/lehman_c
                 'description': event['description'],
                 'source': event.get('source', 'Capital IQ'),
                 'actor': event.get('actor', 'unknown'),
+                'severity': event.get('severity', 'low'),  # Store severity from v2
                 'sentiment': 0.0
             })
             event_count += 1
 
-            # Link event to entities
+            # Link event to entities (optimized with entity_map)
             for entity_name in event['entities']:
-                # Find entity by name
-                entity_match = [e for e in data['entities'] if e['name'] == entity_name]
-                if entity_match:
-                    entity_id = entity_match[0]['entityId']
+                # Use entity_map for O(1) lookup instead of O(n) search
+                entity_id = entity_map.get(entity_name)
+                if entity_id:
                     link_query = """
                     MATCH (e:Entity {entityId: $entityId})
                     MATCH (ev:Event {eventId: $eventId})
@@ -198,34 +203,114 @@ def load_lehman_case_study(input_file: str = 'data/capital_iq_processed/lehman_c
 
         print(f"   ✅ Stored {link_count} evolution links")
 
-    # Create basic risks based on event severity
+    # Create risks based on event type and severity
     print(f"\n7. Creating risk nodes...")
+
+    # Define comprehensive event-to-risk mapping
+    event_risk_mapping = {
+        'bankruptcy': {
+            'risk_type': 'credit_risk',
+            'base_severity': 'critical',
+            'base_likelihood': 0.95,
+            'description': 'Credit default and bankruptcy contagion risk'
+        },
+        'government_intervention': {
+            'risk_type': 'systemic_risk',
+            'base_severity': 'critical',
+            'base_likelihood': 0.90,
+            'description': 'Systemic financial crisis requiring government intervention'
+        },
+        'credit_downgrade': {
+            'risk_type': 'credit_risk',
+            'base_severity': 'high',
+            'base_likelihood': 0.80,
+            'description': 'Credit quality deterioration and funding risk'
+        },
+        'earnings_loss': {
+            'risk_type': 'financial_risk',
+            'base_severity': 'high',
+            'base_likelihood': 0.75,
+            'description': 'Financial performance deterioration and solvency risk'
+        },
+        'restructuring': {
+            'risk_type': 'operational_risk',
+            'base_severity': 'high',
+            'base_likelihood': 0.70,
+            'description': 'Business restructuring and operational disruption risk'
+        },
+        'merger_acquisition': {
+            'risk_type': 'counterparty_risk',
+            'base_severity': 'medium',
+            'base_likelihood': 0.65,
+            'description': 'Acquisition integration and counterparty exposure risk'
+        },
+        'capital_raising': {
+            'risk_type': 'liquidity_risk',
+            'base_severity': 'medium',
+            'base_likelihood': 0.70,
+            'description': 'Liquidity stress and capital adequacy concerns'
+        },
+        'management_change': {
+            'risk_type': 'operational_risk',
+            'base_severity': 'medium',
+            'base_likelihood': 0.60,
+            'description': 'Management instability and governance risk'
+        },
+        'stock_movement': {
+            'risk_type': 'market_risk',
+            'base_severity': 'medium',
+            'base_likelihood': 0.55,
+            'description': 'Stock price volatility and shareholder value risk'
+        },
+        'legal_issue': {
+            'risk_type': 'legal_risk',
+            'base_severity': 'medium',
+            'base_likelihood': 0.60,
+            'description': 'Legal liability and regulatory compliance risk'
+        },
+        'strategic_partnership': {
+            'risk_type': 'strategic_risk',
+            'base_severity': 'low',
+            'base_likelihood': 0.45,
+            'description': 'Strategic alliance and partnership execution risk'
+        },
+        'earnings_announcement': {
+            'risk_type': 'market_risk',
+            'base_severity': 'low',
+            'base_likelihood': 0.50,
+            'description': 'Market volatility and investor sentiment risk'
+        },
+        'business_operations': {
+            'risk_type': 'operational_risk',
+            'base_severity': 'low',
+            'base_likelihood': 0.40,
+            'description': 'Business operations and execution risk'
+        }
+    }
+
+    # Severity to likelihood adjustment
+    severity_adjustment = {
+        'critical': 0.0,   # No reduction for critical
+        'high': -0.10,     # Reduce likelihood by 10%
+        'medium': -0.20,   # Reduce likelihood by 20%
+        'low': -0.30       # Reduce likelihood by 30%
+    }
 
     risk_count = 0
     for event_data in data['events']:
         event_type = event_data['type']
+        event_severity = event_data.get('severity', 'low')
 
-        # Create risks for critical events
-        if event_type in ['bankruptcy', 'government_intervention', 'earnings_announcement']:
+        # Only create risks for events with defined risk mappings
+        if event_type in event_risk_mapping:
             risk_id = f"risk_{event_data['eventId']}"
+            risk_config = event_risk_mapping[event_type]
 
-            # Determine risk type and severity
-            if event_type == 'bankruptcy':
-                risk_type = 'credit_risk'
-                severity = 'critical'
-                likelihood = 0.95
-            elif event_type == 'government_intervention':
-                risk_type = 'systemic_risk'
-                severity = 'high'
-                likelihood = 0.85
-            elif event_type == 'earnings_announcement':
-                risk_type = 'market_risk'
-                severity = 'medium'
-                likelihood = 0.70
-            else:
-                risk_type = 'operational_risk'
-                severity = 'low'
-                likelihood = 0.50
+            # Use event severity from v2, fallback to mapping base severity
+            severity = event_severity if event_severity in ['critical', 'high', 'medium', 'low'] else risk_config['base_severity']
+
+            # Adjust likelihood based on actual event severity
+            likelihood = max(0.1, min(1.0, risk_config['base_likelihood'] + severity_adjustment.get(severity, 0)))
 
             query = """
             MERGE (r:Risk {riskId: $riskId})
@@ -239,10 +324,10 @@ def load_lehman_case_study(input_file: str = 'data/capital_iq_processed/lehman_c
             try:
                 backend.execute_query(query, {
                     'riskId': risk_id,
-                    'riskType': risk_type,
+                    'riskType': risk_config['risk_type'],
                     'severity': severity,
                     'likelihood': likelihood,
-                    'description': f"Risk stemming from: {event_data['headline']}"
+                    'description': f"{risk_config['description']}: {event_data['headline'][:100]}"
                 })
 
                 # Link risk to event
