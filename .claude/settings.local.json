@@ -77,7 +77,8 @@
       "Bash(/bashes)",
       "Bash(npx tsc:*)",
       "WebFetch(domain:build.nvidia.com)",
-      "WebFetch(domain:docs.api.nvidia.com)"
+      "WebFetch(domain:docs.api.nvidia.com)",
+      "Bash(git init:*)"
     ],
     "deny": [],
     "ask": []

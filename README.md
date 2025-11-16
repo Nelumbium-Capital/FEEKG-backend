@@ -2,15 +2,27 @@
 
 Implementation of the FEEKG paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
 
-## 📚 Documentation Navigation
+## 📚 Documentation Hub
 
-**Explore all 50+ documentation files:**
-- **[📖 Interactive Documentation Hub](docs_hub.html)** - Beautiful web interface with search (open in browser)
-- **[📑 Complete Documentation Index](DOCS_INDEX.md)** - Markdown catalog of all docs (GitHub-friendly)
-- **[🔧 Technical Guide](CLAUDE.md)** - Comprehensive project guide for developers
-- **[👀 Quick Start](VIEW.md)** - How to view and interact with visualizations
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                       │
+│  🖥️  INTERACTIVE DOCUMENTATION TERMINAL                              │
+│                                                                       │
+│  Navigate 50+ markdown files with a sleek terminal interface         │
+│  Features: Live search, categories, monochrome design                │
+│                                                                       │
+│  👉 Open: docs_hub.html in your browser                              │
+│  👉 Or run: open docs_hub.html                                       │
+│                                                                       │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
-> **Tip:** Open `docs_hub.html` in your browser for the best navigation experience with search and filtering!
+**Quick Links:**
+- **[📖 Documentation Terminal](docs_hub.html)** - Interactive hub with search (recommended!)
+- **[📑 Markdown Index](DOCS_INDEX.md)** - Text-based catalog of all docs
+- **[🔧 Technical Guide](CLAUDE.md)** - Complete project guide for developers
+- **[👀 Quick Start](VIEW.md)** - How to view visualizations
 
 ## 📊 Database: AllegroGraph (Production)
 

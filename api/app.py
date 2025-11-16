@@ -175,16 +175,25 @@ def create_app():
             # Use time window filter if dates provided
             if start_date and end_date:
                 events = backend.get_events_by_timewindow(start_date, end_date, limit=limit)
+                # For time window queries, return count (no pagination info)
+                return jsonify({
+                    'status': 'success',
+                    'count': len(events),
+                    'data': events
+                })
             else:
                 # Use pagination for all events
                 result = backend.get_events_paginated(offset=offset, limit=limit)
-                events = result['events']
 
-            return jsonify({
-                'status': 'success',
-                'count': len(events),
-                'data': events
-            })
+                # Return complete paginated response
+                return jsonify({
+                    'status': 'success',
+                    'data': result['events'],
+                    'total': result['total'],
+                    'offset': result['offset'],
+                    'limit': result['limit'],
+                    'count': len(result['events'])
+                })
         except Exception as e:
             return jsonify({
                 'status': 'error',

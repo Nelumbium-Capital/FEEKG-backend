@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FE-EKG Documentation Hub</title>
+    <title>FE-EKG Documentation Terminal</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -12,204 +14,335 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 20px;
             line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Scanlines effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.3;
+        }
+
+        /* Screen glow */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 999;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        header {
-            background: white;
-            padding: 50px 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            margin-bottom: 40px;
-            text-align: center;
+        .terminal-header {
+            background: #1a1a1a;
+            border: 2px solid #888;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1),
+                        inset 0 0 30px rgba(255, 255, 255, 0.02);
+            position: relative;
         }
 
-        h1 {
-            color: #1a1a1a;
-            margin-bottom: 16px;
-            font-size: 48px;
+        .terminal-header::before {
+            content: "┌─────────────────────────────────────────────────────────────┐";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 10px;
+            color: #666;
+            opacity: 0.5;
+        }
+
+        .terminal-title {
+            color: #fff;
+            font-size: 28px;
             font-weight: 700;
-            letter-spacing: -1px;
+            text-shadow: none;
+            margin-bottom: 10px;
         }
 
-        .subtitle {
-            color: #555;
-            font-size: 20px;
-            line-height: 1.7;
-            max-width: 800px;
-            margin: 0 auto 30px;
+        .terminal-subtitle {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 20px;
         }
 
-        .stats {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 30px;
+        .prompt {
+            color: #999;
+            margin-right: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
 
         .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 12px;
+            background: #151515;
+            border: 1px solid #555;
+            padding: 15px;
             text-align: center;
-            min-width: 150px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            border-color: #999;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .stat-number {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: none;
         }
 
         .stat-label {
-            font-size: 14px;
-            opacity: 0.95;
+            color: #aaa;
+            font-size: 11px;
+            margin-top: 5px;
+            text-transform: uppercase;
         }
 
-        .search-section {
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            margin-bottom: 40px;
+        .terminal-section {
+            background: #1a1a1a;
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-section h2 {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-shadow: none;
+            border-bottom: 1px solid #555;
+            padding-bottom: 8px;
+        }
+
+        .terminal-section h2::before {
+            content: "$ ";
+            color: #999;
         }
 
         .search-box {
             width: 100%;
-            padding: 18px 24px;
-            font-size: 18px;
-            border: 3px solid #667eea;
-            border-radius: 12px;
+            padding: 15px;
+            background: #151515;
+            border: 2px solid #555;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
             outline: none;
             transition: all 0.3s;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-box::placeholder {
+            color: #888;
+            opacity: 1;
         }
 
         .search-box:focus {
-            border-color: #764ba2;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .quick-links {
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            margin-bottom: 40px;
-        }
-
-        .quick-links h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 28px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
+            border-color: #999;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1),
+                        inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .quick-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            gap: 15px;
         }
 
         .quick-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #151515;
+            border: 1px solid #555;
             padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 4px;
+            transition: all 0.3s;
         }
 
         .quick-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-color: #999;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
         }
 
         .quick-card h3 {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
         }
 
         .quick-card a {
-            color: #667eea;
+            color: #bbb;
             text-decoration: none;
-            font-weight: 600;
+            font-size: 12px;
             display: block;
-            margin-top: 5px;
-            transition: color 0.2s;
+            margin: 8px 0;
+            padding: 5px 10px;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
         }
 
         .quick-card a:hover {
-            color: #764ba2;
+            color: #fff;
+            border-left-color: #999;
+            padding-left: 15px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .toc {
+            background: #1a1a1a;
+            border: 2px solid #555;
+            padding: 20px;
+            border-radius: 8px;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+
+        .toc h2 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-shadow: none;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            color: #bbb;
+            text-decoration: none;
+            font-size: 11px;
+            display: block;
+            padding: 8px 10px;
+            border-radius: 3px;
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+        }
+
+        .toc a:hover,
+        .toc a.active {
+            background: #252525;
+            border-left-color: #999;
+            color: #fff;
+            padding-left: 15px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
 
         .category-section {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            margin-bottom: 30px;
+            background: #1a1a1a;
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
         }
 
         .category-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 28px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-shadow: none;
         }
 
-        .category-icon {
-            font-size: 32px;
+        .category-section h2::before {
+            content: "# ";
+            color: #999;
+        }
+
+        .category-description {
+            color: #aaa;
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 20px;
         }
 
         .doc-list {
             display: grid;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
         }
 
         .doc-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-            transition: all 0.2s;
+            background: #151515;
+            border: 1px solid #555;
+            padding: 18px;
+            border-radius: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
             gap: 15px;
+            transition: all 0.3s;
         }
 
         .doc-item:hover {
-            background: #e9ecef;
+            border-color: #999;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
         .doc-item.major {
-            border-left-color: #e74c3c;
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            border-color: #888;
         }
 
         .doc-item.major:hover {
-            background: linear-gradient(135deg, #ffe0e0 0%, #ffc9c9 100%);
+            border-color: #ccc;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
         }
 
         .doc-info {
@@ -218,9 +351,9 @@
         }
 
         .doc-title {
-            font-size: 18px;
+            color: #fff;
+            font-size: 14px;
             font-weight: 700;
-            color: #333;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -229,111 +362,119 @@
 
         .doc-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .badge-major {
-            background: #e74c3c;
-            color: white;
+            background: #fff;
+            color: #0a0a0a;
+            box-shadow: none;
         }
 
         .badge-supplementary {
-            background: #95a5a6;
-            color: white;
+            background: #666;
+            color: #fff;
         }
 
         .doc-description {
-            color: #666;
-            font-size: 15px;
-            line-height: 1.6;
+            color: #bbb;
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.5;
         }
 
         .doc-path {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #999;
+            font-size: 10px;
+            color: #888;
+            opacity: 0.8;
             margin-top: 5px;
         }
 
-        .doc-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+        .doc-path::before {
+            content: "→ ";
         }
 
         .doc-link {
             padding: 10px 20px;
-            background: #667eea;
-            color: white;
+            background: #fff;
+            color: #0a0a0a;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.3s;
             white-space: nowrap;
+            text-transform: uppercase;
+            box-shadow: none;
         }
 
         .doc-link:hover {
-            background: #5568d3;
+            background: #ddd;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
         }
 
-        .toc {
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            margin-bottom: 40px;
-            position: sticky;
-            top: 20px;
+        .hidden {
+            display: none !important;
         }
 
-        .toc h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 24px;
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 16px;
         }
 
-        .toc ul {
-            list-style: none;
+        footer {
+            text-align: center;
+            color: #888;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.8;
+            font-size: 12px;
+            border-top: 1px solid #333;
         }
 
-        .toc li {
-            margin-bottom: 10px;
-        }
-
-        .toc a {
-            color: #333;
+        footer a {
+            color: #bbb;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-            display: block;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
         }
 
-        .toc a:hover {
-            background: #f0f4ff;
-            color: #667eea;
-            transform: translateX(5px);
+        footer a:hover {
+            color: #fff;
+            text-shadow: none;
         }
 
-        .two-column {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            align-items: start;
+        .blink {
+            animation: blink 1s infinite;
         }
 
-        .main-content {
-            min-width: 0;
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #777;
         }
 
         @media (max-width: 1024px) {
@@ -344,133 +485,140 @@
             .toc {
                 position: static;
             }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        .hidden {
-            display: none !important;
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .no-results {
+        /* ASCII art decoration */
+        .ascii-decoration {
+            font-size: 8px;
+            color: #444;
+            opacity: 0.5;
             text-align: center;
-            padding: 60px 20px;
-            color: #666;
-            font-size: 18px;
-        }
-
-        footer {
-            text-align: center;
-            color: white;
-            margin-top: 60px;
-            padding: 30px;
-            opacity: 0.9;
-        }
-
-        footer a {
-            color: white;
-            text-decoration: underline;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>📚 FE-EKG Documentation Hub</h1>
-            <p class="subtitle">
-                Complete documentation portal for the Financial Event Evolution Knowledge Graph system.
-                Navigate all 50+ markdown files organized by topic.
-            </p>
-            <div class="stats">
+        <!-- Header -->
+        <div class="terminal-header">
+            <div class="terminal-title">
+                <span class="prompt">root@feekg:~$</span> ./docs_hub.sh
+            </div>
+            <div class="terminal-subtitle">
+                <span class="prompt">&gt;&gt;</span> Financial Event Evolution Knowledge Graph - Documentation Terminal v2.1.0
+            </div>
+            <div class="terminal-subtitle">
+                <span class="prompt">&gt;&gt;</span> 5,105 Events | 22 Entities | 31,173 Evolution Links | 429K Triples in AllegroGraph
+            </div>
+            <div class="stats-grid">
                 <div class="stat-box">
-                    <div class="stat-number">50</div>
-                    <div class="stat-label">Documentation Files</div>
+                    <div class="stat-number">5,105</div>
+                    <div class="stat-label">Events</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-number">14</div>
-                    <div class="stat-label">Categories</div>
+                    <div class="stat-number">22</div>
+                    <div class="stat-label">Entities</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-number">26</div>
-                    <div class="stat-label">Major Docs</div>
+                    <div class="stat-number">31,173</div>
+                    <div class="stat-label">Evo Links</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">429K</div>
+                    <div class="stat-label">Triples</div>
                 </div>
             </div>
-        </header>
+        </div>
 
-        <div class="search-section">
+        <!-- Search -->
+        <div class="terminal-section">
+            <h2>search</h2>
             <input type="text"
                    id="searchBox"
                    class="search-box"
-                   placeholder="🔍 Search documentation... (e.g., 'AllegroGraph', 'frontend', 'API')"
+                   placeholder="[Ctrl+K] Search documentation... (try 'API', 'frontend', 'AllegroGraph')"
                    autocomplete="off">
         </div>
 
-        <div class="quick-links">
-            <h2>🚀 Quick Start Paths</h2>
+        <!-- Quick Links -->
+        <div class="terminal-section">
+            <h2>quick_start</h2>
             <div class="quick-grid">
                 <div class="quick-card">
-                    <h3>🎯 New to FE-EKG?</h3>
-                    <a href="README.md">1. README.md - Project Overview</a>
-                    <a href="CLAUDE.md">2. CLAUDE.md - Technical Guide</a>
-                    <a href="VIEW.md">3. VIEW.md - How to Use</a>
+                    <h3>→ New User</h3>
+                    <a href="README.md">README.md</a>
+                    <a href="CLAUDE.md">CLAUDE.md</a>
+                    <a href="VIEW.md">VIEW.md</a>
                 </div>
                 <div class="quick-card">
-                    <h3>⚙️ Setup & Configuration</h3>
-                    <a href="SECURITY.md">SECURITY.md - Credentials</a>
-                    <a href="ALLEGROGRAPH_MIGRATION.md">AllegroGraph Setup</a>
-                    <a href="FRONTEND_SETUP_GUIDE.md">Frontend Setup (30 min)</a>
+                    <h3>→ Setup</h3>
+                    <a href="SECURITY.md">SECURITY.md</a>
+                    <a href="ALLEGROGRAPH_MIGRATION.md">AllegroGraph</a>
+                    <a href="FRONTEND_SETUP_GUIDE.md">Frontend (30 min)</a>
+                    <a href="FUTURE_ROADMAP.md">Future Roadmap</a>
                 </div>
                 <div class="quick-card">
-                    <h3>💾 Working with Data</h3>
-                    <a href="REAL_DATA_RESULTS.md">Capital IQ Data Results</a>
+                    <h3>→ Data</h3>
+                    <a href="REAL_DATA_RESULTS.md">Capital IQ Results</a>
                     <a href="CSV_TRACEABILITY_SUMMARY.md">Data Lineage</a>
                     <a href="data/CAPITAL_IQ_DOWNLOAD_GUIDE.md">Download Guide</a>
                 </div>
                 <div class="quick-card">
-                    <h3>🎨 Frontend Development</h3>
+                    <h3>→ Development</h3>
                     <a href="FRONTEND_ARCHITECTURE.md">Architecture</a>
-                    <a href="COMPONENT_LIBRARY.md">Component Library</a>
-                    <a href="FRONTEND_STATUS.md">Current Status</a>
-                </div>
-                <div class="quick-card">
-                    <h3>🔌 API & Integration</h3>
-                    <a href="api/README.md">REST API Docs</a>
-                    <a href="llm/README.md">LLM Integration</a>
-                    <a href="docs/LLM_INTEGRATION.md">AI Features</a>
-                </div>
-                <div class="quick-card">
-                    <h3>📊 Visualization</h3>
-                    <a href="VISUALIZATION_GUIDE.md">Visualization Guide</a>
-                    <a href="docs/VISUALIZATIONS.md">System Overview</a>
-                    <a href="GRAPH_INTERACTION_GUIDE.md">Interaction Patterns</a>
+                    <a href="COMPONENT_LIBRARY.md">Components</a>
+                    <a href="api/README.md">REST API</a>
                 </div>
             </div>
         </div>
 
+        <div class="ascii-decoration">
+        ════════════════════════════════════════════════════════════════════════════════
+        </div>
+
         <div class="two-column">
+            <!-- TOC -->
             <div class="toc">
-                <h2>📑 Categories</h2>
+                <h2>[ INDEX ]</h2>
                 <ul>
-                    <li><a href="#cat-main">Main Documentation (3)</a></li>
+                    <li><a href="#cat-main">Main Docs (3)</a></li>
                     <li><a href="#cat-stage">Stage Summaries (4)</a></li>
-                    <li><a href="#cat-migration">Migration & Setup (4)</a></li>
-                    <li><a href="#cat-data">Data Processing (6)</a></li>
-                    <li><a href="#cat-evolution">Evolution & Algorithms (2)</a></li>
-                    <li><a href="#cat-frontend">Frontend Development (7)</a></li>
+                    <li><a href="#cat-migration">Migration (4)</a></li>
+                    <li><a href="#cat-data">Data (6)</a></li>
+                    <li><a href="#cat-evolution">Evolution (2)</a></li>
+                    <li><a href="#cat-frontend">Frontend (7)</a></li>
                     <li><a href="#cat-viz">Visualization (3)</a></li>
                     <li><a href="#cat-performance">Performance (3)</a></li>
                     <li><a href="#cat-cleanup">Cleanup (2)</a></li>
-                    <li><a href="#cat-api">API Documentation (1)</a></li>
-                    <li><a href="#cat-llm">LLM/AI Integration (3)</a></li>
+                    <li><a href="#cat-api">API (1)</a></li>
+                    <li><a href="#cat-llm">LLM/AI (3)</a></li>
                     <li><a href="#cat-case">Case Studies (1)</a></li>
-                    <li><a href="#cat-output">Output & Results (1)</a></li>
-                    <li><a href="#cat-consolidated">Consolidated Docs (3)</a></li>
+                    <li><a href="#cat-output">Output (1)</a></li>
+                    <li><a href="#cat-planning">Planning (1)</a></li>
+                    <li><a href="#cat-consolidated">Consolidated (3)</a></li>
                 </ul>
             </div>
 
+            <!-- Main Content -->
             <div class="main-content">
                 <!-- Category 1: Main Documentation -->
                 <div class="category-section" id="cat-main" data-category="main">
-                    <h2><span class="category-icon">📖</span> Main Documentation</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Core reference documents - start here for project overview</p>
+                    <h2>Main Documentation</h2>
+                    <p class="category-description">Core reference documents - start here</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="readme project overview main allegrograph capital iq lehman 4000 events">
                             <div class="doc-info">
@@ -478,7 +626,7 @@
                                     README.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Main project documentation with AllegroGraph setup, 4,000 Capital IQ events from Lehman Brothers crisis</div>
+                                <div class="doc-description">Main project documentation with AllegroGraph setup, 5,105 Capital IQ events</div>
                                 <div class="doc-path">./README.md</div>
                             </div>
                             <div class="doc-actions">
@@ -492,7 +640,7 @@
                                     CLAUDE.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Complete project guide for AI assistants - architecture, commands, troubleshooting, and best practices</div>
+                                <div class="doc-description">Complete project guide for AI assistants - architecture, commands, troubleshooting</div>
                                 <div class="doc-path">./CLAUDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -506,7 +654,7 @@
                                     VIEW.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Quick guide on how to view and interact with the system (PNG files, browser visualizations, API)</div>
+                                <div class="doc-description">Quick guide on viewing/interacting with system (PNG, browser, API)</div>
                                 <div class="doc-path">./VIEW.md</div>
                             </div>
                             <div class="doc-actions">
@@ -518,16 +666,16 @@
 
                 <!-- Category 2: Stage Summaries -->
                 <div class="category-section" id="cat-stage" data-category="stage">
-                    <h2><span class="category-icon">📋</span> Stage Summaries</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Chronological implementation progress documentation</p>
+                    <h2>Stage Summaries</h2>
+                    <p class="category-description">Chronological implementation progress</p>
                     <div class="doc-list">
                         <div class="doc-item" data-keywords="stage1 infrastructure setup docker neo4j initial">
                             <div class="doc-info">
                                 <div class="doc-title">
                                     stage1_summary.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Infrastructure setup completion summary - Docker, Neo4j, project structure</div>
+                                <div class="doc-description">Infrastructure setup - Docker, Neo4j, project structure</div>
                                 <div class="doc-path">./logs/stage1_summary.md</div>
                             </div>
                             <div class="doc-actions">
@@ -539,9 +687,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     stage2_summary.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Schema with risk layer and Neo4j backend completion - 12 risk types defined</div>
+                                <div class="doc-description">Schema with risk layer - 12 risk types defined</div>
                                 <div class="doc-path">./logs/stage2_summary.md</div>
                             </div>
                             <div class="doc-actions">
@@ -553,9 +701,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     stage3_summary.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Evergrande crisis data ingestion completion - 20 events, 10 entities, 10 risks</div>
+                                <div class="doc-description">Evergrande crisis data ingestion - 20 events, 10 entities, 10 risks</div>
                                 <div class="doc-path">./logs/stage3_summary.md</div>
                             </div>
                             <div class="doc-actions">
@@ -569,7 +717,7 @@
                                     STAGE6_SUMMARY.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Visualizations and REST API implementation completion - 8 visualization types, 20+ endpoints</div>
+                                <div class="doc-description">Visualizations & REST API - 8 types, 20+ endpoints</div>
                                 <div class="doc-path">./STAGE6_SUMMARY.md</div>
                             </div>
                             <div class="doc-actions">
@@ -581,8 +729,8 @@
 
                 <!-- Category 3: Migration & Setup -->
                 <div class="category-section" id="cat-migration" data-category="migration">
-                    <h2><span class="category-icon">🔄</span> Migration & Setup Guides</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Database migration and system configuration</p>
+                    <h2>Migration & Setup</h2>
+                    <p class="category-description">Database migration and system configuration</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="allegrograph migration neo4j rdf triplestore sparql production">
                             <div class="doc-info">
@@ -590,7 +738,7 @@
                                     ALLEGROGRAPH_MIGRATION.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Complete guide for Neo4j to AllegroGraph migration - Production Ready with SPARQL queries</div>
+                                <div class="doc-description">Neo4j → AllegroGraph migration guide (Production Ready)</div>
                                 <div class="doc-path">./ALLEGROGRAPH_MIGRATION.md</div>
                             </div>
                             <div class="doc-actions">
@@ -604,7 +752,7 @@
                                     SECURITY.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Secret management and security guidelines - credential handling, .env setup</div>
+                                <div class="doc-description">Secret management and security guidelines</div>
                                 <div class="doc-path">./SECURITY.md</div>
                             </div>
                             <div class="doc-actions">
@@ -616,7 +764,7 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     ALLEGROGRAPH_SETUP.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
                                 <div class="doc-description">AllegroGraph cloud connection setup via HTTPS</div>
                                 <div class="doc-path">./docs/ALLEGROGRAPH_SETUP.md</div>
@@ -630,9 +778,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     RDF_SETUP.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">RDF conversion, triple stores, and ontology management</div>
+                                <div class="doc-description">RDF conversion, triple stores, ontology management</div>
                                 <div class="doc-path">./docs/RDF_SETUP.md</div>
                             </div>
                             <div class="doc-actions">
@@ -644,8 +792,8 @@
 
                 <!-- Category 4: Data Processing -->
                 <div class="category-section" id="cat-data" data-category="data">
-                    <h2><span class="category-icon">💾</span> Data Processing & Quality</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Data ingestion, processing, quality assurance, and traceability</p>
+                    <h2>Data Processing</h2>
+                    <p class="category-description">Data ingestion, processing, quality assurance</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="real data capital iq lehman brothers results 77590 4000 events crisis">
                             <div class="doc-info">
@@ -653,7 +801,7 @@
                                     REAL_DATA_RESULTS.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Capital IQ Lehman Brothers case study results - 77,590 raw events filtered to 4,000 financial events</div>
+                                <div class="doc-description">Capital IQ Lehman Brothers - 77,590 → 5,105 events (deduplicated)</div>
                                 <div class="doc-path">./REAL_DATA_RESULTS.md</div>
                             </div>
                             <div class="doc-actions">
@@ -667,7 +815,7 @@
                                     CSV_TRACEABILITY_SUMMARY.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Full CSV traceability implementation for complete data lineage and provenance</div>
+                                <div class="doc-description">Full CSV traceability for data lineage</div>
                                 <div class="doc-path">./CSV_TRACEABILITY_SUMMARY.md</div>
                             </div>
                             <div class="doc-actions">
@@ -679,9 +827,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     DATA_QUALITY_REPORT.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Data quality analysis for v2 improved dataset - validation and metrics</div>
+                                <div class="doc-description">Data quality analysis for v2 dataset</div>
                                 <div class="doc-path">./DATA_QUALITY_REPORT.md</div>
                             </div>
                             <div class="doc-actions">
@@ -693,9 +841,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     QUICK_ANALYSIS_GUIDE.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Quick reference for analyzing data in AllegroGraph with SPARQL</div>
+                                <div class="doc-description">Quick reference for SPARQL queries</div>
                                 <div class="doc-path">./QUICK_ANALYSIS_GUIDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -707,9 +855,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     CAPITAL_IQ_DOWNLOAD_GUIDE.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Guide for downloading Capital IQ bulk data (2007-2009 financial crisis)</div>
+                                <div class="doc-description">Capital IQ bulk data download (2007-2009)</div>
                                 <div class="doc-path">./data/CAPITAL_IQ_DOWNLOAD_GUIDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -721,9 +869,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     README_WORKFLOW.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Capital IQ to FE-EKG data processing workflow and ETL pipeline</div>
+                                <div class="doc-description">Capital IQ → FE-EKG processing workflow</div>
                                 <div class="doc-path">./data/README_WORKFLOW.md</div>
                             </div>
                             <div class="doc-actions">
@@ -733,10 +881,10 @@
                     </div>
                 </div>
 
-                <!-- Category 5: Evolution & Algorithms -->
+                <!-- Category 5: Evolution -->
                 <div class="category-section" id="cat-evolution" data-category="evolution">
-                    <h2><span class="category-icon">🔗</span> Evolution & Algorithms</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Event evolution methods and algorithms from the research paper</p>
+                    <h2>Evolution & Algorithms</h2>
+                    <p class="category-description">Event evolution methods from research paper</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="evolution implementation methods algorithms paper 6 temporal semantic">
                             <div class="doc-info">
@@ -744,7 +892,7 @@
                                     EVOLUTION_IMPLEMENTATION.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Event evolution methods from paper - 6 algorithms (temporal, semantic, entity overlap, etc.)</div>
+                                <div class="doc-description">6 evolution algorithms (temporal, semantic, entity overlap)</div>
                                 <div class="doc-path">./EVOLUTION_IMPLEMENTATION.md</div>
                             </div>
                             <div class="doc-actions">
@@ -758,7 +906,7 @@
                                     FEEKG_CAPABILITIES.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">System capabilities overview with 74,012 triples - current status and features</div>
+                                <div class="doc-description">System capabilities with 429,019 triples</div>
                                 <div class="doc-path">./FEEKG_CAPABILITIES.md</div>
                             </div>
                             <div class="doc-actions">
@@ -768,10 +916,10 @@
                     </div>
                 </div>
 
-                <!-- Category 6: Frontend Development -->
+                <!-- Category 6: Frontend -->
                 <div class="category-section" id="cat-frontend" data-category="frontend">
-                    <h2><span class="category-icon">🎨</span> Frontend Development</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Frontend architecture, components, setup, and UI/UX design</p>
+                    <h2>Frontend Development</h2>
+                    <p class="category-description">Frontend architecture, components, UI/UX</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="frontend status deployment 7 interactive visualizations">
                             <div class="doc-info">
@@ -779,7 +927,7 @@
                                     FRONTEND_STATUS.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Current frontend deployment status - 7 interactive visualizations deployed</div>
+                                <div class="doc-description">Current deployment - 7 interactive visualizations</div>
                                 <div class="doc-path">./FRONTEND_STATUS.md</div>
                             </div>
                             <div class="doc-actions">
@@ -793,7 +941,7 @@
                                     FRONTEND_ARCHITECTURE.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Next.js 14 + Cytoscape.js architecture - component structure and design patterns</div>
+                                <div class="doc-description">Next.js 14 + Cytoscape.js architecture</div>
                                 <div class="doc-path">./FRONTEND_ARCHITECTURE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -807,7 +955,7 @@
                                     FRONTEND_SETUP_GUIDE.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">30-minute frontend setup guide - step-by-step installation</div>
+                                <div class="doc-description">30-minute setup guide</div>
                                 <div class="doc-path">./FRONTEND_SETUP_GUIDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -819,9 +967,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     COMPONENT_LIBRARY.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">React component library for graph visualizations and UI elements</div>
+                                <div class="doc-description">React component library for visualizations</div>
                                 <div class="doc-path">./COMPONENT_LIBRARY.md</div>
                             </div>
                             <div class="doc-actions">
@@ -833,9 +981,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     STATE_MANAGEMENT_GUIDE.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">React Query + Zustand state management patterns and best practices</div>
+                                <div class="doc-description">React Query + Zustand patterns</div>
                                 <div class="doc-path">./STATE_MANAGEMENT_GUIDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -847,9 +995,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     UI_UX_DESIGN_SYSTEM.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Design system with design tokens, color palette, and typography</div>
+                                <div class="doc-description">Design tokens, colors, typography</div>
                                 <div class="doc-path">./UI_UX_DESIGN_SYSTEM.md</div>
                             </div>
                             <div class="doc-actions">
@@ -861,9 +1009,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     GRAPH_INTERACTION_GUIDE.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">User interaction patterns for Cytoscape.js graph navigation</div>
+                                <div class="doc-description">User interaction patterns for Cytoscape.js</div>
                                 <div class="doc-path">./GRAPH_INTERACTION_GUIDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -875,8 +1023,8 @@
 
                 <!-- Category 7: Visualization -->
                 <div class="category-section" id="cat-viz" data-category="visualization">
-                    <h2><span class="category-icon">📊</span> Visualization</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Graph and data visualization guides and implementations</p>
+                    <h2>Visualization</h2>
+                    <p class="category-description">Graph and data visualization</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="visualization guide d3 allegrograph professional charts">
                             <div class="doc-info">
@@ -884,7 +1032,7 @@
                                     VISUALIZATION_GUIDE.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Professional D3.js + AllegroGraph visualizations - comprehensive guide</div>
+                                <div class="doc-description">Professional D3.js + AllegroGraph visualizations</div>
                                 <div class="doc-path">./VISUALIZATION_GUIDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -896,9 +1044,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     GRAPH_VISUALIZATION_BACKEND_OPT.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Backend optimizations for graph rendering and visualization performance</div>
+                                <div class="doc-description">Backend optimizations for graph rendering</div>
                                 <div class="doc-path">./GRAPH_VISUALIZATION_BACKEND_OPT.md</div>
                             </div>
                             <div class="doc-actions">
@@ -910,9 +1058,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     VISUALIZATIONS.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Static, interactive, and timeline visualization system overview</div>
+                                <div class="doc-description">Static, interactive, timeline visualization system</div>
                                 <div class="doc-path">./docs/VISUALIZATIONS.md</div>
                             </div>
                             <div class="doc-actions">
@@ -924,8 +1072,8 @@
 
                 <!-- Category 8: Performance -->
                 <div class="category-section" id="cat-performance" data-category="performance">
-                    <h2><span class="category-icon">⚡</span> Performance & Optimization</h2>
-                    <p style="color: #666; margin-bottom: 20px;">System performance tuning and optimization strategies</p>
+                    <h2>Performance & Optimization</h2>
+                    <p class="category-description">System performance tuning</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="performance optimization frontend pagination lazy loading">
                             <div class="doc-info">
@@ -933,7 +1081,7 @@
                                     PERFORMANCE_OPTIMIZATION.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Frontend performance optimization - pagination, lazy loading, and caching</div>
+                                <div class="doc-description">Frontend optimization - pagination, lazy loading, caching</div>
                                 <div class="doc-path">./PERFORMANCE_OPTIMIZATION.md</div>
                             </div>
                             <div class="doc-actions">
@@ -947,7 +1095,7 @@
                                     BACKEND_IMPROVEMENTS_SUMMARY.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Backend optimizations - reliability, performance, and scalability improvements</div>
+                                <div class="doc-description">Backend reliability, performance, scalability</div>
                                 <div class="doc-path">./BACKEND_IMPROVEMENTS_SUMMARY.md</div>
                             </div>
                             <div class="doc-actions">
@@ -959,9 +1107,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     OPTIMIZATION.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Complete performance analysis and pipeline comparison benchmarks</div>
+                                <div class="doc-description">Performance analysis and benchmarks</div>
                                 <div class="doc-path">./docs/OPTIMIZATION.md</div>
                             </div>
                             <div class="doc-actions">
@@ -973,8 +1121,8 @@
 
                 <!-- Category 9: Cleanup -->
                 <div class="category-section" id="cat-cleanup" data-category="cleanup">
-                    <h2><span class="category-icon">🧹</span> Cleanup & Refactoring</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Codebase maintenance, cleanup, and refactoring</p>
+                    <h2>Cleanup & Refactoring</h2>
+                    <p class="category-description">Codebase maintenance</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="cleanup summary analysis 1500 lines refactor">
                             <div class="doc-info">
@@ -982,7 +1130,7 @@
                                     CLEANUP_SUMMARY.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Codebase cleanup analysis - potential to save ~1,500 lines of code</div>
+                                <div class="doc-description">Cleanup analysis - save ~1,500 lines</div>
                                 <div class="doc-path">./CLEANUP_SUMMARY.md</div>
                             </div>
                             <div class="doc-actions">
@@ -994,9 +1142,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     CLEANUP_PLAN.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Phased cleanup execution plan and strategy</div>
+                                <div class="doc-description">Phased cleanup execution plan</div>
                                 <div class="doc-path">./CLEANUP_PLAN.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1008,8 +1156,8 @@
 
                 <!-- Category 10: API -->
                 <div class="category-section" id="cat-api" data-category="api">
-                    <h2><span class="category-icon">🔌</span> API Documentation</h2>
-                    <p style="color: #666; margin-bottom: 20px;">REST API reference and integration guides</p>
+                    <h2>API Documentation</h2>
+                    <p class="category-description">REST API reference</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="api rest flask endpoints 20 documentation">
                             <div class="doc-info">
@@ -1017,7 +1165,7 @@
                                     api/README.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">REST API documentation - 20+ endpoints for entities, events, risks, and visualizations</div>
+                                <div class="doc-description">REST API - 20+ endpoints for entities, events, risks</div>
                                 <div class="doc-path">./api/README.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1029,8 +1177,8 @@
 
                 <!-- Category 11: LLM/AI -->
                 <div class="category-section" id="cat-llm" data-category="llm">
-                    <h2><span class="category-icon">🤖</span> LLM/AI Integration</h2>
-                    <p style="color: #666; margin-bottom: 20px;">AI-powered features, NVIDIA NIM, and semantic analysis</p>
+                    <h2>LLM/AI Integration</h2>
+                    <p class="category-description">AI-powered features</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="llm nvidia nim graphrag integration ai">
                             <div class="doc-info">
@@ -1038,7 +1186,7 @@
                                     llm/README.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">NVIDIA NIM integration for GraphRAG methodology and AI-powered analysis</div>
+                                <div class="doc-description">NVIDIA NIM integration for GraphRAG</div>
                                 <div class="doc-path">./llm/README.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1050,9 +1198,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     NVIDIA_MODELS.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Best NVIDIA API models for financial event analysis and classification</div>
+                                <div class="doc-description">Best NVIDIA models for financial analysis</div>
                                 <div class="doc-path">./evolution/NVIDIA_MODELS.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1064,9 +1212,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     LLM_INTEGRATION.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">AI-powered features - NeMo, semantic analysis, and event classification</div>
+                                <div class="doc-description">AI features - NeMo, semantic analysis</div>
                                 <div class="doc-path">./docs/LLM_INTEGRATION.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1078,8 +1226,8 @@
 
                 <!-- Category 12: Case Studies -->
                 <div class="category-section" id="cat-case" data-category="case">
-                    <h2><span class="category-icon">📖</span> Case Studies</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Real-world financial crisis implementations</p>
+                    <h2>Case Studies</h2>
+                    <p class="category-description">Real-world implementations</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="case study lehman brothers crisis pipeline complete">
                             <div class="doc-info">
@@ -1087,7 +1235,7 @@
                                     CASE_STUDY_LEHMAN.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Lehman Brothers financial crisis case study - complete pipeline walkthrough</div>
+                                <div class="doc-description">Lehman Brothers crisis - complete pipeline</div>
                                 <div class="doc-path">./docs/CASE_STUDY_LEHMAN.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1099,16 +1247,16 @@
 
                 <!-- Category 13: Output -->
                 <div class="category-section" id="cat-output" data-category="output">
-                    <h2><span class="category-icon">📁</span> Output & Results</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Generated outputs, visualizations, and analysis results</p>
+                    <h2>Output & Results</h2>
+                    <p class="category-description">Generated outputs and analysis</p>
                     <div class="doc-list">
                         <div class="doc-item" data-keywords="results output directory structure generated files">
                             <div class="doc-info">
                                 <div class="doc-title">
                                     results/README.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Directory structure for generated outputs - visualizations, data exports, analysis results</div>
+                                <div class="doc-description">Directory structure for generated outputs</div>
                                 <div class="doc-path">./results/README.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1118,10 +1266,31 @@
                     </div>
                 </div>
 
-                <!-- Category 14: Consolidated Docs -->
+                <!-- Category 14: Planning & Roadmap -->
+                <div class="category-section" id="cat-planning" data-category="planning">
+                    <h2>Planning & Roadmap</h2>
+                    <p class="category-description">Future development plans and technology decisions</p>
+                    <div class="doc-list">
+                        <div class="doc-item major" data-keywords="future roadmap planning rag nvidia faiss cuGraph phases market narrative analytics">
+                            <div class="doc-info">
+                                <div class="doc-title">
+                                    FUTURE_ROADMAP.md
+                                    <span class="doc-badge badge-major">MAJOR</span>
+                                </div>
+                                <div class="doc-description">5-phase feature roadmap - RAG, Market Intelligence, Analytics, Platform Expansion</div>
+                                <div class="doc-path">./FUTURE_ROADMAP.md</div>
+                            </div>
+                            <div class="doc-actions">
+                                <a href="FUTURE_ROADMAP.md" class="doc-link">Open</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category 15: Consolidated -->
                 <div class="category-section" id="cat-consolidated" data-category="consolidated">
-                    <h2><span class="category-icon">📚</span> Consolidated Documentation</h2>
-                    <p style="color: #666; margin-bottom: 20px;">Centralized documentation repository in docs/ folder</p>
+                    <h2>Consolidated Docs</h2>
+                    <p class="category-description">Centralized docs/ folder</p>
                     <div class="doc-list">
                         <div class="doc-item major" data-keywords="index docs consolidated v2 comprehensive">
                             <div class="doc-info">
@@ -1129,7 +1298,7 @@
                                     docs/INDEX.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Complete documentation index (v2.0 Consolidated) - master navigation</div>
+                                <div class="doc-description">Complete documentation index (v2.0)</div>
                                 <div class="doc-path">./docs/INDEX.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1143,7 +1312,7 @@
                                     docs/README.md
                                     <span class="doc-badge badge-major">MAJOR</span>
                                 </div>
-                                <div class="doc-description">Docs folder overview with viewing instructions and organization</div>
+                                <div class="doc-description">Docs folder overview</div>
                                 <div class="doc-path">./docs/README.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1155,9 +1324,9 @@
                             <div class="doc-info">
                                 <div class="doc-title">
                                     docs/PROJECT_GUIDE.md
-                                    <span class="doc-badge badge-supplementary">SUPPLEMENTARY</span>
+                                    <span class="doc-badge badge-supplementary">SUPP</span>
                                 </div>
-                                <div class="doc-description">Alternative project guide focused on Evergrande case study</div>
+                                <div class="doc-description">Alternative project guide (Evergrande focused)</div>
                                 <div class="doc-path">./docs/PROJECT_GUIDE.md</div>
                             </div>
                             <div class="doc-actions">
@@ -1168,21 +1337,28 @@
                 </div>
 
                 <div id="noResults" class="no-results hidden">
-                    <h3>No documents found</h3>
-                    <p>Try searching for different keywords like "API", "frontend", "AllegroGraph", or "visualization"</p>
+                    <h3>&gt;&gt; No documents found</h3>
+                    <p>Try: 'API', 'frontend', 'AllegroGraph', 'visualization'</p>
                 </div>
             </div>
         </div>
 
+        <div class="ascii-decoration">
+        ════════════════════════════════════════════════════════════════════════════════
+        </div>
+
         <footer>
             <p>
-                <strong>FE-EKG Documentation Hub</strong> |
-                Last Updated: 2025-11-16 |
-                <a href="README.md">Main README</a> |
-                <a href="CLAUDE.md">Technical Guide</a>
+                <span class="prompt">root@feekg:~$</span> Documentation Terminal v2.1.0 | AllegroGraph Production | 429K Triples |
+                <a href="README.md">README</a> |
+                <a href="CLAUDE.md">Guide</a> |
+                <a href="FUTURE_ROADMAP.md">Roadmap</a>
             </p>
-            <p style="margin-top: 10px; opacity: 0.8;">
-                Financial Event Evolution Knowledge Graph - Research Implementation
+            <p style="margin-top: 8px; opacity: 0.6;">
+                FE-EKG: Financial Event Evolution Knowledge Graph - Research Implementation
+            </p>
+            <p style="margin-top: 8px; font-size: 10px;">
+                <span class="blink">▮</span>
             </p>
         </footer>
     </div>
@@ -1199,14 +1375,12 @@
             let visibleCount = 0;
 
             if (searchTerm === '') {
-                // Show all
                 categorySection.forEach(section => section.style.display = 'block');
                 docItems.forEach(item => item.style.display = 'flex');
                 noResults.classList.add('hidden');
                 return;
             }
 
-            // Search through documents
             categorySection.forEach(section => {
                 let sectionHasVisibleItems = false;
                 const items = section.querySelectorAll('.doc-item');
@@ -1215,7 +1389,6 @@
                     const keywords = item.getAttribute('data-keywords') || '';
                     const title = item.querySelector('.doc-title').textContent.toLowerCase();
                     const description = item.querySelector('.doc-description').textContent.toLowerCase();
-
                     const searchableText = `${keywords} ${title} ${description}`;
 
                     if (searchableText.includes(searchTerm)) {
@@ -1227,11 +1400,9 @@
                     }
                 });
 
-                // Hide section if no visible items
                 section.style.display = sectionHasVisibleItems ? 'block' : 'none';
             });
 
-            // Show no results message if needed
             if (visibleCount === 0) {
                 noResults.classList.remove('hidden');
             } else {
@@ -1239,7 +1410,7 @@
             }
         });
 
-        // Smooth scroll for TOC links
+        // Smooth scroll
         document.querySelectorAll('.toc a').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1247,15 +1418,12 @@
                 const targetElement = document.querySelector(targetId);
 
                 if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
 
-        // Highlight active section in TOC while scrolling
+        // Active section highlighting
         window.addEventListener('scroll', function() {
             const sections = document.querySelectorAll('.category-section');
             const tocLinks = document.querySelectorAll('.toc a');
@@ -1263,32 +1431,26 @@
             let currentSection = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
                 if (window.pageYOffset >= sectionTop - 100) {
                     currentSection = section.getAttribute('id');
                 }
             });
 
             tocLinks.forEach(link => {
-                link.style.background = '';
-                link.style.color = '';
+                link.classList.remove('active');
                 if (link.getAttribute('href') === `#${currentSection}`) {
-                    link.style.background = '#f0f4ff';
-                    link.style.color = '#667eea';
+                    link.classList.add('active');
                 }
             });
         });
 
-        // Add keyboard shortcut for search (Ctrl/Cmd + K)
+        // Keyboard shortcut
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 searchBox.focus();
             }
         });
-
-        // Show hint about keyboard shortcut
-        searchBox.placeholder += ' (Ctrl/Cmd + K)';
     </script>
 </body>
 </html>

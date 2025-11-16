@@ -653,6 +653,7 @@ LIMIT {limit}
                 'from': from_id,
                 'to': to_id,
                 'score': float(binding['score']['value']),
+                'type': 'enhanced',
                 'temporal': float(binding.get('temporal', {}).get('value', 0)),
                 'entity_overlap': float(binding.get('entityOverlap', {}).get('value', 0)),
                 'semantic': float(binding.get('semantic', {}).get('value', 0)),
