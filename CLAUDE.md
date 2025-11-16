@@ -5,7 +5,7 @@
 This is a complete implementation of the **FE-EKG (Financial Event Evolution Knowledge Graph)** system based on the paper:
 > "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach" (Liu et al., 2024)
 
-**Purpose:** Build a three-layer knowledge graph for financial risk analysis using the Evergrande crisis as a case study.
+**Purpose:** Build a three-layer knowledge graph for financial risk analysis using real Capital IQ data from the 2007-2009 Lehman Brothers financial crisis.
 
 ## Architecture
 
@@ -28,12 +28,14 @@ This is a complete implementation of the **FE-EKG (Financial Event Evolution Kno
 
 ## Technology Stack
 
-- **Database:** Neo4j (via Docker) + AllegroGraph fallback
+- **Database:** AllegroGraph 8.4.0 (cloud-hosted RDF triplestore) ⭐ **PRIMARY**
 - **Backend:** Python 3.10+
-- **Graph Library:** NetworkX, py2neo, neo4j-driver
+- **Graph Library:** NetworkX, RDFLib, requests (SPARQL)
 - **Visualization:** Matplotlib, Pandas
 - **API:** Flask + CORS
-- **Data:** Hand-crafted Evergrande crisis events (2020-2022)
+- **Data:** Capital IQ Lehman Brothers crisis (2007-2009) - 4,000 real financial events
+
+> **⚠️ Note:** Neo4j has been **retired**. We now use AllegroGraph exclusively. See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md).
 
 ## Project Structure
 
@@ -46,11 +48,14 @@ feekg/
 ├── STAGE6_SUMMARY.md         # Latest stage summary
 │
 ├── config/                   # Configuration
-│   ├── graph_backend.py      # Dual backend (Neo4j/AllegroGraph)
+│   ├── graph_backend.py      # Backend abstraction
+│   ├── rdf_backend.py        # AllegroGraph RDF client
 │   └── secrets.py            # Credential management
 │
 ├── data/                     # Input data
-│   └── evergrande_crisis.json  # 20 events, 10 entities, 10 risks
+│   ├── capital_iq_raw/       # Raw Capital IQ CSV files
+│   ├── capital_iq_processed/ # Processed JSON (4,000 events)
+│   └── evergrande_crisis.json  # Legacy: 20 events (not in AllegroGraph)
 │
 ├── ontology/                 # Schema definitions
 │   ├── feekg_minimal.ttl     # RDF/OWL schema
@@ -89,7 +94,14 @@ feekg/
 
 ## Quick Start Commands
 
-### 1. View Visualizations (PNG files)
+### 1. Check AllegroGraph Connection
+
+```bash
+# Verify connection and data
+./venv/bin/python scripts/check_feekg_mycatalog.py
+```
+
+### 2. View Visualizations (PNG files)
 
 ```bash
 # Generate all visualizations
@@ -123,16 +135,34 @@ open http://localhost:5000
 
 **Open in browser:** `file:///Users/hansonxiong/Desktop/DDP/feekg/api/demo.html`
 
-### 3. Query the Database Directly
+### 3. Query AllegroGraph (SPARQL)
 
-```bash
-# Run interactive demo
-./venv/bin/python scripts/demo_risk_queries.py
+```python
+# Query using SPARQL
+import requests
+from requests.auth import HTTPBasicAuth
 
-# Or use Neo4j Browser
-open http://localhost:7474
-# Username: neo4j, Password: feekg2024
+url = 'https://qa-agraph.nelumbium.ai/catalogs/mycatalog/repositories/FEEKG'
+auth = HTTPBasicAuth('sadmin', '279H-Dt<>,YU')
+
+query = '''
+PREFIX feekg: <http://feekg.org/ontology#>
+SELECT ?entity ?label ?type
+WHERE {
+    ?entity a feekg:Entity .
+    ?entity feekg:label ?label .
+    ?entity feekg:entityType ?type .
+}
+LIMIT 10
+'''
+
+response = requests.post(url, data={'query': query},
+                        headers={'Accept': 'application/sparql-results+json'},
+                        auth=auth)
+results = response.json()['results']['bindings']
 ```
+
+See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for more SPARQL examples.
 
 ## Implementation Stages
 
@@ -198,23 +228,29 @@ Results: 154 enhanced evolution links (avg score: 0.366)
 - `scripts/verify_stage5.py` - Verify queries
 - `scripts/verify_stage6.py` - Verify visualizations + API
 
-## Database Schema (Neo4j)
+## Database Schema (AllegroGraph RDF)
 
-**Node Labels:**
-- `Entity` - Companies, banks, regulators (10 instances)
-- `Event` - Financial events (20 instances)
-- `Risk` - Risk instances (10 instances)
-- `RiskType` - Risk categories (12 types)
-- `RiskSnapshot` - Temporal risk data
+**RDF Classes:**
+- `feekg:Entity` - Companies, banks, regulators (22 institutions)
+- `feekg:Event` - Financial events (4,000 events from 2007-2009)
+- `feekg:Risk` - Risk instances (as available)
 
-**Relationship Types:**
-- `HAS_ACTOR` - Event → Entity (actor)
-- `HAS_TARGET` - Event → Entity (target)
-- `EVOLVES_TO` - Event → Event (154 enhanced links)
-- `TARGETS_ENTITY` - Risk → Entity
-- `HAS_RISK_TYPE` - Risk → RiskType
-- `HAS_SNAPSHOT` - Risk → RiskSnapshot
-- `INCREASES_RISK_OF` - Risk → Risk
+**RDF Properties:**
+- `feekg:label` - Human-readable name
+- `feekg:entityType` - Type (investment_bank, bank, insurance, etc.)
+- `feekg:eventType` - Event category (merger_acquisition, capital_raising, etc.)
+- `feekg:date` - Event date
+- `feekg:description` - Event description
+- `feekg:actor` - Event → Entity (actor)
+- `feekg:involves` - Event → Entity (participant)
+- `feekg:evolvesTo` - Event → Event (evolution link)
+
+**CSV Traceability Properties:**
+- `feekg:csvRowNumber` - Original CSV row number
+- `feekg:csvFilename` - Source CSV file
+- `feekg:capitalIqId` - Capital IQ unique identifier
+- `feekg:classificationConfidence` - Classification confidence score
+- `feekg:classificationMethod` - Classification method used
 
 ## Evolution Link Properties
 
@@ -230,12 +266,24 @@ Each `EVOLVES_TO` relationship has:
 
 ## Common Tasks
 
-### Add New Events
+### Query AllegroGraph Data
 
-1. Edit `data/evergrande_crisis.json`
-2. Add event to `events` array
-3. Reload: `./venv/bin/python ingestion/load_evergrande.py`
-4. Recompute evolution: `./venv/bin/python evolution/run_evolution.py`
+See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for comprehensive SPARQL examples.
+
+```bash
+# Quick check
+./venv/bin/python scripts/check_feekg_mycatalog.py
+```
+
+### Load More Capital IQ Data
+
+```bash
+# Process new CSV data
+./venv/bin/python ingestion/process_capital_iq_v3.py
+
+# Load to AllegroGraph
+./venv/bin/python ingestion/load_capital_iq_to_allegrograph.py
+```
 
 ### Create Custom Visualizations
 
@@ -275,34 +323,34 @@ links = response.json()['data']
 ## Environment Variables (.env)
 
 ```bash
-# Backend selection
-GRAPH_BACKEND=neo4j
+# Backend Selection - AllegroGraph Only (Production)
+GRAPH_BACKEND=allegrograph
 
-# Neo4j connection
-NEO4J_URI=bolt://localhost:7687
-NEO4J_USER=neo4j
-NEO4J_PASS=feekg2024
-NEO4J_DB=neo4j
-
-# AllegroGraph (fallback)
+# AllegroGraph Connection Details (Primary Database)
 AG_URL=https://qa-agraph.nelumbium.ai/
 AG_USER=sadmin
 AG_PASS=279H-Dt<>,YU
-AG_REPO=feekg_dev
+AG_CATALOG=mycatalog
+AG_REPO=FEEKG
+
+# Neo4j Connection Details (DEPRECATED - Not in use)
+# Neo4j has been retired in favor of AllegroGraph
+# NEO4J_URI=bolt://localhost:7687
+# NEO4J_USER=neo4j
+# NEO4J_PASS=feekg2024
+# NEO4J_DB=neo4j
 ```
 
 ## Troubleshooting
 
-### Neo4j Not Running
+### AllegroGraph Connection Issues
 ```bash
-# Check if Docker is running
-docker ps
+# Test connection
+./venv/bin/python scripts/check_feekg_mycatalog.py
 
-# Start Neo4j
-./scripts/start_neo4j.sh
-
-# Or manually
-docker start feekg-neo4j
+# Or manual test with curl
+curl -u sadmin:PASSWORD \
+  "https://qa-agraph.nelumbium.ai/catalogs/mycatalog/repositories/FEEKG/size"
 ```
 
 ### Module Import Errors
@@ -326,10 +374,12 @@ python script.py
 
 ## Performance Notes
 
-- **Small dataset**: 20 events = fast queries
-- **Evolution computation**: ~154 links in <1 second
+- **Production dataset**: 4,000 events from Capital IQ
+- **AllegroGraph**: Cloud-hosted, fast SPARQL queries
+- **Triple count**: 59,090 triples
+- **Query response time**: <500ms for most SPARQL queries
 - **Visualization generation**: 1-3 seconds per image
-- **API response time**: <100ms for queries, 1-3s for visualizations
+- **Data traceability**: Full CSV lineage for all events
 
 ## Future Development Ideas
 
@@ -356,9 +406,11 @@ python script.py
 ## References
 
 - **Paper**: Liu et al. (2024) "Risk identification and management through knowledge Association"
-- **Neo4j Docs**: https://neo4j.com/docs/
+- **AllegroGraph Docs**: https://franz.com/agraph/support/documentation/
+- **SPARQL Tutorial**: https://www.w3.org/TR/sparql11-query/
 - **NetworkX**: https://networkx.org/
 - **Flask**: https://flask.palletsprojects.com/
+- **Capital IQ**: Professional financial data source
 
 ## Contact & Contributing
 
@@ -369,22 +421,33 @@ This is a research implementation. For questions or improvements:
 
 ## Current Status
 
-**Stages 1-6: Complete ✅**
-- ✅ Infrastructure working
-- ✅ Data loaded (20 events, 10 entities, 10 risks)
+**AllegroGraph Migration: Complete ✅ (2025-11-15)**
+- ✅ Neo4j retired, AllegroGraph is now the exclusive database
+- ✅ Production data loaded: 4,000 Capital IQ events (2007-2009 Lehman crisis)
+- ✅ 59,090 RDF triples with full CSV traceability
+- ✅ 22 major financial entities (Morgan Stanley, Lehman Brothers, etc.)
+- ✅ SPARQL query interface operational
+- ✅ Evolution methods tested and compatible
+
+**Implementation Complete:**
+- ✅ Infrastructure working (cloud-hosted AllegroGraph)
+- ✅ Real production data loaded (4,000 events vs 20 synthetic)
 - ✅ Evolution methods implemented (6 algorithms)
-- ✅ Query system complete (80+ templates)
+- ✅ Query system complete (SPARQL-based)
 - ✅ Visualizations working (8 types)
 - ✅ REST API running (20+ endpoints)
+- ✅ CSV traceability for data lineage
 
 **Ready for:**
-- Research analysis and publication
+- Research analysis and publication (real Capital IQ data)
+- Evolution link computation on 4,000 events
+- SPARQL-based risk analysis
 - Frontend development
-- Real-world deployment
-- Further extensions
+- Team collaboration (shared cloud database)
 
 ---
 
-Last Updated: 2025-11-10
-Version: 1.0.0
+Last Updated: 2025-11-15
+Version: 2.0.0 (AllegroGraph)
 Status: Production Ready
+Database: AllegroGraph @ qa-agraph.nelumbium.ai
