@@ -2,35 +2,37 @@
 
 Implementation of the FEEKG paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
 
+## 📊 Database: AllegroGraph (Production)
+
+**Current Setup:**
+- **Database:** AllegroGraph 8.4.0 (cloud-hosted)
+- **Data:** 4,000 real financial events from Capital IQ (2007-2009 Lehman Brothers crisis)
+- **Repository:** `mycatalog/FEEKG` @ qa-agraph.nelumbium.ai
+- **Entities:** 22 major financial institutions (Morgan Stanley, Lehman Brothers, etc.)
+- **Query Language:** SPARQL
+
+> ⚠️ **Note:** Neo4j has been retired in favor of AllegroGraph. See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for details.
+
 ## 🚀 How to View Everything
 
-### Option 1: View Visualizations (PNG Images)
+### Option 1: Interactive HTML Visualizations
 
 ```bash
-# Generate all visualizations
-./venv/bin/python scripts/demo_visualizations.py
-
-# View the images (Mac)
-open results/three_layer_graph.png
-open results/evolution_network.png
-
-# Or view all at once
-open results/*.png
-
-# On Linux
-xdg-open results/three_layer_graph.png
-
-# On Windows
-start results\three_layer_graph.png
+# Open interactive visualizations in browser
+open results/optimized_knowledge_graph.html  # Main interactive graph
+open results/timeline_view.html              # Timeline with 4,000 events
+open results/dashboard.html                  # Statistics dashboard
 ```
 
-**Generated files** (in `results/` folder):
-- `three_layer_graph.png` - Full 3-layer architecture
-- `evolution_network.png` - Event evolution network
-- `risk_propagation.png` - Risk-entity connections
-- `evolution_heatmap.png` - Event type matrix
-- `component_breakdown.png` - Evolution method contributions
-- And 3 more...
+**Available visualizations** (in `results/` folder):
+- `optimized_knowledge_graph.html` (127KB) - Interactive network graph with zoom/pan/filter
+- `timeline_view.html` (174KB) - Hierarchical timeline of 4,000 Lehman crisis events
+- `dashboard.html` - Entity/Event/Risk statistics dashboard
+- `interactive_kg_lehman_200.html` - Medium-scale graph (200 events)
+- `clean_knowledge_graph.html` - Simplified graph view
+- And 2 more...
+
+See [FRONTEND_STATUS.md](FRONTEND_STATUS.md) for complete visualization documentation.
 
 ### Option 2: Interactive API Demo (Web Browser)
 
@@ -49,40 +51,26 @@ The demo page provides:
 - ✅ Database statistics
 - ✅ Query results display
 
-### Option 3: Neo4j Browser (Interactive Graph Database)
+### Option 3: AllegroGraph SPARQL Queries
 
 ```bash
-# Open Neo4j Browser
-open http://localhost:7474
-
-# Login with:
-# Username: neo4j
-# Password: feekg2024
-
-# Try these queries:
-# 1. View evolution network
-MATCH (e1:Event)-[r:EVOLVES_TO]->(e2:Event)
-RETURN e1, r, e2
-LIMIT 50
-
-# 2. View entity risks
-MATCH (e:Entity {name: 'China Evergrande Group'})<-[:TARGETS_ENTITY]-(r:Risk)
-MATCH (r)-[:HAS_RISK_TYPE]->(rt:RiskType)
-RETURN e, r, rt
+# Check repository status
+./venv/bin/python scripts/utils/check_feekg_mycatalog.py
 ```
+
+See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for SPARQL query examples.
 
 ### Option 4: Run Query Demos (Terminal)
 
 ```bash
-# Interactive risk analysis demo
-./venv/bin/python scripts/demo_risk_queries.py
+# Interactive demonstrations
+./venv/bin/python scripts/demos/demo_feekg_capabilities.py
 
 # This shows:
-# - Database overview
-# - Entity risk profiles
-# - Evolution analysis
-# - Pattern detection
-# - Statistics
+# - AllegroGraph connection test
+# - Database statistics (4,000 events, 22 entities)
+# - SPARQL query examples
+# - Data quality metrics
 ```
 
 ## Project Structure
@@ -167,128 +155,43 @@ Event Layer:    [DebtDefault] ──evolves──> [CreditDowngrade]
 Entity Layer:   [Evergrande] ─────────────> [Minsheng Bank]
 ```
 
-## NVIDIA NIM Pipeline (Stage 7)
-
-FE-EKG integrates NVIDIA NIM for automated knowledge extraction from financial news:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    FE-EKG LLM PIPELINE                          │
-└─────────────────────────────────────────────────────────────────┘
-
-1. INPUT
-   Financial News Articles (manual or RSS feeds)
-        ↓
-2. NVIDIA NIM (llm/ module)
-   ┌──────────────────────────────────────┐
-   │ TripletExtractor                     │
-   │  • Extract events from text          │
-   │  • Identify entities (companies)     │
-   │  • Extract relationships             │
-   │                                      │
-   │ SemanticScorer                       │
-   │  • Embedding-based similarity        │
-   │  • Replace keyword matching          │
-   │  • 98% accuracy (with fine-tuning)   │
-   └──────────────────────────────────────┘
-        ↓
-3. NEO4J GRAPH DATABASE
-   Store triplets as nodes & relationships
-        ↓
-4. EVOLUTION ANALYSIS (evolution/ module)
-   6 evolution methods + enhanced semantic similarity
-        ↓
-5. QUERY & VISUALIZE (api/ + viz/ modules)
-   REST API, Cypher queries, NetworkX visualizations
-```
-
-**Key Components**:
-- **NemotronClient**: NVIDIA NIM API wrapper for text generation & embeddings
-- **TripletExtractor**: Extract (subject, predicate, object) from financial text
-- **SemanticScorer**: Embedding-based similarity (replaces keyword matching)
-
-**Models Used**:
-- `meta/llama-3.1-8b-instruct` - Text generation & triplet extraction
-- `nvidia/nv-embedqa-e5-v5` - Semantic embeddings (1024 dimensions)
-
-**Status**: Module implemented, requires NVIDIA API key to use.
-
-See `llm/README.md` for complete documentation.
-
 ## Development Status
 
-- [x] **Stage 1**: Infrastructure & connection test ✅
-- [x] **Stage 2**: Minimal schema with Risk Layer + Neo4j backend ✅
-- [x] **Stage 3**: Sample Evergrande data (20 events, 10 entities, 10 risks, 154 enhanced evolution links) ✅
-- [x] **Stage 4**: Event evolution methods (6 algorithms: temporal, entity, semantic, topic, causal, emotional) ✅
-- [x] **Stage 5**: Risk queries (80+ Cypher templates, Python API, interactive demo) ✅
-- [x] **Stage 6**: Visualizations (NetworkX/Matplotlib graphs, REST API with 20+ endpoints) ✅
-- [x] **Stage 7**: LLM/Nemotron integration (NVIDIA NIM, triplet extraction, embedding-based similarity) ✅
-- [ ] **Stage 8**: Mini ABM (optional)
+- [x] **AllegroGraph Migration**: Migrated from Neo4j to AllegroGraph (cloud-hosted RDF triplestore) ✅
+- [x] **Capital IQ Data**: Loaded 4,000 real financial events from 2007-2009 Lehman Brothers crisis ✅
+- [x] **CSV Traceability**: Full data lineage with row numbers and Capital IQ IDs ✅
+- [x] **Event Evolution**: 6 evolution algorithms (temporal, entity, semantic, topic, causal, emotional) ✅
+- [x] **SPARQL Queries**: Query system with Python API ✅
+- [x] **Interactive Visualizations**: 7 HTML visualizations with vis.js (network graphs, timeline, dashboard) ✅
+- [x] **REST API**: 20+ endpoints for data access and visualization generation ✅
+- [ ] **Evolution Links Computation**: Apply 6 methods to 4,000 events (future)
 
 ## Usage Guide
 
-### Connecting to Neo4j Browser
-
-1. Open Neo4j Browser: http://localhost:7474
-2. Connect with:
-   - **URL**: `neo4j://localhost:7687`
-   - **Username**: `neo4j`
-   - **Password**: `feekg2024`
-
-### Running Risk Analysis
+### Connecting to AllegroGraph
 
 ```bash
-# Run the interactive demo
-./venv/bin/python scripts/demo_risk_queries.py
+# Test connection
+./venv/bin/python scripts/utils/check_feekg_mycatalog.py
 
-# Verify Stage 4 (Evolution Methods)
-./venv/bin/python scripts/verify_stage4.py
-
-# Verify Stage 5 (Risk Queries)
-./venv/bin/python scripts/verify_stage5.py
-
-# Verify Stage 6 (Visualizations & API)
-./venv/bin/python scripts/verify_stage6.py
-
-# Demo LLM Integration (Stage 7)
-./venv/bin/python scripts/demo_llm_integration.py
+# Expected output:
+# ✅ Connected to AllegroGraph
+# 📊 Total triples: 59,090
+# 📅 Events: 4,000
+# 👥 Entities: 22
 ```
 
-### Using LLM Features (Stage 7)
+### Running Demos
 
 ```bash
-# 1. Get NVIDIA API key from https://build.nvidia.com
-# 2. Add to .env: NVIDIA_API_KEY=your_key_here
+# Interactive capabilities demo
+./venv/bin/python scripts/demos/demo_feekg_capabilities.py
 
-# 3. Run LLM demo
-./venv/bin/python scripts/demo_llm_integration.py
+# View visualizations
+open results/optimized_knowledge_graph.html
+open results/timeline_view.html
+open results/dashboard.html
 ```
-
-**LLM Capabilities**:
-- Extract knowledge triplets from financial news (98% accuracy)
-- Automatic event and entity recognition
-- Enhanced semantic similarity using embeddings
-- Foundation for natural language queries
-
-See `llm/README.md` for complete documentation.
-
-### Generating Visualizations
-
-```bash
-# Generate all visualizations (saved to results/)
-./venv/bin/python scripts/demo_visualizations.py
-```
-
-This creates 8 visualization files:
-- `three_layer_graph.png` - Full 3-layer architecture
-- `evolution_network.png` - Event evolution network
-- `risk_propagation.png` - Risk → Entity connections
-- `risk_timeline.png` - Risk evolution over time
-- `evolution_heatmap.png` - Event type evolution matrix
-- `event_network_timeline.png` - Temporal event network
-- `component_breakdown.png` - Evolution method contributions
-- `risk_distribution.png` - Risk severity distribution
 
 ### Starting the REST API
 
@@ -320,52 +223,37 @@ curl http://localhost:5000/api/graph/data
 See [api/README.md](api/README.md) for complete API documentation.
 ```
 
-### Using the Python API
+### Using SPARQL Queries
 
 ```python
-from query.risk_analyzer import RiskAnalyzer
+import requests
+from requests.auth import HTTPBasicAuth
 
-analyzer = RiskAnalyzer()
+url = 'https://qa-agraph.nelumbium.ai/catalogs/mycatalog/repositories/FEEKG'
+auth = HTTPBasicAuth('sadmin', '279H-Dt<>,YU')
 
-# Get entity risk profile
-risks = analyzer.get_entity_risk_profile('China Evergrande Group')
-for risk in risks:
-    print(f"{risk['riskType']}: {risk['score']:.3f} ({risk['severity']})")
+# Query entities
+query = '''
+PREFIX feekg: <http://feekg.org/ontology#>
+SELECT ?entity ?label ?type
+WHERE {
+    ?entity a feekg:Entity .
+    ?entity feekg:label ?label .
+    ?entity feekg:entityType ?type .
+}
+LIMIT 10
+'''
 
-# Find strongest evolution links
-links = analyzer.get_strongest_evolution_links(min_score=0.5)
-for link in links[:5]:
-    print(f"{link['fromEvent']} → {link['toEvent']} (score: {link['overallScore']:.3f})")
+response = requests.post(url, data={'query': query},
+                        headers={'Accept': 'application/sparql-results+json'},
+                        auth=auth)
+results = response.json()['results']['bindings']
 
-# Detect causal chains
-chains = analyzer.get_causal_chains(min_causality=0.6)
-for chain in chains:
-    print(f"Chain: {' → '.join(chain['eventChain'])}")
-
-analyzer.close()
+for r in results:
+    print(f"{r['label']['value']} ({r['type']['value']})")
 ```
 
-### Sample Neo4j Queries
-
-```cypher
-// View all enhanced evolution links
-MATCH (e1:Event)-[r:EVOLVES_TO {type: 'enhanced'}]->(e2:Event)
-RETURN e1.type, e2.type, r.score, r.causality
-ORDER BY r.score DESC
-LIMIT 20;
-
-// Find causal chains
-MATCH path = (e1:Event)-[:EVOLVES_TO*2..4]->(e2:Event)
-WHERE all(r in relationships(path) WHERE r.causality > 0.6)
-RETURN [e in nodes(path) | e.type] as chain;
-
-// Entity risk profile
-MATCH (e:Entity {name: 'China Evergrande Group'})
-MATCH (r:Risk)-[:TARGETS_ENTITY]->(e)
-MATCH (r)-[:HAS_RISK_TYPE]->(rt:RiskType)
-RETURN rt.label, r.score, r.severity
-ORDER BY r.score DESC;
-```
+See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for more SPARQL examples.
 
 ## 📋 Quick Reference
 
@@ -373,20 +261,13 @@ ORDER BY r.score DESC;
 
 ```bash
 # =============================================================================
-# VIEWING & VISUALIZATION
+# INTERACTIVE VISUALIZATIONS
 # =============================================================================
 
-# Generate all visualizations → results/*.png
-./venv/bin/python scripts/demo_visualizations.py
-
-# View a specific visualization (Mac)
-open results/three_layer_graph.png
-
-# View all visualizations
-open results/*.png
-
-# Run query demos (terminal output)
-./venv/bin/python scripts/demo_risk_queries.py
+# Open interactive HTML visualizations in browser
+open results/optimized_knowledge_graph.html  # Main interactive graph
+open results/timeline_view.html              # Timeline with 4,000 events
+open results/dashboard.html                  # Statistics dashboard
 
 # =============================================================================
 # REST API
@@ -395,7 +276,7 @@ open results/*.png
 # Start API server → http://localhost:5000
 ./venv/bin/python api/app.py
 
-# Test API
+# Test API endpoints
 curl http://localhost:5000/health
 curl http://localhost:5000/api/info
 curl http://localhost:5000/api/entities
@@ -404,68 +285,39 @@ curl http://localhost:5000/api/entities
 # Navigate to: file:///Users/hansonxiong/Desktop/DDP/feekg/api/demo.html
 
 # =============================================================================
-# NEO4J BROWSER
+# ALLEGROGRAPH QUERIES
 # =============================================================================
 
-# Open Neo4j Browser → http://localhost:7474
-open http://localhost:7474
+# Check AllegroGraph repository status
+./venv/bin/python scripts/utils/check_feekg_mycatalog.py
 
-# Credentials:
-# Username: neo4j
-# Password: feekg2024
-
-# =============================================================================
-# VERIFICATION
-# =============================================================================
-
-# Verify Stage 4 (Evolution Methods)
-./venv/bin/python scripts/verify_stage4.py
-
-# Verify Stage 5 (Risk Queries)
-./venv/bin/python scripts/verify_stage5.py
-
-# Verify Stage 6 (Visualizations & API)
-./venv/bin/python scripts/verify_stage6.py
+# Run interactive capabilities demo
+./venv/bin/python scripts/demos/demo_feekg_capabilities.py
 
 # =============================================================================
 # DATA MANAGEMENT
 # =============================================================================
 
-# Reload data into Neo4j
-./venv/bin/python ingestion/load_evergrande.py
+# Load Capital IQ data to AllegroGraph
+./venv/bin/python ingestion/load_capital_iq_to_allegrograph.py
 
-# Recompute evolution links
-./venv/bin/python evolution/run_evolution.py
-
-# =============================================================================
-# NEO4J DOCKER
-# =============================================================================
-
-# Start Neo4j container
-./scripts/start_neo4j.sh
-
-# Check if running
-docker ps | grep feekg-neo4j
-
-# Stop Neo4j
-docker stop feekg-neo4j
-
-# Restart Neo4j
-docker start feekg-neo4j
+# Recompute evolution links (SPARQL-based)
+./venv/bin/python evolution/run_evolution_ag.py
 ```
 
 ### Important Files & Locations
 
 | What | Where | Description |
 |------|-------|-------------|
-| **Visualizations** | `results/*.png` | 8 generated PNG images |
+| **Interactive Visualizations** | `results/*.html` | 7 interactive HTML visualizations |
 | **API Demo** | `api/demo.html` | Interactive web interface |
 | **API Docs** | `api/README.md` | Complete API documentation |
 | **Project Guide** | `CLAUDE.md` | Comprehensive project guide |
-| **Stage Summary** | `STAGE6_SUMMARY.md` | Latest implementation details |
-| **Input Data** | `data/evergrande_crisis.json` | All events, entities, risks |
-| **Evolution Results** | `results/evolution_links.json` | Computed evolution links |
-| **Query Templates** | `query/risk_queries.cypher` | 80+ Cypher query examples |
+| **AllegroGraph Migration** | `ALLEGROGRAPH_MIGRATION.md` | Migration guide and SPARQL examples |
+| **Frontend Status** | `FRONTEND_STATUS.md` | Visualization documentation |
+| **Capital IQ Data** | `data/capital_iq_raw/` | Raw transaction data (2007-2009) |
+| **Processed Data** | `data/capital_iq_processed/` | Classified Lehman events |
+| **Data Quality Report** | `DATA_QUALITY_REPORT.md` | Classification metrics |
 
 ### Quick API Endpoints
 

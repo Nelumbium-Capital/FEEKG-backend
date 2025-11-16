@@ -346,8 +346,42 @@ class EventEvolutionScorer:
         return overall_score, scores
 
 
+def _compute_event_pair_batch(args):
+    """
+    Helper function for parallel processing of event pairs
+
+    Args:
+        args: Tuple of (event_pairs, events_list, entities_list, threshold)
+
+    Returns:
+        List of evolution links for this batch
+    """
+    event_pairs, events_list, entities_list, threshold = args
+    scorer = EventEvolutionScorer(events_list, entities_list)
+    links = []
+
+    for evt_a, evt_b in event_pairs:
+        score, components = scorer.compute_evolution_score(evt_a, evt_b)
+
+        if score >= threshold:
+            links.append({
+                'from': evt_a['eventId'],
+                'to': evt_b['eventId'],
+                'score': score,
+                'components': components,
+                'from_date': evt_a['date'],
+                'to_date': evt_b['date'],
+                'from_type': evt_a['type'],
+                'to_type': evt_b['type'],
+            })
+
+    return links
+
+
 def compute_all_evolution_links(events: List[Dict], entities: List[Dict],
-                               threshold: float = 0.2) -> List[Dict]:
+                               threshold: float = 0.2,
+                               use_parallel: bool = True,
+                               max_workers: int = None) -> List[Dict]:
     """
     Compute evolution links for all event pairs
 
@@ -355,19 +389,32 @@ def compute_all_evolution_links(events: List[Dict], entities: List[Dict],
         events: List of events from JSON
         entities: List of entities from JSON
         threshold: Minimum score to create link (paper uses 0.2)
+        use_parallel: Use multiprocessing for faster computation (default: True)
+        max_workers: Number of parallel workers (default: CPU count)
 
     Returns:
         List of evolution link dicts with scores
     """
-    scorer = EventEvolutionScorer(events, entities)
-    links = []
-
     # Sort events by date
     sorted_events = sorted(events, key=lambda e: e['date'])
 
-    # Compare each event with later events
+    # Generate all event pairs (forward-looking only)
+    event_pairs = []
     for i, evt_a in enumerate(sorted_events):
         for evt_b in sorted_events[i+1:]:
+            event_pairs.append((evt_a, evt_b))
+
+    print(f"   Total pairs to evaluate: {len(event_pairs):,}")
+
+    if not use_parallel or len(event_pairs) < 1000:
+        # Serial processing for small datasets
+        scorer = EventEvolutionScorer(sorted_events, entities)
+        links = []
+
+        for i, (evt_a, evt_b) in enumerate(event_pairs):
+            if i % 10000 == 0 and i > 0:
+                print(f"   Progress: {i:,}/{len(event_pairs):,} pairs ({i*100//len(event_pairs)}%)")
+
             score, components = scorer.compute_evolution_score(evt_a, evt_b)
 
             if score >= threshold:
@@ -382,7 +429,49 @@ def compute_all_evolution_links(events: List[Dict], entities: List[Dict],
                     'to_type': evt_b['type'],
                 })
 
-    return links
+        return links
+
+    # Parallel processing for large datasets
+    from multiprocessing import Pool, cpu_count
+    import os
+
+    if max_workers is None:
+        max_workers = min(cpu_count(), 8)  # Cap at 8 to avoid overhead
+
+    print(f"   Using {max_workers} parallel workers")
+
+    # Split pairs into chunks for parallel processing
+    chunk_size = max(1, len(event_pairs) // (max_workers * 4))  # 4 chunks per worker
+    chunks = []
+
+    for i in range(0, len(event_pairs), chunk_size):
+        chunk = event_pairs[i:i + chunk_size]
+        chunks.append((chunk, sorted_events, entities, threshold))
+
+    print(f"   Processing in {len(chunks)} batches")
+
+    # Process in parallel
+    try:
+        with Pool(max_workers) as pool:
+            results = pool.map(_compute_event_pair_batch, chunks)
+
+        # Flatten results
+        links = []
+        for batch_links in results:
+            links.extend(batch_links)
+
+        return links
+
+    except Exception as e:
+        print(f"   ⚠️  Parallel processing failed: {e}")
+        print(f"   Falling back to serial processing...")
+
+        # Fallback to serial if parallel fails
+        return compute_all_evolution_links(
+            events, entities,
+            threshold=threshold,
+            use_parallel=False
+        )
 
 
 if __name__ == "__main__":

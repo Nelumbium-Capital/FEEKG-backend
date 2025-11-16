@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "source": "Capital IQ",
+    "created_at": "2025-11-10T22:05:58.958287",
+    "events_count": 7,
+    "entities_count": 12
+  },
+  "events": [
+    {
+      "eventId": "evt_000",
+      "date": "2008-01-02",
+      "type": "earnings_announcement",
+      "actor": "unknown",
+      "description": "Lehman Brothers warned investors of potential fourth-quarter losses",
+      "headline": "Lehman warns of Q4 losses",
+      "source": "Capital IQ",
+      "entities": [
+        "Lehman Brothers"
+      ]
+    },
+    {
+      "eventId": "evt_001",
+      "date": "2008-03-14",
+      "type": "unknown",
+      "actor": "unknown",
+      "description": "JPMorgan acquired Bear Stearns with Federal Reserve backing",
+      "headline": "Bear Stearns rescued by JPMorgan",
+      "source": "Capital IQ",
+      "entities": [
+        "Bear Stearns",
+        "JPMorgan",
+        "Federal Reserve"
+      ]
+    },
+    {
+      "eventId": "evt_002",
+      "date": "2008-06-09",
+      "type": "earnings_announcement",
+      "actor": "unknown",
+      "description": "Lehman Brothers reported a $2.8 billion quarterly loss",
+      "headline": "Lehman reports $2.8B loss",
+      "source": "Capital IQ",
+      "entities": [
+        "Lehman Brothers"
+      ]
+    },
+    {
+      "eventId": "evt_003",
+      "date": "2008-09-10",
+      "type": "merger_acquisition",
+      "actor": "unknown",
+      "description": "Bank of America withdrew from negotiations to acquire Lehman",
+      "headline": "BofA backs out of Lehman deal",
+      "source": "Capital IQ",
+      "entities": [
+        "Bank of America",
+        "Lehman Brothers"
+      ]
+    },
+    {
+      "eventId": "evt_004",
+      "date": "2008-09-15",
+      "type": "bankruptcy",
+      "actor": "unknown",
+      "description": "Lehman Brothers Holdings Inc filed for Chapter 11 bankruptcy protection",
+      "headline": "Lehman Brothers files for bankruptcy",
+      "source": "Capital IQ",
+      "entities": [
+        "Lehman Brothers",
+        "Barclays",
+        "Fed"
+      ]
+    },
+    {
+      "eventId": "evt_005",
+      "date": "2008-09-16",
+      "type": "unknown",
+      "actor": "unknown",
+      "description": "Global stock markets fell sharply following Lehman's bankruptcy filing",
+      "headline": "Markets plunge on Lehman bankruptcy",
+      "source": "Capital IQ",
+      "entities": [
+        "Dow Jones",
+        "S&P 500",
+        "FTSE"
+      ]
+    },
+    {
+      "eventId": "evt_006",
+      "date": "2008-09-16",
+      "type": "government_intervention",
+      "actor": "unknown",
+      "description": "Federal Reserve provided $85 billion bailout to AIG",
+      "headline": "Fed bails out AIG",
+      "source": "Capital IQ",
+      "entities": [
+        "AIG",
+        "Federal Reserve",
+        "Treasury"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "entityId": "ent_000",
+      "name": "AIG",
+      "type": "insurance"
+    },
+    {
+      "entityId": "ent_001",
+      "name": "Bank of America",
+      "type": "bank"
+    },
+    {
+      "entityId": "ent_002",
+      "name": "Barclays",
+      "type": "company"
+    },
+    {
+      "entityId": "ent_003",
+      "name": "Bear Stearns",
+      "type": "company"
+    },
+    {
+      "entityId": "ent_004",
+      "name": "Dow Jones",
+      "type": "company"
+    },
+    {
+      "entityId": "ent_005",
+      "name": "FTSE",
+      "type": "company"
+    },
+    {
+      "entityId": "ent_006",
+      "name": "Fed",
+      "type": "regulator"
+    },
+    {
+      "entityId": "ent_007",
+      "name": "Federal Reserve",
+      "type": "regulator"
+    },
+    {
+      "entityId": "ent_008",
+      "name": "JPMorgan",
+      "type": "bank"
+    },
+    {
+      "entityId": "ent_009",
+      "name": "Lehman Brothers",
+      "type": "investment_bank"
+    },
+    {
+      "entityId": "ent_010",
+      "name": "S&P 500",
+      "type": "company"
+    },
+    {
+      "entityId": "ent_011",
+      "name": "Treasury",
+      "type": "regulator"
+    }
+  ]
+}
