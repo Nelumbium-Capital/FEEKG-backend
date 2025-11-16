@@ -493,21 +493,19 @@ ORDER BY DESC(?count)
         Get all entities with metadata
 
         Returns:
-            List of entities with id, name, type, description
+            List of entities with id, name, type
         """
         query = """
 PREFIX feekg: <http://feekg.org/ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?entity ?id ?name ?type ?description
+SELECT ?entity ?label ?type
 WHERE {
     ?entity a feekg:Entity .
-    ?entity feekg:entityId ?id .
-    ?entity feekg:name ?name .
+    ?entity rdfs:label ?label .
     ?entity feekg:entityType ?type .
-    OPTIONAL { ?entity feekg:description ?description . }
 }
-ORDER BY ?name
+ORDER BY ?label
 """
         result = self._query_sparql(query)
         if not result:
@@ -515,11 +513,14 @@ ORDER BY ?name
 
         entities = []
         for binding in result['results']['bindings']:
+            # Use entity URI as ID (extract local name)
+            entity_uri = binding['entity']['value']
+            entity_id = entity_uri.split('#')[-1] if '#' in entity_uri else entity_uri.split('/')[-1]
+
             entities.append({
-                'id': binding['id']['value'],
-                'name': binding['name']['value'],
-                'type': binding['type']['value'],
-                'description': binding.get('description', {}).get('value')
+                'id': entity_id,
+                'name': binding['label']['value'],
+                'type': binding['type']['value']
             })
 
         return entities
@@ -600,6 +601,161 @@ WHERE {{
             'severity': binding.get('severity', {}).get('value'),
             'description': binding.get('description', {}).get('value'),
             'confidence': float(binding.get('confidence', {}).get('value', 0))
+        }
+
+    def get_evolution_links(self, limit: int = 500, min_score: float = 0.0) -> List[Dict]:
+        """
+        Get evolution links between events
+
+        Args:
+            limit: Maximum number of links to return
+            min_score: Minimum evolution score (0.0 to 1.0)
+
+        Returns:
+            List of evolution links with scores
+        """
+        query = f"""
+PREFIX feekg: <http://feekg.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?from ?to ?score ?temporal ?entityOverlap ?semantic ?topic ?causality ?emotional
+WHERE {{
+    ?link a feekg:EvolutionLink .
+    ?link feekg:from ?from .
+    ?link feekg:to ?to .
+    ?link feekg:score ?score .
+
+    OPTIONAL {{ ?link feekg:temporalScore ?temporal . }}
+    OPTIONAL {{ ?link feekg:entity_overlapScore ?entityOverlap . }}
+    OPTIONAL {{ ?link feekg:semanticScore ?semantic . }}
+    OPTIONAL {{ ?link feekg:topicScore ?topic . }}
+    OPTIONAL {{ ?link feekg:causalityScore ?causality . }}
+    OPTIONAL {{ ?link feekg:emotionalScore ?emotional . }}
+
+    FILTER(?score >= {min_score})
+}}
+ORDER BY DESC(?score)
+LIMIT {limit}
+"""
+        result = self._query_sparql(query)
+        if not result:
+            return []
+
+        links = []
+        for binding in result['results']['bindings']:
+            # Extract event IDs from URIs
+            from_uri = binding['from']['value']
+            to_uri = binding['to']['value']
+            from_id = from_uri.split('#')[-1] if '#' in from_uri else from_uri.split('/')[-1]
+            to_id = to_uri.split('#')[-1] if '#' in to_uri else to_uri.split('/')[-1]
+
+            links.append({
+                'from': from_id,
+                'to': to_id,
+                'score': float(binding['score']['value']),
+                'temporal': float(binding.get('temporal', {}).get('value', 0)),
+                'entity_overlap': float(binding.get('entityOverlap', {}).get('value', 0)),
+                'semantic': float(binding.get('semantic', {}).get('value', 0)),
+                'topic': float(binding.get('topic', {}).get('value', 0)),
+                'causality': float(binding.get('causality', {}).get('value', 0)),
+                'emotional': float(binding.get('emotional', {}).get('value', 0))
+            })
+
+        return links
+
+    def get_event_entity_relationships(self, event_ids: Optional[List[str]] = None) -> List[Dict]:
+        """
+        Get relationships between events and entities
+
+        Args:
+            event_ids: Optional list of event IDs to filter (if None, gets all)
+
+        Returns:
+            List of event-entity relationships
+        """
+        # Build filter if event IDs provided
+        event_filter = ''
+        if event_ids:
+            # Create URI list for filtering
+            event_uris = [f'<http://feekg.org/ontology#{eid}>' for eid in event_ids]
+            event_filter = f'FILTER(?event IN ({", ".join(event_uris)}))'
+
+        query = f"""
+PREFIX feekg: <http://feekg.org/ontology#>
+
+SELECT ?event ?entity
+WHERE {{
+    ?event a feekg:Event .
+    ?event feekg:involves ?entity .
+
+    {event_filter}
+}}
+"""
+        result = self._query_sparql(query)
+        if not result:
+            return []
+
+        relationships = []
+        for binding in result['results']['bindings']:
+            # Extract IDs from URIs
+            event_uri = binding['event']['value']
+            entity_uri = binding['entity']['value']
+            event_id = event_uri.split('#')[-1] if '#' in event_uri else event_uri.split('/')[-1]
+            entity_id = entity_uri.split('#')[-1] if '#' in entity_uri else entity_uri.split('/')[-1]
+
+            relationships.append({
+                'event': event_id,
+                'entity': entity_id,
+                'type': 'involves'
+            })
+
+        return relationships
+
+    def get_graph_data_for_viz(self, limit_events: int = 500, min_evolution_score: float = 0.3) -> Dict:
+        """
+        Get complete graph data for visualization (entities, events, relationships)
+
+        Args:
+            limit_events: Maximum number of events to include
+            min_evolution_score: Minimum score for evolution links
+
+        Returns:
+            Dict with nodes and edges for 2-layer graph (entities + events)
+        """
+        # Get events
+        events_result = self.get_events_paginated(offset=0, limit=limit_events)
+        events = events_result['events']
+        event_ids = [e['eventId'] for e in events]
+
+        # Get entities
+        entities = self.get_all_entities()
+
+        # Get evolution links (filtered by events we're showing)
+        all_links = self.get_evolution_links(limit=10000, min_score=min_evolution_score)
+        # Filter to only include links between events we're displaying
+        evolution_links = [
+            link for link in all_links
+            if link['from'] in event_ids and link['to'] in event_ids
+        ]
+
+        # Get event-entity relationships
+        event_entity_rels = self.get_event_entity_relationships(event_ids)
+
+        return {
+            'nodes': {
+                'entities': entities,
+                'events': events,
+            },
+            'edges': {
+                'evolution': evolution_links,
+                'event_entity': event_entity_rels
+            },
+            'stats': {
+                'total_entities': len(entities),
+                'total_events': len(events),
+                'evolution_links': len(evolution_links),
+                'event_entity_links': len(event_entity_rels)
+            }
         }
 
 

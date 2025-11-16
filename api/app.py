@@ -223,11 +223,17 @@ def create_app():
         """Get evolution links with optional filtering"""
         try:
             min_score = float(request.args.get('min_score', 0.0))
-            limit = int(request.args.get('limit', 100))
+            limit = int(request.args.get('limit', 1000))
+            event_id = request.args.get('event_id')  # Optional filter by event
 
-            analyzer = RiskAnalyzer()
-            links = analyzer.get_strongest_evolution_links(min_score=min_score, limit=limit)
-            analyzer.close()
+            backend = OptimizedGraphBackend()
+            all_links = backend.get_evolution_links(limit=limit, min_score=min_score)
+
+            # Filter by event_id if provided
+            if event_id:
+                links = [link for link in all_links if link['from'] == event_id or link['to'] == event_id]
+            else:
+                links = all_links
 
             return jsonify({
                 'status': 'success',
@@ -235,6 +241,8 @@ def create_app():
                 'data': links
             })
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return jsonify({
                 'status': 'error',
                 'message': str(e)
@@ -545,11 +553,15 @@ def create_app():
     def get_graph_data():
         """Get graph data in nodes/edges format for frontend visualization"""
         try:
-            limit_events = int(request.args.get('limit', 20))
+            limit_events = int(request.args.get('limit', 500))
+            min_score = float(request.args.get('min_score', 0.3))
 
-            viz = ThreeLayerVisualizer()
-            data = viz.fetch_graph_data(limit_events=limit_events)
-            viz.close()
+            # Use OptimizedGraphBackend for SPARQL queries (works with AllegroGraph)
+            backend = OptimizedGraphBackend()
+            data = backend.get_graph_data_for_viz(
+                limit_events=limit_events,
+                min_evolution_score=min_score
+            )
 
             # Transform to nodes/edges format
             nodes = []
@@ -568,48 +580,31 @@ def create_app():
             # Add event nodes
             for event in data['nodes']['events']:
                 nodes.append({
-                    'id': event['id'],
-                    'label': event['type'],
-                    'type': 'event',
+                    'id': event['eventId'],
+                    'label': event['label'],
+                    'type': event['type'],
                     'group': 'event',
                     'data': event
                 })
 
-            # Add risk nodes
-            for risk in data['nodes']['risks']:
-                nodes.append({
-                    'id': risk['id'],
-                    'label': risk['type'],
-                    'type': 'risk',
-                    'group': 'risk',
-                    'data': risk
-                })
-
-            # Add evolution edges
+            # Add evolution edges (event → event)
             for edge in data['edges']['evolution']:
                 edges.append({
-                    'source': edge['source'],
-                    'target': edge['target'],
+                    'id': f"{edge['from']}-{edge['to']}",
+                    'source': edge['from'],
+                    'target': edge['to'],
                     'type': 'evolves_to',
-                    'weight': edge.get('score', 0.5),
+                    'weight': edge['score'],
                     'data': edge
                 })
 
             # Add event-entity edges
             for edge in data['edges']['event_entity']:
                 edges.append({
-                    'source': edge['source'],
-                    'target': edge['target'],
-                    'type': edge['type'].lower(),
-                    'data': edge
-                })
-
-            # Add risk-entity edges
-            for edge in data['edges']['risk_entity']:
-                edges.append({
-                    'source': edge['source'],
-                    'target': edge['target'],
-                    'type': 'targets',
+                    'id': f"{edge['event']}-{edge['entity']}",
+                    'source': edge['event'],
+                    'target': edge['entity'],
+                    'type': edge['type'],
                     'data': edge
                 })
 
@@ -617,14 +612,11 @@ def create_app():
                 'status': 'success',
                 'nodes': nodes,
                 'edges': edges,
-                'stats': {
-                    'entities': len(data['nodes']['entities']),
-                    'events': len(data['nodes']['events']),
-                    'risks': len(data['nodes']['risks']),
-                    'evolution_links': len(data['edges']['evolution'])
-                }
+                'stats': data['stats']
             })
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return jsonify({
                 'status': 'error',
                 'message': str(e)

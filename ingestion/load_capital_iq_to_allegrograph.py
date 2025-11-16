@@ -397,8 +397,8 @@ def load_file_to_allegrograph(
         print("   Methods: Temporal, Entity Overlap, Semantic, Topic, Causality, Emotional")
 
         try:
-            links = compute_all_evolution_links(events, entities, threshold=0.2)
-            print(f"   ✅ Computed {len(links)} links (score ≥ 0.2)")
+            links = compute_all_evolution_links(events, entities, threshold=0.5)
+            print(f"   ✅ Computed {len(links)} links (score ≥ 0.5)")
 
             if links:
                 print(f"\n5. Uploading evolution links...")

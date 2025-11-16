@@ -74,7 +74,10 @@
       "Bash(mv:*)",
       "Bash(git ls-tree:*)",
       "Bash(/Users/hansonxiong/Desktop/DDP/feekg/venv/bin/python3:*)",
-      "Bash(/bashes)"
+      "Bash(/bashes)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:build.nvidia.com)",
+      "WebFetch(domain:docs.api.nvidia.com)"
     ],
     "deny": [],
     "ask": []
