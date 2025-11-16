@@ -488,6 +488,120 @@ ORDER BY DESC(?count)
             return distribution
         return {}
 
+    def get_all_entities(self) -> List[Dict]:
+        """
+        Get all entities with metadata
+
+        Returns:
+            List of entities with id, name, type, description
+        """
+        query = """
+PREFIX feekg: <http://feekg.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?entity ?id ?name ?type ?description
+WHERE {
+    ?entity a feekg:Entity .
+    ?entity feekg:entityId ?id .
+    ?entity feekg:name ?name .
+    ?entity feekg:entityType ?type .
+    OPTIONAL { ?entity feekg:description ?description . }
+}
+ORDER BY ?name
+"""
+        result = self._query_sparql(query)
+        if not result:
+            return []
+
+        entities = []
+        for binding in result['results']['bindings']:
+            entities.append({
+                'id': binding['id']['value'],
+                'name': binding['name']['value'],
+                'type': binding['type']['value'],
+                'description': binding.get('description', {}).get('value')
+            })
+
+        return entities
+
+    def get_entity_by_id(self, entity_id: str) -> Optional[Dict]:
+        """
+        Get specific entity by ID
+
+        Args:
+            entity_id: Entity ID to fetch
+
+        Returns:
+            Entity dict or None if not found
+        """
+        query = f"""
+PREFIX feekg: <http://feekg.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?entity ?id ?name ?type ?description
+WHERE {{
+    ?entity a feekg:Entity .
+    ?entity feekg:entityId "{entity_id}" .
+    ?entity feekg:entityId ?id .
+    ?entity feekg:name ?name .
+    ?entity feekg:entityType ?type .
+    OPTIONAL {{ ?entity feekg:description ?description . }}
+}}
+"""
+        result = self._query_sparql(query)
+        if not result or not result['results']['bindings']:
+            return None
+
+        binding = result['results']['bindings'][0]
+        return {
+            'id': binding['id']['value'],
+            'name': binding['name']['value'],
+            'type': binding['type']['value'],
+            'description': binding.get('description', {}).get('value')
+        }
+
+    def get_event_by_id(self, event_id: str) -> Optional[Dict]:
+        """
+        Get specific event by ID with full details
+
+        Args:
+            event_id: Event ID to fetch
+
+        Returns:
+            Event dict or None if not found
+        """
+        query = f"""
+PREFIX feekg: <http://feekg.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?event ?id ?type ?date ?label ?severity ?description ?confidence
+WHERE {{
+    ?event a feekg:Event .
+    ?event feekg:eventId "{event_id}" .
+    ?event feekg:eventId ?id .
+    ?event feekg:eventType ?type .
+    ?event feekg:date ?date .
+    ?event rdfs:label ?label .
+    OPTIONAL {{ ?event feekg:severity ?severity . }}
+    OPTIONAL {{ ?event feekg:description ?description . }}
+    OPTIONAL {{ ?event feekg:classificationConfidence ?confidence . }}
+}}
+"""
+        result = self._query_sparql(query)
+        if not result or not result['results']['bindings']:
+            return None
+
+        binding = result['results']['bindings'][0]
+        return {
+            'eventId': binding['id']['value'],
+            'type': binding['type']['value'],
+            'date': binding['date']['value'],
+            'label': binding['label']['value'],
+            'severity': binding.get('severity', {}).get('value'),
+            'description': binding.get('description', {}).get('value'),
+            'confidence': float(binding.get('confidence', {}).get('value', 0))
+        }
+
 
 # Convenience functions for Flask API
 def get_paginated_events(offset=0, limit=100):

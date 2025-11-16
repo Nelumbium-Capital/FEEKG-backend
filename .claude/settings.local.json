@@ -69,7 +69,12 @@
       "Bash(pkill:*)",
       "Bash(timeout 60 ./venv/bin/python:*)",
       "Bash(npm install:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(/Users/hansonxiong/Desktop/DDP/feekg/venv/bin/python3:*)",
+      "Bash(/bashes)"
     ],
     "deny": [],
     "ask": []

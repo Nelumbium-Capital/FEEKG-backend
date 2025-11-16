@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from query.risk_analyzer import RiskAnalyzer
+from query.optimized_graph_queries import OptimizedGraphBackend
 from viz.graph_viz import ThreeLayerVisualizer
 from viz.plot_utils import (plot_risk_timeline, plot_evolution_heatmap,
                             plot_event_network, plot_component_breakdown,
@@ -89,16 +90,10 @@ def create_app():
 
     @app.route('/api/entities', methods=['GET'])
     def get_entities():
-        """Get all entities"""
+        """Get all entities (using SPARQL)"""
         try:
-            analyzer = RiskAnalyzer()
-            query = """
-            MATCH (e:Entity)
-            RETURN e.entityId as id, e.name as name, e.type as type, e.description as description
-            ORDER BY e.name
-            """
-            entities = analyzer.backend.execute_query(query)
-            analyzer.close()
+            backend = OptimizedGraphBackend()
+            entities = backend.get_all_entities()
 
             return jsonify({
                 'status': 'success',
@@ -113,15 +108,10 @@ def create_app():
 
     @app.route('/api/entities/<entity_id>', methods=['GET'])
     def get_entity(entity_id):
-        """Get specific entity details"""
+        """Get specific entity details (using SPARQL)"""
         try:
-            analyzer = RiskAnalyzer()
-            query = """
-            MATCH (e:Entity {entityId: $entityId})
-            RETURN e.entityId as id, e.name as name, e.type as type, e.description as description
-            """
-            entity = analyzer.backend.execute_query(query, {'entityId': entity_id})
-            analyzer.close()
+            backend = OptimizedGraphBackend()
+            entity = backend.get_entity_by_id(entity_id)
 
             if not entity:
                 return jsonify({
@@ -131,7 +121,7 @@ def create_app():
 
             return jsonify({
                 'status': 'success',
-                'data': entity[0]
+                'data': entity
             })
         except Exception as e:
             return jsonify({
@@ -172,46 +162,23 @@ def create_app():
 
     @app.route('/api/events', methods=['GET'])
     def get_events():
-        """Get all events with optional filtering"""
+        """Get all events with optional filtering (using SPARQL)"""
         try:
             # Query parameters
             start_date = request.args.get('start_date')
             end_date = request.args.get('end_date')
-            event_type = request.args.get('type')
+            offset = int(request.args.get('offset', 0))
+            limit = int(request.args.get('limit', 100))
 
-            analyzer = RiskAnalyzer()
+            backend = OptimizedGraphBackend()
 
-            # Build query
-            conditions = []
-            params = {}
-
-            if start_date:
-                conditions.append("date(e.date) >= date($startDate)")
-                params['startDate'] = start_date
-
-            if end_date:
-                conditions.append("date(e.date) <= date($endDate)")
-                params['endDate'] = end_date
-
-            if event_type:
-                conditions.append("e.type = $eventType")
-                params['eventType'] = event_type
-
-            where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
-
-            query = f"""
-            MATCH (e:Event)
-            {where_clause}
-            OPTIONAL MATCH (e)-[:HAS_ACTOR]->(actor:Entity)
-            OPTIONAL MATCH (e)-[:HAS_TARGET]->(target:Entity)
-            RETURN e.eventId as id, e.type as type, toString(e.date) as date,
-                   e.description as description, e.confidence as confidence,
-                   actor.name as actor, target.name as target
-            ORDER BY e.date
-            """
-
-            events = analyzer.backend.execute_query(query, params)
-            analyzer.close()
+            # Use time window filter if dates provided
+            if start_date and end_date:
+                events = backend.get_events_by_timewindow(start_date, end_date, limit=limit)
+            else:
+                # Use pagination for all events
+                result = backend.get_events_paginated(offset=offset, limit=limit)
+                events = result['events']
 
             return jsonify({
                 'status': 'success',
@@ -226,19 +193,10 @@ def create_app():
 
     @app.route('/api/events/<event_id>', methods=['GET'])
     def get_event(event_id):
-        """Get specific event details"""
+        """Get specific event details (using SPARQL)"""
         try:
-            analyzer = RiskAnalyzer()
-            query = """
-            MATCH (e:Event {eventId: $eventId})
-            OPTIONAL MATCH (e)-[:HAS_ACTOR]->(actor:Entity)
-            OPTIONAL MATCH (e)-[:HAS_TARGET]->(target:Entity)
-            RETURN e.eventId as id, e.type as type, toString(e.date) as date,
-                   e.description as description, e.confidence as confidence,
-                   actor.name as actor, target.name as target
-            """
-            event = analyzer.backend.execute_query(query, {'eventId': event_id})
-            analyzer.close()
+            backend = OptimizedGraphBackend()
+            event = backend.get_event_by_id(event_id)
 
             if not event:
                 return jsonify({
@@ -248,7 +206,7 @@ def create_app():
 
             return jsonify({
                 'status': 'success',
-                'data': event[0]
+                'data': event
             })
         except Exception as e:
             return jsonify({
