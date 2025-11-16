@@ -759,6 +759,115 @@ WHERE {{
             }
         }
 
+    def get_graph_stats(self) -> Dict:
+        """
+        Get accurate graph statistics from AllegroGraph
+
+        Returns:
+            Dictionary with total counts of events, entities, evolution links, and relationships
+        """
+        stats = {}
+
+        # Count total events
+        event_count_query = """
+PREFIX feekg: <http://feekg.org/ontology#>
+
+SELECT (COUNT(DISTINCT ?event) AS ?count)
+WHERE {
+    ?event a feekg:Event .
+}
+"""
+        event_count_result = self._query_sparql(event_count_query)
+        event_count = event_count_result.get('results', {}).get('bindings', []) if event_count_result else []
+        if event_count and len(event_count) > 0:
+            stats['totalEvents'] = int(event_count[0]['count']['value'])
+        else:
+            stats['totalEvents'] = 0
+
+        # Count total entities
+        entity_count_query = """
+PREFIX feekg: <http://feekg.org/ontology#>
+
+SELECT (COUNT(DISTINCT ?entity) AS ?count)
+WHERE {
+    ?entity a feekg:Entity .
+}
+"""
+        entity_count_result = self._query_sparql(entity_count_query)
+        entity_count = entity_count_result.get('results', {}).get('bindings', []) if entity_count_result else []
+        if entity_count and len(entity_count) > 0:
+            stats['totalEntities'] = int(entity_count[0]['count']['value'])
+        else:
+            stats['totalEntities'] = 0
+
+        # Count evolution links
+        evolution_count_query = """
+PREFIX feekg: <http://feekg.org/ontology#>
+
+SELECT (COUNT(?link) AS ?count)
+WHERE {
+    ?link a feekg:EvolutionLink .
+}
+"""
+        evolution_count_result = self._query_sparql(evolution_count_query)
+        evolution_count = evolution_count_result.get('results', {}).get('bindings', []) if evolution_count_result else []
+        if evolution_count and len(evolution_count) > 0:
+            stats['evolutionLinks'] = int(evolution_count[0]['count']['value'])
+        else:
+            stats['evolutionLinks'] = 0
+
+        # Count event-entity relationships
+        relationship_count_query = """
+PREFIX feekg: <http://feekg.org/ontology#>
+
+SELECT (COUNT(?rel) AS ?count)
+WHERE {
+    ?event feekg:involves ?entity .
+    BIND(1 as ?rel)
+}
+"""
+        relationship_count_result = self._query_sparql(relationship_count_query)
+        relationship_count = relationship_count_result.get('results', {}).get('bindings', []) if relationship_count_result else []
+        if relationship_count and len(relationship_count) > 0:
+            stats['totalRelationships'] = int(relationship_count[0]['count']['value'])
+        else:
+            stats['totalRelationships'] = 0
+
+        # Get top entities by degree (number of connections)
+        top_entities_query = """
+PREFIX feekg: <http://feekg.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?entity ?label (COUNT(?event) AS ?degree)
+WHERE {
+    ?entity a feekg:Entity .
+    ?entity rdfs:label ?label .
+    ?event feekg:involves ?entity .
+}
+GROUP BY ?entity ?label
+ORDER BY DESC(?degree)
+LIMIT 10
+"""
+        top_entities_response = self._query_sparql(top_entities_query)
+        top_entities_result = top_entities_response.get('results', {}).get('bindings', []) if top_entities_response else []
+        top_entities = []
+        if top_entities_result:
+            for binding in top_entities_result:
+                entity_uri = binding['entity']['value']
+                entity_id = entity_uri.split('#')[-1] if '#' in entity_uri else entity_uri.split('/')[-1]
+                top_entities.append({
+                    'id': entity_id,
+                    'label': binding['label']['value'],
+                    'degree': int(binding['degree']['value'])
+                })
+        stats['topEntities'] = top_entities
+
+        # Calculate total nodes and edges
+        stats['totalNodes'] = stats['totalEvents'] + stats['totalEntities']
+        stats['totalEdges'] = stats['evolutionLinks'] + stats['totalRelationships']
+
+        return stats
+
 
 # Convenience functions for Flask API
 def get_paginated_events(offset=0, limit=100):

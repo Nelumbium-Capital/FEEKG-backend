@@ -84,6 +84,23 @@ def create_app():
                 'message': str(e)
             }), 500
 
+    @app.route('/api/stats', methods=['GET'])
+    def get_stats():
+        """Get accurate graph statistics from AllegroGraph"""
+        try:
+            backend = OptimizedGraphBackend()
+            stats = backend.get_graph_stats()
+
+            return jsonify({
+                'status': 'success',
+                'data': stats
+            })
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+
     # ==========================================================================
     # ENTITY ENDPOINTS
     # ==========================================================================
