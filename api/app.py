@@ -837,11 +837,16 @@ def create_app():
 
 
 if __name__ == '__main__':
+    import os
     app = create_app()
+
+    # Get port from environment variable (for Railway/Heroku) or default to 5001
+    port = int(os.environ.get('PORT', 5001))
+
     print("\n" + "=" * 70)
     print("FE-EKG REST API Server")
     print("=" * 70)
-    print("\nStarting server on http://localhost:5001")
+    print(f"\nStarting server on http://0.0.0.0:{port}")
     print("\nAPI Documentation:")
     print("  Health:       GET  /health")
     print("  Info:         GET  /api/info")
@@ -853,9 +858,9 @@ if __name__ == '__main__':
     print("  Timeline:     GET  /api/graph/timeline?end_date=YYYY-MM-DD")
     print("  Viz (3-layer):GET  /api/visualizations/three-layer")
     print("\nInteractive Demos:")
-    print("  API Demo:     http://localhost:5001/demo.html")
-    print("  Timeline:     http://localhost:5001/timeline.html")
+    print(f"  API Demo:     http://localhost:{port}/demo.html")
+    print(f"  Timeline:     http://localhost:{port}/timeline.html")
     print("\nPress Ctrl+C to stop")
     print("=" * 70 + "\n")
 
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=port)
