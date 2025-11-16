@@ -2,6 +2,17 @@
 
 Implementation of the FEEKG paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
 
+## 📊 Database: AllegroGraph (Production)
+
+**Current Setup:**
+- **Database:** AllegroGraph 8.4.0 (cloud-hosted)
+- **Data:** 4,000 real financial events from Capital IQ (2007-2009 Lehman Brothers crisis)
+- **Repository:** `mycatalog/FEEKG` @ qa-agraph.nelumbium.ai
+- **Entities:** 22 major financial institutions (Morgan Stanley, Lehman Brothers, etc.)
+- **Query Language:** SPARQL
+
+> ⚠️ **Note:** Neo4j has been retired in favor of AllegroGraph. See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for details.
+
 ## 🚀 How to View Everything
 
 ### Option 1: View Visualizations (PNG Images)
