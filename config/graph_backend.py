@@ -145,41 +145,31 @@ class AllegroGraphBackend(GraphBackend):
     """AllegroGraph implementation of graph backend"""
 
     def __init__(self):
-        self.url = os.getenv('AG_URL')
+        self.url = os.getenv('AG_URL', 'https://qa-agraph.nelumbium.ai/')
         self.user = os.getenv('AG_USER')
         self.password = os.getenv('AG_PASS')
+        self.catalog = os.getenv('AG_CATALOG', 'mycatalog')
         self.repo = os.getenv('AG_REPO', 'feekg_dev')
+
+        # Ensure URL has explicit port 443 for HTTPS
+        if ':443' not in self.url and self.url.startswith('https://'):
+            self.url = self.url.rstrip('/') + ':443'
+
         self.conn = None
 
-    def _parse_host(self, url):
-        """Extract host from URL"""
-        host = url.replace('https://', '').replace('http://', '')
-        host = host.rstrip('/')
-        if ':' in host:
-            host = host.split(':')[0]
-        return host
-
-    def _parse_port(self, url):
-        """Extract port from URL"""
-        if ':' in url:
-            parts = url.split(':')
-            if len(parts) >= 3:
-                return int(parts[-1].rstrip('/'))
-        return 10035
-
     def connect(self):
-        """Connect to AllegroGraph"""
+        """Connect to AllegroGraph using HTTPS (port 443)"""
         from franz.openrdf.connect import ag_connect
 
         try:
+            # Use ag_connect with full HTTPS URL including port 443
+            # This works through firewalls that block port 10035
             self.conn = ag_connect(
-                repo=self.repo,
-                host=self._parse_host(self.url),
-                port=self._parse_port(self.url),
+                self.repo,
+                catalog=self.catalog,
                 user=self.user,
-                password=self.password,
-                create=True,
-                clear=False
+                host=self.url,  # Full URL with :443
+                password=self.password
             )
             return True
         except Exception as e:
@@ -217,7 +207,7 @@ class AllegroGraphBackend(GraphBackend):
         if not self.conn:
             raise RuntimeError("Not connected")
 
-        result = self.conn.prepareTupleQuery(query).evaluate()
+        result = self.conn.prepareTupleQuery(query=query).evaluate()
         rows = []
         for binding in result:
             row = {}

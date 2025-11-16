@@ -1,6 +1,7 @@
 # Core dependencies for FE-EKG MVP
 # Graph database clients (dual backend support)
 agraph-python>=101.0.6  # AllegroGraph (RDF/SPARQL)
+pycurl>=7.45.0          # Required by agraph-python for HTTPS
 neo4j>=5.0.0            # Neo4j (Property Graph)
 py2neo>=2021.2.3        # Neo4j OGM (alternative)
 
