@@ -6,12 +6,36 @@ Clean, professional D3.js visualizations leveraging full data provenance
 import sys
 import os
 import json
+import re
 from typing import Optional, Dict, List
 from collections import defaultdict, Counter
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from config.graph_backend import get_connection
+from evolution.event_evolution_scorer import compute_event_evolution_links
+
+
+def clean_rdf_literal(value):
+    """Remove RDF datatype annotations and quotes from literals"""
+    if not value:
+        return ''
+
+    # Convert to string
+    s = str(value).strip()
+
+    # Remove RDF datatype annotation (e.g., "value"^^<http://...>)
+    if '^^' in s:
+        s = s.split('^^')[0]
+
+    # Remove quotes
+    s = s.strip(' "\'')
+
+    # Handle None/null values
+    if s in ['None', 'null', 'undefined']:
+        return ''
+
+    return s
 
 
 class OptimizedVisualizer:
@@ -55,11 +79,11 @@ class OptimizedVisualizer:
         # Clean and deduplicate entities
         entity_nodes = {}
         for e in entities:
-            label = e.get('label', '').strip(' "')
-            if not label or label == 'None':
+            label = clean_rdf_literal(e.get('label', ''))
+            if not label:
                 continue
 
-            entity_type = e.get('type', 'unknown').strip(' "').lower()
+            entity_type = clean_rdf_literal(e.get('type', 'unknown')).lower()
 
             if label not in entity_nodes:
                 entity_nodes[label] = {
@@ -72,7 +96,7 @@ class OptimizedVisualizer:
 
         print(f"  ✓ Loaded {len(entity_nodes)} clean entities")
 
-        # Fetch events with CSV metadata
+        # Fetch events with CSV metadata - prioritize events involving our entities
         event_query = f"""
         PREFIX feekg: <http://feekg.org/ontology#>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -81,6 +105,7 @@ class OptimizedVisualizer:
                ?csvRow ?csvFile ?confidence ?method
         WHERE {{
           ?event a feekg:Event .
+          ?event feekg:involves ?entity .
           OPTIONAL {{ ?event rdfs:label ?label }}
           OPTIONAL {{ ?event feekg:eventType ?type }}
           OPTIONAL {{ ?event feekg:date ?date }}
@@ -100,16 +125,16 @@ class OptimizedVisualizer:
 
         for i, e in enumerate(events):
             event_id = f"evt_{i}"
-            label = (e.get('label') or f"Event {i}").strip(' "')[:50]
-            event_type = (e.get('type') or 'unknown').strip(' "')
-            date = (e.get('date') or 'unknown').strip(' "')
-            desc = (e.get('desc') or '').strip(' "')[:200]
+            label = (clean_rdf_literal(e.get('label')) or f"Event {i}")[:50]
+            event_type = clean_rdf_literal(e.get('type')) or 'unknown'
+            date = clean_rdf_literal(e.get('date')) or 'unknown'
+            desc = clean_rdf_literal(e.get('desc'))[:200] if clean_rdf_literal(e.get('desc')) else ''
 
-            # CSV metadata
-            csv_row = e.get('csvRow', '').strip(' "')
-            csv_file = e.get('csvFile', '').strip(' "')
-            confidence = e.get('confidence', '').strip(' "')
-            method = e.get('method', '').strip(' "')
+            # CSV metadata - clean ALL RDF annotations
+            csv_row = clean_rdf_literal(e.get('csvRow'))
+            csv_file = clean_rdf_literal(e.get('csvFile'))
+            confidence = clean_rdf_literal(e.get('confidence'))
+            method = clean_rdf_literal(e.get('method'))
 
             event_nodes[event_id] = {
                 'id': event_id,
@@ -132,35 +157,170 @@ class OptimizedVisualizer:
         # Fetch relationships
         links = []
 
-        # Event → Entity (involves)
+        # Event → Entity (involves/hasTarget) - fetch ALL for our events
+        # Distinguish between "involves" and "hasTarget" based on event type
         involves_query = """
         PREFIX feekg: <http://feekg.org/ontology#>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-        SELECT ?event ?entity ?entityLabel
+        SELECT ?event ?entity ?entityLabel ?eventType
         WHERE {
           ?event feekg:involves ?entity .
           ?entity rdfs:label ?entityLabel .
+          ?event feekg:eventType ?eventType .
         }
-        LIMIT 500
+        LIMIT 2000
         """
+
+        # Event types where "involves" means "target" (affected entity)
+        target_event_types = {
+            'merger_acquisition', 'legal_issue', 'credit_downgrade',
+            'bankruptcy', 'restructuring', 'government_intervention'
+        }
 
         try:
             involves = self.backend.execute_query(involves_query)
+            involves_count = 0
+            target_count = 0
             for rel in involves:
                 event_uri = rel['event']
-                entity_label = rel['entityLabel'].strip(' "')
+                entity_label = clean_rdf_literal(rel.get('entityLabel'))
+                event_type = clean_rdf_literal(rel.get('eventType'))
 
                 if event_uri in event_uri_to_id and entity_label in entity_nodes:
+                    # Determine relationship type based on event type
+                    rel_type = 'hasTarget' if event_type in target_event_types else 'involves'
+
                     links.append({
                         'source': event_uri_to_id[event_uri],
                         'target': entity_label,
-                        'type': 'involves',
-                        'strength': 0.8
+                        'type': rel_type,
+                        'strength': 0.9 if rel_type == 'hasTarget' else 0.7
                     })
-            print(f"  ✓ Loaded {len(involves)} relationships")
+
+                    if rel_type == 'hasTarget':
+                        target_count += 1
+                    else:
+                        involves_count += 1
+
+            print(f"  ✓ Loaded {involves_count} 'involves' + {target_count} 'hasTarget' relationships")
         except Exception as e:
-            print(f"  ⚠ Relationship loading: {str(e)[:100]}")
+            print(f"  ⚠ 'involves/hasTarget' relationship loading: {str(e)[:100]}")
+
+        # Event → Entity (actor) - stored as literal, need to match to entities
+        actor_query = """
+        PREFIX feekg: <http://feekg.org/ontology#>
+
+        SELECT ?event ?actor
+        WHERE {
+          ?event a feekg:Event .
+          ?event feekg:actor ?actor .
+        }
+        LIMIT 2000
+        """
+
+        try:
+            actors = self.backend.execute_query(actor_query)
+            actor_count = 0
+            for rel in actors:
+                event_uri = rel['event']
+                actor_name = clean_rdf_literal(rel.get('actor'))
+
+                if event_uri not in event_uri_to_id:
+                    continue
+
+                # Try fuzzy matching to handle corporate suffixes
+                matched_entity = None
+
+                # 1. Exact match
+                if actor_name in entity_nodes:
+                    matched_entity = actor_name
+                else:
+                    # 2. Check if any entity name is a substring of actor name
+                    # e.g., "American International Group" matches "American International Group, Inc."
+                    for entity_label in entity_nodes.keys():
+                        if entity_label in actor_name or actor_name in entity_label:
+                            matched_entity = entity_label
+                            break
+
+                if matched_entity:
+                    links.append({
+                        'source': event_uri_to_id[event_uri],
+                        'target': matched_entity,
+                        'type': 'hasActor',
+                        'strength': 1.0
+                    })
+                    actor_count += 1
+
+            print(f"  ✓ Loaded {actor_count} 'hasActor' relationships")
+        except Exception as e:
+            print(f"  ⚠ 'hasActor' relationship loading: {str(e)[:100]}")
+
+        # Entity ↔ Entity (co-occurrence / relatedTo)
+        # Connect entities that appear together in events
+        entity_events = defaultdict(list)  # entity -> list of (event_id, event_type)
+        for link in links:
+            if link['target'] in entity_nodes:  # target is an entity
+                event_id = link['source']
+                # Get event type from event_nodes
+                event_type = event_nodes.get(event_id, {}).get('type', 'unknown')
+                entity_events[link['target']].append((event_id, event_type))
+
+        # Create entity-entity links based on co-occurrence
+        entity_list = list(entity_events.keys())
+        entity_link_count = 0
+        for i, entity1 in enumerate(entity_list):
+            for entity2 in entity_list[i+1:]:
+                # Find shared events
+                events1 = set(ev[0] for ev in entity_events[entity1])
+                events2 = set(ev[0] for ev in entity_events[entity2])
+                shared_events = events1 & events2
+
+                # Create link if they share at least 2 events
+                if len(shared_events) >= 2:
+                    links.append({
+                        'source': entity1,
+                        'target': entity2,
+                        'type': 'relatedTo',
+                        'strength': 0.5,
+                        'shared_events': len(shared_events)
+                    })
+                    entity_link_count += 1
+
+        print(f"  ✓ Created {entity_link_count} entity 'relatedTo' relationships")
+
+        # Compute Event Evolution Links (evolvesTo)
+        # Prepare event data with associated entities for evolution scoring
+        print("\nComputing event evolution links...")
+        event_list_for_evolution = []
+        for event_id, event_data in event_nodes.items():
+            # Collect entities associated with this event
+            associated_entities = []
+            for link in links:
+                if link['source'] == event_id and link['target'] in entity_nodes:
+                    associated_entities.append(link['target'])
+
+            event_list_for_evolution.append({
+                'id': event_id,
+                'date': event_data.get('date', ''),
+                'type': event_data.get('type', 'unknown'),
+                'description': event_data.get('description', ''),
+                'label': event_data.get('label', ''),
+                'entities': associated_entities
+            })
+
+        # Compute evolution links with minimum score threshold
+        # Using higher threshold (0.5) to reduce link count for visualization
+        # Paper uses 0.2, but that's too many for interactive display
+        evolution_links = compute_event_evolution_links(
+            event_list_for_evolution,
+            min_score=0.5,  # Higher threshold for cleaner visualization
+            max_time_window_days=180  # 6 months window (shorter for more relevance)
+        )
+
+        # Add evolution links to main links list
+        links.extend(evolution_links)
+        print(f"  ✓ Total relationships: {len(links)} (including {len(evolution_links)} evolution links)")
 
         # Calculate statistics
         entity_type_counts = Counter(n['type'] for n in entity_nodes.values())
@@ -371,6 +531,13 @@ class OptimizedVisualizer:
             border: 2px solid rgba(0, 0, 0, 0.1);
         }}
 
+        .legend-line {{
+            width: 30px;
+            height: 3px;
+            margin-right: 10px;
+            border-radius: 2px;
+        }}
+
         .tooltip {{
             position: fixed;
             background: rgba(255, 255, 255, 0.98);
@@ -486,7 +653,7 @@ class OptimizedVisualizer:
         </div>
 
         <div class="legend">
-            <h3 style="font-size: 14px; color: #333; margin-bottom: 12px;">Legend</h3>
+            <h3 style="font-size: 14px; color: #333; margin-bottom: 12px;">Node Types</h3>
             <div class="legend-item">
                 <div class="legend-color" style="background: #3b82f6;"></div>
                 <span>Banks & Financial Institutions</span>
@@ -502,6 +669,26 @@ class OptimizedVisualizer:
             <div class="legend-item">
                 <div class="legend-color" style="background: #f59e0b;"></div>
                 <span>Events</span>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3 style="font-size: 14px; color: #333; margin-bottom: 12px;">Relationship Types</h3>
+            <div class="legend-item">
+                <div class="legend-line" style="background: #10b981;"></div>
+                <span style="font-size: 11px;"><strong>hasActor</strong> - performs action</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-line" style="background: #ef4444;"></div>
+                <span style="font-size: 11px;"><strong>hasTarget</strong> - affected/targeted</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-line" style="background: #3b82f6;"></div>
+                <span style="font-size: 11px;"><strong>involves</strong> - related to</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-line" style="background: #a855f7;"></div>
+                <span style="font-size: 11px;"><strong>relatedTo</strong> - co-occurs</span>
             </div>
         </div>
     </div>
@@ -565,14 +752,28 @@ class OptimizedVisualizer:
             .force('center', d3.forceCenter(width / 2, height / 2))
             .force('collision', d3.forceCollide().radius(d => getNodeSize(d) + 10));
 
+        // Relationship type color mapping
+        const relationshipColors = {{
+            'hasActor': '#10b981',      // Green - entity performs action
+            'hasTarget': '#ef4444',     // Red - entity is affected/targeted
+            'involves': '#3b82f6',      // Blue - entity is involved/related
+            'relatedTo': '#a855f7',     // Purple - entities are connected
+            'evolvesTo': '#f59e0b'      // Orange - event evolution (future)
+        }};
+
+        function getLinkColor(d) {{
+            return relationshipColors[d.type] || '#64748b';  // Default gray
+        }}
+
         // Draw links
         const link = g.append('g')
             .selectAll('line')
             .data(graphData.links)
             .join('line')
             .attr('class', 'link')
-            .attr('stroke', '#64748b')
-            .attr('stroke-width', 1.5);
+            .attr('stroke', getLinkColor)
+            .attr('stroke-width', d => d.strength * 2)
+            .attr('opacity', 0.6);
 
         // Draw link labels
         const linkLabels = g.append('g')

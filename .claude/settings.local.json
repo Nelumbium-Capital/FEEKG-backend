@@ -61,7 +61,14 @@
       "Bash(PIPELINE_COMPARISON.md )",
       "Bash(ETL_COMPLETION_SUMMARY.md )",
       "Bash(RDF_CONVERSION_GUIDE.md )",
-      "Bash(RDF_DATABASE_OPTIONS.md)"
+      "Bash(RDF_DATABASE_OPTIONS.md)",
+      "Bash(find:*)",
+      "Bash(git reset:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(docker stop:*)",
+      "Bash(pkill:*)",
+      "Bash(timeout 60 ./venv/bin/python:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
