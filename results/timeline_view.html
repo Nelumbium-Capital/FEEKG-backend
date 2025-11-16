@@ -1,0 +1,3747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Timeline - Financial Crisis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 24px 32px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .timeline-container {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .controls h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #667eea;
+        }
+
+        .slider-container {
+            margin: 16px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e9ecef;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .date-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        #timeline {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 600px;
+        }
+
+        .event-node {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .event-node:hover {
+            transform: scale(1.2);
+        }
+
+        .event-label {
+            pointer-events: none;
+            font-size: 11px;
+            fill: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .axis {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .axis line,
+        .axis path {
+            stroke: #475569;
+        }
+
+        .axis text {
+            fill: #94a3b8;
+        }
+
+        .tooltip {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2000;
+            max-width: 400px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        .tooltip strong {
+            color: #667eea;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .tooltip .date {
+            color: #666;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            flex: 1;
+            min-width: 200px;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h4 {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📅 Financial Crisis Timeline</h1>
+        <div class="subtitle">Chronological Event Explorer with CSV Provenance</div>
+    </div>
+
+    <div class="timeline-container">
+        <div class="controls">
+            <h3>🎚️ Time Range Filter</h3>
+            <div class="slider-container">
+                <input type="range" class="slider" id="dateSlider" min="0" max="100" value="100">
+                <div class="date-display">
+                    <span id="startDate">Start</span>
+                    <span id="endDate">End</span>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 20px;">🏷️ Event Type Filter</h3>
+            <div class="filter-buttons" id="typeFilters"></div>
+        </div>
+
+        <svg id="timeline"></svg>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h4>Total Events</h4>
+                <div class="value" id="totalEvents">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Visible Events</h4>
+                <div class="value" id="visibleEvents">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Date Range</h4>
+                <div class="value" style="font-size: 16px;" id="dateRangeText">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        const timelineData = {
+  "events": [
+    {
+      "id": "evt_0",
+      "label": "Morgan Stanley (NYSE: MS) acquired retail portfolio of Banco Mercantil do Brasil S.A.",
+      "type": "merger_acquisition",
+      "date": "2007-01-01",
+      "timestamp": 1167638400000,
+      "description": "Morgan Stanley (NYSE: MS) acquired retail portfolio of Banco Mercantil do Brasil S.A.",
+      "csvRow": "67673\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_62532306>"
+    },
+    {
+      "id": "evt_1",
+      "label": "Huawei-3Com Technology Co. and Microsoft Corp. to Jointly Provide Security Solutions",
+      "type": "strategic_partnership",
+      "date": "2007-01-02",
+      "timestamp": 1167724800000,
+      "description": "Huawei-3Com Technology Co. and Microsoft Corp. to Jointly Provide Security Solutions",
+      "csvRow": "7163\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3397039>"
+    },
+    {
+      "id": "evt_2",
+      "label": "Deutsche Bank completed the acquisition of MortgageIT Holdings, Inc.",
+      "type": "merger_acquisition",
+      "date": "2007-01-03",
+      "timestamp": 1167811200000,
+      "description": "Deutsche Bank completed the acquisition of MortgageIT Holdings, Inc.",
+      "csvRow": "62722\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3399490>"
+    },
+    {
+      "id": "evt_3",
+      "label": "Ex-Executive Files Age Discrimination Suit Against Morgan Stanley",
+      "type": "legal_issue",
+      "date": "2007-01-03",
+      "timestamp": 1167811200000,
+      "description": "Ex-Executive Files Age Discrimination Suit Against Morgan Stanley",
+      "csvRow": "67674\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3398046>"
+    },
+    {
+      "id": "evt_4",
+      "label": "Federal Trade Commission Fines the Marketers of Four Weight Loss Pills $25 Million for Making False",
+      "type": "earnings_loss",
+      "date": "2007-01-04",
+      "timestamp": 1167897600000,
+      "description": "Federal Trade Commission Fines the Marketers of Four Weight Loss Pills $25 Million for Making False Advertising Claims",
+      "csvRow": "66779\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3400803>"
+    },
+    {
+      "id": "evt_5",
+      "label": "Citi Institutional Liquidity Fund plc Announces Resignation of KPMG LLP as Auditor",
+      "type": "management_change",
+      "date": "2007-01-04",
+      "timestamp": 1167897600000,
+      "description": "Citi Institutional Liquidity Fund plc Announces Resignation of KPMG LLP as Auditor",
+      "csvRow": "27015\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3401510>"
+    },
+    {
+      "id": "evt_6",
+      "label": "Merrill Lynch & Co. Inc. to Report Q4, 2006 Results on January 18, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-01-05",
+      "timestamp": 1167984000000,
+      "description": "Merrill Lynch & Co. Inc. to Report Q4, 2006 Results on January 18, 2007",
+      "csvRow": "1902\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_64106446>"
+    },
+    {
+      "id": "evt_7",
+      "label": "BofA Merrill Lynch, Q4 2006 Earnings Call, Jan-18-2007",
+      "type": "earnings_announcement",
+      "date": "2007-01-05",
+      "timestamp": 1167984000000,
+      "description": "BofA Merrill Lynch, Q4 2006 Earnings Call, Jan-18-2007",
+      "csvRow": "1901\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3403098>"
+    },
+    {
+      "id": "evt_8",
+      "label": "FirstMerit Corp. Dismisses PricewaterhouseCoopers, LLP as Independent Auditor and Hires Ernst & Youn",
+      "type": "business_operations",
+      "date": "2007-01-08",
+      "timestamp": 1168243200000,
+      "description": "FirstMerit Corp. Dismisses PricewaterhouseCoopers, LLP as Independent Auditor and Hires Ernst & Young LLP as its New Auditor",
+      "csvRow": "22276\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3408020>"
+    },
+    {
+      "id": "evt_9",
+      "label": "IBM and Sears Build Second Life Store",
+      "type": "business_operations",
+      "date": "2007-01-08",
+      "timestamp": 1168243200000,
+      "description": "IBM and Sears Build Second Life Store",
+      "csvRow": "32453\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3417353>"
+    },
+    {
+      "id": "evt_10",
+      "label": "Gap Inc. Selects Goldman Sachs Group Inc. to Explore Strategic Alternatives",
+      "type": "business_operations",
+      "date": "2007-01-08",
+      "timestamp": 1168243200000,
+      "description": "Gap Inc. Selects Goldman Sachs Group Inc. to Explore Strategic Alternatives",
+      "csvRow": "59149\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3407609>"
+    },
+    {
+      "id": "evt_11",
+      "label": "China Everbright Bank Selects Morgan Stanley and China International Capital as Advisers",
+      "type": "business_operations",
+      "date": "2007-01-08",
+      "timestamp": 1168243200000,
+      "description": "China Everbright Bank Selects Morgan Stanley and China International Capital as Advisers",
+      "csvRow": "67676\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3415392>"
+    },
+    {
+      "id": "evt_12",
+      "label": "AES Corp. Seeks Federal Approval to Build Liquefied Natural Gas Terminal At Sparrows Point",
+      "type": "business_operations",
+      "date": "2007-01-09",
+      "timestamp": 1168329600000,
+      "description": "AES Corp. Seeks Federal Approval to Build Liquefied Natural Gas Terminal At Sparrows Point",
+      "csvRow": "17852\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3414481>"
+    },
+    {
+      "id": "evt_13",
+      "label": "The Goldman Sachs Group, Inc. acquired a 14.51% stake in Kensington Group plc.",
+      "type": "merger_acquisition",
+      "date": "2007-01-09",
+      "timestamp": 1168329600000,
+      "description": "The Goldman Sachs Group, Inc. acquired a 14.51% stake in Kensington Group plc.",
+      "csvRow": "59150\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3410876>"
+    },
+    {
+      "id": "evt_14",
+      "label": "Tyler Technologies and Microsoft Team Up to Develop Microsoft Dynamics AX For Public Sector",
+      "type": "strategic_partnership",
+      "date": "2007-01-10",
+      "timestamp": 1168416000000,
+      "description": "Tyler Technologies and Microsoft Team Up to Develop Microsoft Dynamics AX For Public Sector",
+      "csvRow": "7185\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3411886>"
+    },
+    {
+      "id": "evt_15",
+      "label": "Kodak Retains Goldman Sachs Group Inc. to Find Buyer for the Business",
+      "type": "business_operations",
+      "date": "2007-01-10",
+      "timestamp": 1168416000000,
+      "description": "Kodak Retains Goldman Sachs Group Inc. to Find Buyer for the Business",
+      "csvRow": "59151\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3417879>"
+    },
+    {
+      "id": "evt_16",
+      "label": "Bear Stearns Co. Names Michael Goldstein to its Board of Directors",
+      "type": "management_change",
+      "date": "2007-01-10",
+      "timestamp": 1168416000000,
+      "description": "Bear Stearns Co. Names Michael Goldstein to its Board of Directors",
+      "csvRow": "18536\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3411196>"
+    },
+    {
+      "id": "evt_17",
+      "label": "Credit Suisse, Morgan Stanley Interested In EADS Stake",
+      "type": "merger_acquisition",
+      "date": "2007-01-10",
+      "timestamp": 1168416000000,
+      "description": "Credit Suisse, Morgan Stanley Interested In EADS Stake",
+      "csvRow": "62726\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3408997>"
+    },
+    {
+      "id": "evt_18",
+      "label": "American International Group, Inc. Appoints Terri D. Austin as Chief Diversity Officer",
+      "type": "management_change",
+      "date": "2007-01-12",
+      "timestamp": 1168588800000,
+      "description": "American International Group, Inc. Appoints Terri D. Austin as Chief Diversity Officer",
+      "csvRow": "44008\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3415659>"
+    },
+    {
+      "id": "evt_19",
+      "label": "Merrill Lynch & Co. Inc. Appoints Inderjeet Hora as Market Director",
+      "type": "management_change",
+      "date": "2007-01-15",
+      "timestamp": 1168848000000,
+      "description": "Merrill Lynch & Co. Inc. Appoints Inderjeet Hora as Market Director",
+      "csvRow": "1903\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3419314>"
+    },
+    {
+      "id": "evt_20",
+      "label": "Honda Motor Co. Ltd. to Build Second Plant in India",
+      "type": "business_operations",
+      "date": "2007-01-15",
+      "timestamp": 1168848000000,
+      "description": "Honda Motor Co. Ltd. to Build Second Plant in India",
+      "csvRow": "46165\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3418790>"
+    },
+    {
+      "id": "evt_21",
+      "label": "Microsoft Corp. Plans to Invest Heavily in its Security Channel in 2007",
+      "type": "business_operations",
+      "date": "2007-01-15",
+      "timestamp": 1168848000000,
+      "description": "Microsoft Corp. Plans to Invest Heavily in its Security Channel in 2007",
+      "csvRow": "7192\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3419027>"
+    },
+    {
+      "id": "evt_22",
+      "label": "Morgan Stanley Appoints Nick Wiles as Senior Adviser",
+      "type": "management_change",
+      "date": "2007-01-16",
+      "timestamp": 1168934400000,
+      "description": "Morgan Stanley Appoints Nick Wiles as Senior Adviser",
+      "csvRow": "67677\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3422357>"
+    },
+    {
+      "id": "evt_23",
+      "label": "Huawei 3Com, Microsoft to Provide Enhanced Networking and Endpoint Security Solutions",
+      "type": "business_operations",
+      "date": "2007-01-16",
+      "timestamp": 1168934400000,
+      "description": "Huawei 3Com, Microsoft to Provide Enhanced Networking and Endpoint Security Solutions",
+      "csvRow": "7195\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3422511>"
+    },
+    {
+      "id": "evt_24",
+      "label": "AIG Small Business Launches The AIG EdgeSM, a Gateway to Products and Services for Small Businesses",
+      "type": "business_operations",
+      "date": "2007-01-16",
+      "timestamp": 1168934400000,
+      "description": "AIG Small Business Launches The AIG EdgeSM, a Gateway to Products and Services for Small Businesses",
+      "csvRow": "44009\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3421836>"
+    },
+    {
+      "id": "evt_25",
+      "label": "American International Group Inc. Announces New Appointments",
+      "type": "management_change",
+      "date": "2007-01-17",
+      "timestamp": 1169020800000,
+      "description": "American International Group Inc. Announces New Appointments",
+      "csvRow": "44010\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3425069>"
+    },
+    {
+      "id": "evt_26",
+      "label": "The Carlyle Group completed the acquisition of a 2.77% stake in Allsec Technologies Limited for INR",
+      "type": "merger_acquisition",
+      "date": "2007-01-17",
+      "timestamp": 1169020800000,
+      "description": "The Carlyle Group completed the acquisition of a 2.77% stake in Allsec Technologies Limited for INR 109.50 million.",
+      "csvRow": "13608\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3428632>"
+    },
+    {
+      "id": "evt_27",
+      "label": "Merrill Lynch Eyes International Acquisitions",
+      "type": "merger_acquisition",
+      "date": "2007-01-18",
+      "timestamp": 1169107200000,
+      "description": "Merrill Lynch Eyes International Acquisitions",
+      "csvRow": "1905\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3425950>"
+    },
+    {
+      "id": "evt_28",
+      "label": "Merrill Lynch & Co., Canada Ltd., Board Meeting, Jan 18, 2007",
+      "type": "management_change",
+      "date": "2007-01-18",
+      "timestamp": 1169107200000,
+      "description": "Merrill Lynch & Co., Canada Ltd., Board Meeting, Jan 18, 2007",
+      "csvRow": "1904\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_6354441>"
+    },
+    {
+      "id": "evt_29",
+      "label": "Morgan Stanley Announces Joint Venture in Saudi Arabia with the Capital Group",
+      "type": "strategic_partnership",
+      "date": "2007-01-18",
+      "timestamp": 1169107200000,
+      "description": "Morgan Stanley Announces Joint Venture in Saudi Arabia with the Capital Group",
+      "csvRow": "67678\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3435328>"
+    },
+    {
+      "id": "evt_30",
+      "label": "Update to Merrill Lynch & Co. Inc.\u0092s Equity Buyback on January 18, 2007",
+      "type": "stock_movement",
+      "date": "2007-01-19",
+      "timestamp": 1169193600000,
+      "description": "Update to Merrill Lynch & Co. Inc.\u0092s Equity Buyback on January 18, 2007",
+      "csvRow": "1906\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3426763>"
+    },
+    {
+      "id": "evt_31",
+      "label": "American International Group Inc. Announces Amendment to Articles of Incorporation or Bylaws",
+      "type": "business_operations",
+      "date": "2007-01-19",
+      "timestamp": 1169193600000,
+      "description": "American International Group Inc. Announces Amendment to Articles of Incorporation or Bylaws",
+      "csvRow": "44011\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3581062>"
+    },
+    {
+      "id": "evt_32",
+      "label": "Goldman Sachs Mulls Opening Israel Branch",
+      "type": "business_operations",
+      "date": "2007-01-21",
+      "timestamp": 1169366400000,
+      "description": "Goldman Sachs Mulls Opening Israel Branch",
+      "csvRow": "59154\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3431514>"
+    },
+    {
+      "id": "evt_33",
+      "label": "Merrill Lynch Eyes APBT",
+      "type": "merger_acquisition",
+      "date": "2007-01-22",
+      "timestamp": 1169452800000,
+      "description": "Merrill Lynch Eyes APBT",
+      "csvRow": "1908\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3432977>"
+    },
+    {
+      "id": "evt_34",
+      "label": "Morgan Stanley Appoints David Cantillon as Managing Director and Head of European Prime Brokerage",
+      "type": "management_change",
+      "date": "2007-01-22",
+      "timestamp": 1169452800000,
+      "description": "Morgan Stanley Appoints David Cantillon as Managing Director and Head of European Prime Brokerage",
+      "csvRow": "67679\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3432114>"
+    },
+    {
+      "id": "evt_35",
+      "label": "Changjiang Securities Co. Ltd. entered into an agreement to acquire remaining 33.30% stake in Changj",
+      "type": "merger_acquisition",
+      "date": "2007-01-22",
+      "timestamp": 1169452800000,
+      "description": "Changjiang Securities Co. Ltd. entered into an agreement to acquire remaining 33.30% stake in Changjiang BNP Paribas Peregrine Securities Co Ltd. from BNP Paribas.",
+      "csvRow": "73435\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3434372>"
+    },
+    {
+      "id": "evt_36",
+      "label": "Microsoft to Launch New Operating System",
+      "type": "business_operations",
+      "date": "2007-01-22",
+      "timestamp": 1169452800000,
+      "description": "Microsoft to Launch New Operating System",
+      "csvRow": "7203\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3434418>"
+    },
+    {
+      "id": "evt_37",
+      "label": "Total SA to Invest $6 billion in Indonesia Oil and Gas Sector",
+      "type": "business_operations",
+      "date": "2007-01-22",
+      "timestamp": 1169452800000,
+      "description": "Total SA to Invest $6 billion in Indonesia Oil and Gas Sector",
+      "csvRow": "51683\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3435036>"
+    },
+    {
+      "id": "evt_38",
+      "label": "Resolution Shares Rise On AIG Bid Talk",
+      "type": "merger_acquisition",
+      "date": "2007-01-22",
+      "timestamp": 1169452800000,
+      "description": "Resolution Shares Rise On AIG Bid Talk",
+      "csvRow": "44012\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3431662>"
+    },
+    {
+      "id": "evt_39",
+      "label": "Honda Motor Co. Ltd. Plans to Set Up Second Car Plant in Rajasthan",
+      "type": "business_operations",
+      "date": "2007-01-23",
+      "timestamp": 1169539200000,
+      "description": "Honda Motor Co. Ltd. Plans to Set Up Second Car Plant in Rajasthan",
+      "csvRow": "46166\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3438116>"
+    },
+    {
+      "id": "evt_40",
+      "label": "Goldman; Morgan Stanley Among Others Seeking Dominion Deal",
+      "type": "merger_acquisition",
+      "date": "2007-01-24",
+      "timestamp": 1169625600000,
+      "description": "Goldman; Morgan Stanley Among Others Seeking Dominion Deal",
+      "csvRow": "13614\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3437583>"
+    },
+    {
+      "id": "evt_41",
+      "label": "American International Group, Inc. (NYSE: AIG) (AIG) made an offer to acquire the 39.21% equity stak",
+      "type": "merger_acquisition",
+      "date": "2007-01-24",
+      "timestamp": 1169625600000,
+      "description": "American International Group, Inc. (NYSE: AIG) (AIG) made an offer to acquire the 39.21% equity stake that it does not already own in 21st Century Insurance Group (21st Century) (NYSE: TW) for approximately $680 million.",
+      "csvRow": "44013\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_6162468>"
+    },
+    {
+      "id": "evt_42",
+      "label": "Morgan Stanley Amends its Restated Bylaws",
+      "type": "business_operations",
+      "date": "2007-01-24",
+      "timestamp": 1169625600000,
+      "description": "Morgan Stanley Amends its Restated Bylaws",
+      "csvRow": "67680\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3476527>"
+    },
+    {
+      "id": "evt_43",
+      "label": "Foreign Brokerages Seeking Stakes In Changjiang Securities",
+      "type": "merger_acquisition",
+      "date": "2007-01-24",
+      "timestamp": 1169625600000,
+      "description": "Foreign Brokerages Seeking Stakes In Changjiang Securities",
+      "csvRow": "1909\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3439218>"
+    },
+    {
+      "id": "evt_44",
+      "label": "American Stock Exchange Appoints Morgan Stanley to Assist on Demutualization Plan",
+      "type": "business_operations",
+      "date": "2007-01-25",
+      "timestamp": 1169712000000,
+      "description": "American Stock Exchange Appoints Morgan Stanley to Assist on Demutualization Plan",
+      "csvRow": "67681\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3443411>"
+    },
+    {
+      "id": "evt_45",
+      "label": "Microsoft Corp. Reports Earnings Results for the Second Quarter Ended December 31, 2006 ; Provides E",
+      "type": "earnings_announcement",
+      "date": "2007-01-25",
+      "timestamp": 1169712000000,
+      "description": "Microsoft Corp. Reports Earnings Results for the Second Quarter Ended December 31, 2006 ; Provides Earnings Guidance for the Third Quarter of Fiscal Year 2007",
+      "csvRow": "7209\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3442184>"
+    },
+    {
+      "id": "evt_46",
+      "label": "Alexander & Baldwin Inc. Amends Portion of Article III, Section 1",
+      "type": "business_operations",
+      "date": "2007-01-26",
+      "timestamp": 1169798400000,
+      "description": "Alexander & Baldwin Inc. Amends Portion of Article III, Section 1",
+      "csvRow": "43282\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3476537>"
+    },
+    {
+      "id": "evt_47",
+      "label": "Morgan Stanley - Conference Presentation Call",
+      "type": "earnings_announcement",
+      "date": "2007-01-26",
+      "timestamp": 1169798400000,
+      "description": "Morgan Stanley - Conference Presentation Call",
+      "csvRow": "67682\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3470825>"
+    },
+    {
+      "id": "evt_48",
+      "label": "Allsec Technologies Limited announced that it has received INR 785.46 million in funding from The Ca",
+      "type": "capital_raising",
+      "date": "2007-01-26",
+      "timestamp": 1169798400000,
+      "description": "Allsec Technologies Limited announced that it has received INR 785.46 million in funding from The Carlyle Group.",
+      "csvRow": "13618\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3471386>"
+    },
+    {
+      "id": "evt_49",
+      "label": "Geomet Inc. Engages Merrill Lynch & Co. as Financial Advisor",
+      "type": "business_operations",
+      "date": "2007-01-26",
+      "timestamp": 1169798400000,
+      "description": "Geomet Inc. Engages Merrill Lynch & Co. as Financial Advisor",
+      "csvRow": "1910\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3470591>"
+    },
+    {
+      "id": "evt_50",
+      "label": "Merrill Lynch entered into a definitive agreement to acquire First Republic Bank for a consideration",
+      "type": "merger_acquisition",
+      "date": "2007-01-29",
+      "timestamp": 1170057600000,
+      "description": "Merrill Lynch entered into a definitive agreement to acquire First Republic Bank for a consideration of $1.7 billion.",
+      "csvRow": "1915\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3477819>"
+    },
+    {
+      "id": "evt_51",
+      "label": "Update to Merrill Lynch & Co Inc\u0091s Equity Buyback on January 29, 2007",
+      "type": "stock_movement",
+      "date": "2007-01-29",
+      "timestamp": 1170057600000,
+      "description": "Update to Merrill Lynch & Co Inc\u0091s Equity Buyback on January 29, 2007",
+      "csvRow": "1913\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3469918>"
+    },
+    {
+      "id": "evt_52",
+      "label": "Merrill Lynch & Co. Inc. Opens Childcare Center at New York City Headquarters",
+      "type": "business_operations",
+      "date": "2007-01-29",
+      "timestamp": 1170057600000,
+      "description": "Merrill Lynch & Co. Inc. Opens Childcare Center at New York City Headquarters",
+      "csvRow": "1912\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3473222>"
+    },
+    {
+      "id": "evt_53",
+      "label": "Merrill Lynch & Co. Inc. Announces Promotion of Eva Castillo",
+      "type": "management_change",
+      "date": "2007-01-29",
+      "timestamp": 1170057600000,
+      "description": "Merrill Lynch & Co. Inc. Announces Promotion of Eva Castillo",
+      "csvRow": "1914\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3481592>"
+    },
+    {
+      "id": "evt_54",
+      "label": "Eagle Hospitality Hires Morgan Stanley For Strategic Review",
+      "type": "restructuring",
+      "date": "2007-01-29",
+      "timestamp": 1170057600000,
+      "description": "Eagle Hospitality Hires Morgan Stanley For Strategic Review",
+      "csvRow": "67683\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3469977>"
+    },
+    {
+      "id": "evt_55",
+      "label": "Microsoft Looks Out on A Changing Vista the Windows Operating System Is Becoming Less Relevant",
+      "type": "business_operations",
+      "date": "2007-01-29",
+      "timestamp": 1170057600000,
+      "description": "Microsoft Looks Out on A Changing Vista the Windows Operating System Is Becoming Less Relevant",
+      "csvRow": "7220\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3474174>"
+    },
+    {
+      "id": "evt_56",
+      "label": "Microsoft Corp. Unveils New Operating System",
+      "type": "business_operations",
+      "date": "2007-01-30",
+      "timestamp": 1170144000000,
+      "description": "Microsoft Corp. Unveils New Operating System",
+      "csvRow": "7222\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3476481>"
+    },
+    {
+      "id": "evt_57",
+      "label": "Mem Celular Participa\u00e7\u00f5es to Engage Merrill Lynch & Co. Inc. to Develop Studies and Adopt Processes",
+      "type": "business_operations",
+      "date": "2007-01-30",
+      "timestamp": 1170144000000,
+      "description": "Mem Celular Participa\u00e7\u00f5es to Engage Merrill Lynch & Co. Inc. to Develop Studies and Adopt Processes",
+      "csvRow": "1916\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4570816>"
+    },
+    {
+      "id": "evt_58",
+      "label": "Morgan Stanley Eyes Energy Acquisitions",
+      "type": "merger_acquisition",
+      "date": "2007-01-31",
+      "timestamp": 1170230400000,
+      "description": "Morgan Stanley Eyes Energy Acquisitions",
+      "csvRow": "67684\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3477076>"
+    },
+    {
+      "id": "evt_59",
+      "label": "FedEx Express completed the acquisition of Prakash Air Freight Pvt. Ltd.",
+      "type": "merger_acquisition",
+      "date": "2007-01-31",
+      "timestamp": 1170230400000,
+      "description": "FedEx Express completed the acquisition of Prakash Air Freight Pvt. Ltd.",
+      "csvRow": "15575\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4640177>"
+    },
+    {
+      "id": "evt_60",
+      "label": "GTL Resources plc Appoints Morgan Stanley as Nominated Adviser and Broker",
+      "type": "business_operations",
+      "date": "2007-02-01",
+      "timestamp": 1170316800000,
+      "description": "GTL Resources plc Appoints Morgan Stanley as Nominated Adviser and Broker",
+      "csvRow": "67685\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3486987>"
+    },
+    {
+      "id": "evt_61",
+      "label": "Bear Stearns Companies Inc. and Caspar Gilroy completed the acquisition of Minster Insurance Service",
+      "type": "merger_acquisition",
+      "date": "2007-02-01",
+      "timestamp": 1170316800000,
+      "description": "Bear Stearns Companies Inc. and Caspar Gilroy completed the acquisition of Minster Insurance Services Limited from Groupama Insurances Group Ltd.",
+      "csvRow": "18537\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4655976>"
+    },
+    {
+      "id": "evt_62",
+      "label": "Merrill Lynch & Co. Inc. and Irish Life & Permanent plc Enter into Mortgage Joint Venture",
+      "type": "strategic_partnership",
+      "date": "2007-02-01",
+      "timestamp": 1170316800000,
+      "description": "Merrill Lynch & Co. Inc. and Irish Life & Permanent plc Enter into Mortgage Joint Venture",
+      "csvRow": "1920\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3485977>"
+    },
+    {
+      "id": "evt_63",
+      "label": "Merrill Lynch & Co. Inc. Wins Approval of $40.3 Million Settlement",
+      "type": "legal_issue",
+      "date": "2007-02-01",
+      "timestamp": 1170316800000,
+      "description": "Merrill Lynch & Co. Inc. Wins Approval of $40.3 Million Settlement",
+      "csvRow": "1919\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3485899>"
+    },
+    {
+      "id": "evt_64",
+      "label": "FedEx Express Announces Executive Changes",
+      "type": "management_change",
+      "date": "2007-02-02",
+      "timestamp": 1170403200000,
+      "description": "FedEx Express Announces Executive Changes",
+      "csvRow": "15576\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644055>"
+    },
+    {
+      "id": "evt_65",
+      "label": "Goldman Sachs Group Inc. - Conference Presentation Call",
+      "type": "earnings_announcement",
+      "date": "2007-02-02",
+      "timestamp": 1170403200000,
+      "description": "Goldman Sachs Group Inc. - Conference Presentation Call",
+      "csvRow": "59155\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3486711>"
+    },
+    {
+      "id": "evt_66",
+      "label": "Alchemia Announces Resignation of Christopher Neal as Chief Financial Officer and Company Secretary",
+      "type": "management_change",
+      "date": "2007-02-02",
+      "timestamp": 1170403200000,
+      "description": "Alchemia Announces Resignation of Christopher Neal as Chief Financial Officer and Company Secretary",
+      "csvRow": "39914\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3488210>"
+    },
+    {
+      "id": "evt_67",
+      "label": "Total SA to Enter Nuclear Sector Energy",
+      "type": "business_operations",
+      "date": "2007-02-05",
+      "timestamp": 1170662400000,
+      "description": "Total SA to Enter Nuclear Sector Energy",
+      "csvRow": "51688\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3492768>"
+    },
+    {
+      "id": "evt_68",
+      "label": "Mirapoint Offers Email Security Appliance on IBM BladeCenter to Secure Large Enterprise and Service",
+      "type": "business_operations",
+      "date": "2007-02-05",
+      "timestamp": 1170662400000,
+      "description": "Mirapoint Offers Email Security Appliance on IBM BladeCenter to Secure Large Enterprise and Service Provider Networks",
+      "csvRow": "32515\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3489900>"
+    },
+    {
+      "id": "evt_69",
+      "label": "Merrill Lynch & Co. Inc. Appoints Margaret Ren as Chairman for China Investment Banking Team",
+      "type": "capital_raising",
+      "date": "2007-02-06",
+      "timestamp": 1170748800000,
+      "description": "Merrill Lynch & Co. Inc. Appoints Margaret Ren as Chairman for China Investment Banking Team",
+      "csvRow": "1921\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3495322>"
+    },
+    {
+      "id": "evt_70",
+      "label": "Standard & Poor's agreed to acquire Goldman Sachs Commodity Index & Two Equity Index Families from G",
+      "type": "merger_acquisition",
+      "date": "2007-02-06",
+      "timestamp": 1170748800000,
+      "description": "Standard & Poor's agreed to acquire Goldman Sachs Commodity Index & Two Equity Index Families from Goldman Sachs Group, Inc.",
+      "csvRow": "59156\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3494565>"
+    },
+    {
+      "id": "evt_71",
+      "label": "FedEx Express Announces Management Changes",
+      "type": "management_change",
+      "date": "2007-02-06",
+      "timestamp": 1170748800000,
+      "description": "FedEx Express Announces Management Changes",
+      "csvRow": "15577\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644056>"
+    },
+    {
+      "id": "evt_72",
+      "label": "Merrill Lynch & Co. Inc. and Credit Suisse Appeals Court to End Class-action Lawsuit by Enron Invest",
+      "type": "legal_issue",
+      "date": "2007-02-06",
+      "timestamp": 1170748800000,
+      "description": "Merrill Lynch & Co. Inc. and Credit Suisse Appeals Court to End Class-action Lawsuit by Enron Investors",
+      "csvRow": "1923\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3493046>"
+    },
+    {
+      "id": "evt_73",
+      "label": "Morgan Stanley to Open Prime Brokerage office",
+      "type": "business_operations",
+      "date": "2007-02-06",
+      "timestamp": 1170748800000,
+      "description": "Morgan Stanley to Open Prime Brokerage office",
+      "csvRow": "67686\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3498286>"
+    },
+    {
+      "id": "evt_74",
+      "label": "Merrill Lynch & Co. Inc. Appoints Bernie Sucher as Managing Director and Head of Global Markets for",
+      "type": "management_change",
+      "date": "2007-02-06",
+      "timestamp": 1170748800000,
+      "description": "Merrill Lynch & Co. Inc. Appoints Bernie Sucher as Managing Director and Head of Global Markets for Russia",
+      "csvRow": "1922\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3496846>"
+    },
+    {
+      "id": "evt_75",
+      "label": "Standard & Poor's completed the acquisition of Goldman Sachs Commodity Index(GSCI) & Two Equity Inde",
+      "type": "merger_acquisition",
+      "date": "2007-02-08",
+      "timestamp": 1170921600000,
+      "description": "Standard & Poor's completed the acquisition of Goldman Sachs Commodity Index(GSCI) & Two Equity Index Families from Goldman Sachs Group, Inc.",
+      "csvRow": "59157\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4724548>"
+    },
+    {
+      "id": "evt_76",
+      "label": "VP Securities Services Announces 5-Year Services Contract for IBM to Manage the Operations and Furth",
+      "type": "business_operations",
+      "date": "2007-02-08",
+      "timestamp": 1170921600000,
+      "description": "VP Securities Services Announces 5-Year Services Contract for IBM to Manage the Operations and Further Development of Infrastructure of VP's Central IT-System",
+      "csvRow": "32536\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3502294>"
+    },
+    {
+      "id": "evt_77",
+      "label": "Pfizer Inc. Announces 545 Job Losses",
+      "type": "earnings_loss",
+      "date": "2007-02-08",
+      "timestamp": 1170921600000,
+      "description": "Pfizer Inc. Announces 545 Job Losses",
+      "csvRow": "38436\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3502567>"
+    },
+    {
+      "id": "evt_78",
+      "label": "PSA Peugeot Citroen Reports Earnings Results for the Second Half Year Ended December 31, 2006",
+      "type": "earnings_announcement",
+      "date": "2007-02-08",
+      "timestamp": 1170921600000,
+      "description": "PSA Peugeot Citroen Reports Earnings Results for the Second Half Year Ended December 31, 2006",
+      "csvRow": "72590\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3502718>"
+    },
+    {
+      "id": "evt_79",
+      "label": "Bearingpoint Inc. Appoints Ernst & Young LLP as Independent Registered Public Accounting Firm, Repla",
+      "type": "business_operations",
+      "date": "2007-02-09",
+      "timestamp": 1171008000000,
+      "description": "Bearingpoint Inc. Appoints Ernst & Young LLP as Independent Registered Public Accounting Firm, Replacing PricewaterhouseCoopers, LLP",
+      "csvRow": "22287\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3539557>"
+    },
+    {
+      "id": "evt_80",
+      "label": "Merrill Lynch & Co. Inc. Opens New Office in Istanbul ; Announces Board Appointments",
+      "type": "business_operations",
+      "date": "2007-02-09",
+      "timestamp": 1171008000000,
+      "description": "Merrill Lynch & Co. Inc. Opens New Office in Istanbul ; Announces Board Appointments",
+      "csvRow": "1924\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3503375>"
+    },
+    {
+      "id": "evt_81",
+      "label": "Levi Strauss & Co. Appoints PricewaterhouseCoopers, LLP as Independent Accounting Firm Replacing KPM",
+      "type": "business_operations",
+      "date": "2007-02-09",
+      "timestamp": 1171008000000,
+      "description": "Levi Strauss & Co. Appoints PricewaterhouseCoopers, LLP as Independent Accounting Firm Replacing KPMG LLP",
+      "csvRow": "27027\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3506915>"
+    },
+    {
+      "id": "evt_82",
+      "label": "FedEx Express Promotes Hamdi Osman to Senior Vice President of the Middle East, Indian Subcontinent",
+      "type": "management_change",
+      "date": "2007-02-11",
+      "timestamp": 1171180800000,
+      "description": "FedEx Express Promotes Hamdi Osman to Senior Vice President of the Middle East, Indian Subcontinent and Africa",
+      "csvRow": "15578\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644057>"
+    },
+    {
+      "id": "evt_83",
+      "label": "Audrey S. Oswell Sues Morgan Stanley",
+      "type": "legal_issue",
+      "date": "2007-02-11",
+      "timestamp": 1171180800000,
+      "description": "Audrey S. Oswell Sues Morgan Stanley",
+      "csvRow": "67688\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3539098>"
+    },
+    {
+      "id": "evt_84",
+      "label": "Microsoft Corp. Launches Latest Versions of its Windows Mobile Smartphone Operating System",
+      "type": "business_operations",
+      "date": "2007-02-12",
+      "timestamp": 1171267200000,
+      "description": "Microsoft Corp. Launches Latest Versions of its Windows Mobile Smartphone Operating System",
+      "csvRow": "7268\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3539815>"
+    },
+    {
+      "id": "evt_85",
+      "label": "Morgan Stanley Names Jay Dweck as Managing Director and Global Head of Strategic Analytics Group",
+      "type": "management_change",
+      "date": "2007-02-12",
+      "timestamp": 1171267200000,
+      "description": "Morgan Stanley Names Jay Dweck as Managing Director and Global Head of Strategic Analytics Group",
+      "csvRow": "67689\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3539016>"
+    },
+    {
+      "id": "evt_86",
+      "label": "Federal Express Appoints Marco Lee as Vice-President of Sales for China and Kevin O'Hearn as Vice-Pr",
+      "type": "management_change",
+      "date": "2007-02-12",
+      "timestamp": 1171267200000,
+      "description": "Federal Express Appoints Marco Lee as Vice-President of Sales for China and Kevin O'Hearn as Vice-President of Sales for North and South Pacific and Global Sales",
+      "csvRow": "15579\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3540671>"
+    },
+    {
+      "id": "evt_87",
+      "label": "Morgan Stanley (NYSE: MS) acquired 60% of Olco Petroleum Group, Inc. from Mayfred Canada Ltd.",
+      "type": "merger_acquisition",
+      "date": "2007-02-13",
+      "timestamp": 1171353600000,
+      "description": "Morgan Stanley (NYSE: MS) acquired 60% of Olco Petroleum Group, Inc. from Mayfred Canada Ltd.",
+      "csvRow": "67690\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3592611>"
+    },
+    {
+      "id": "evt_88",
+      "label": "International Business Machines Corp. Expanding its System p with New Virtualization and Operating S",
+      "type": "business_operations",
+      "date": "2007-02-14",
+      "timestamp": 1171440000000,
+      "description": "International Business Machines Corp. Expanding its System p with New Virtualization and Operating System Features",
+      "csvRow": "32555\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3551811>"
+    },
+    {
+      "id": "evt_89",
+      "label": "Merrill Lynch & Co. Inc. Appoints Harold Ford as Vice Chairman and Senior Policy Adviser",
+      "type": "management_change",
+      "date": "2007-02-14",
+      "timestamp": 1171440000000,
+      "description": "Merrill Lynch & Co. Inc. Appoints Harold Ford as Vice Chairman and Senior Policy Adviser",
+      "csvRow": "1926\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3549012>"
+    },
+    {
+      "id": "evt_90",
+      "label": "American International Group Inc. to Report Q4, 2006 Results on March 01, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-02-14",
+      "timestamp": 1171440000000,
+      "description": "American International Group Inc. to Report Q4, 2006 Results on March 01, 2007",
+      "csvRow": "44015\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_64358083>"
+    },
+    {
+      "id": "evt_91",
+      "label": "Morgan Stanley Opens Private Wealth Office in Miami; Appoints Latin American Team and Deputy Head fo",
+      "type": "business_operations",
+      "date": "2007-02-14",
+      "timestamp": 1171440000000,
+      "description": "Morgan Stanley Opens Private Wealth Office in Miami; Appoints Latin American Team and Deputy Head for Region",
+      "csvRow": "67691\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3546947>"
+    },
+    {
+      "id": "evt_92",
+      "label": "American International Group, Inc., Q4 2006 Earnings Call, Mar-02-2007",
+      "type": "earnings_announcement",
+      "date": "2007-02-14",
+      "timestamp": 1171440000000,
+      "description": "American International Group, Inc., Q4 2006 Earnings Call, Mar-02-2007",
+      "csvRow": "44014\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3550249>"
+    },
+    {
+      "id": "evt_93",
+      "label": "LVMH and Morgan Stanley Settle Five-Year Court Battle",
+      "type": "legal_issue",
+      "date": "2007-02-15",
+      "timestamp": 1171526400000,
+      "description": "LVMH and Morgan Stanley Settle Five-Year Court Battle",
+      "csvRow": "67693\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3554998>"
+    },
+    {
+      "id": "evt_94",
+      "label": "U.S. Bankruptcy Judge Burton Lifland Orders Bear Stearns Companies Inc. to Pay $125 Million",
+      "type": "bankruptcy",
+      "date": "2007-02-16",
+      "timestamp": 1171612800000,
+      "description": "U.S. Bankruptcy Judge Burton Lifland Orders Bear Stearns Companies Inc. to Pay $125 Million",
+      "csvRow": "18539\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3555346>"
+    },
+    {
+      "id": "evt_95",
+      "label": "Merrill Lynch & Co. Inc. Hires Kimberly Palmer as Managing Director of the South Florida Region",
+      "type": "management_change",
+      "date": "2007-02-19",
+      "timestamp": 1171872000000,
+      "description": "Merrill Lynch & Co. Inc. Hires Kimberly Palmer as Managing Director of the South Florida Region",
+      "csvRow": "1927\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3566210>"
+    },
+    {
+      "id": "evt_96",
+      "label": "The Commission Issues an Order to American International Group",
+      "type": "legal_issue",
+      "date": "2007-02-20",
+      "timestamp": 1171958400000,
+      "description": "The Commission Issues an Order to American International Group",
+      "csvRow": "44016\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3576072>"
+    },
+    {
+      "id": "evt_97",
+      "label": "Goldman Sachs Group Inc., Annual General Meeting, Mar 27, 2007",
+      "type": "business_operations",
+      "date": "2007-02-21",
+      "timestamp": 1172044800000,
+      "description": "Goldman Sachs Group Inc., Annual General Meeting, Mar 27, 2007",
+      "csvRow": "59158\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3572422>"
+    },
+    {
+      "id": "evt_98",
+      "label": "JM Financial Ltd. agreed to acquire the remaining stake of 49% in JM Morgan Stanley Pvt. Ltd. from M",
+      "type": "merger_acquisition",
+      "date": "2007-02-21",
+      "timestamp": 1172044800000,
+      "description": "JM Financial Ltd. agreed to acquire the remaining stake of 49% in JM Morgan Stanley Pvt. Ltd. from Morgan Stanley for $20 million.",
+      "csvRow": "67694\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3586421>"
+    },
+    {
+      "id": "evt_99",
+      "label": "Microsoft Corporation added to S&P 500/Citigroup Value Index",
+      "type": "credit_downgrade",
+      "date": "2007-02-22",
+      "timestamp": 1172131200000,
+      "description": "Microsoft Corporation added to S&P 500/Citigroup Value Index",
+      "csvRow": "7299\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_5077464>"
+    },
+    {
+      "id": "evt_100",
+      "label": "Morgan Stanley to End Joint Ventures with J.M. Financial",
+      "type": "strategic_partnership",
+      "date": "2007-02-22",
+      "timestamp": 1172131200000,
+      "description": "Morgan Stanley to End Joint Ventures with J.M. Financial",
+      "csvRow": "67697\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3576264>"
+    },
+    {
+      "id": "evt_101",
+      "label": "The Bear Stearns Companies, Inc. added to S&P 500/Citigroup Value Index",
+      "type": "credit_downgrade",
+      "date": "2007-02-22",
+      "timestamp": 1172131200000,
+      "description": "The Bear Stearns Companies, Inc. added to S&P 500/Citigroup Value Index",
+      "csvRow": "18540\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_5668970>"
+    },
+    {
+      "id": "evt_102",
+      "label": "ChannelVantage Launches Second Generation Lead Qualification Solution with General Motors",
+      "type": "business_operations",
+      "date": "2007-02-22",
+      "timestamp": 1172131200000,
+      "description": "ChannelVantage Launches Second Generation Lead Qualification Solution with General Motors",
+      "csvRow": "41445\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3580398>"
+    },
+    {
+      "id": "evt_103",
+      "label": "Morgan Stanley Appoints Two Additional Teams to Serve High Net Worth Clients in the Latin American M",
+      "type": "management_change",
+      "date": "2007-02-22",
+      "timestamp": 1172131200000,
+      "description": "Morgan Stanley Appoints Two Additional Teams to Serve High Net Worth Clients in the Latin American Market",
+      "csvRow": "67695\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3581251>"
+    },
+    {
+      "id": "evt_104",
+      "label": "Morgan Stanley agreed to acquire the remaining stake of 49% in JM Morgan Stanley Securities Private",
+      "type": "merger_acquisition",
+      "date": "2007-02-22",
+      "timestamp": 1172131200000,
+      "description": "Morgan Stanley agreed to acquire the remaining stake of 49% in JM Morgan Stanley Securities Private Limited from JM Financial Ltd. for $445 million.",
+      "csvRow": "67696\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3586428>"
+    },
+    {
+      "id": "evt_105",
+      "label": "FedEx Express Appoints Matthew Davies as Managing Director of Sales for South-East Asia, Australia a",
+      "type": "management_change",
+      "date": "2007-02-22",
+      "timestamp": 1172131200000,
+      "description": "FedEx Express Appoints Matthew Davies as Managing Director of Sales for South-East Asia, Australia and New Zealand",
+      "csvRow": "15580\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644060>"
+    },
+    {
+      "id": "evt_106",
+      "label": "Morgan Stanley, Annual General Meeting, Apr 10, 2007",
+      "type": "business_operations",
+      "date": "2007-02-23",
+      "timestamp": 1172217600000,
+      "description": "Morgan Stanley, Annual General Meeting, Apr 10, 2007",
+      "csvRow": "67698\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3581868>"
+    },
+    {
+      "id": "evt_107",
+      "label": "Office Live, LLC Sues Microsoft for Federal Trademark Infringement",
+      "type": "legal_issue",
+      "date": "2007-02-23",
+      "timestamp": 1172217600000,
+      "description": "Office Live, LLC Sues Microsoft for Federal Trademark Infringement",
+      "csvRow": "7303\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3581676>"
+    },
+    {
+      "id": "evt_108",
+      "label": "Merrill Lynch & Co. Inc. acquired a minority stake in Russian Carbon Fund Aps for a reported conside",
+      "type": "merger_acquisition",
+      "date": "2007-02-26",
+      "timestamp": 1172476800000,
+      "description": "Merrill Lynch & Co. Inc. acquired a minority stake in Russian Carbon Fund Aps for a reported consideration of $200 million.",
+      "csvRow": "1929\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3598588>"
+    },
+    {
+      "id": "evt_109",
+      "label": "Bear Stearns Opens Cleveland Satellite Office; Announces Director Changes",
+      "type": "business_operations",
+      "date": "2007-02-26",
+      "timestamp": 1172476800000,
+      "description": "Bear Stearns Opens Cleveland Satellite Office; Announces Director Changes",
+      "csvRow": "18541\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3590212>"
+    },
+    {
+      "id": "evt_110",
+      "label": "Merrill Lynch & Co. Inc. entered into an agreement to acquire First Permanent Financial Services Pty",
+      "type": "merger_acquisition",
+      "date": "2007-02-27",
+      "timestamp": 1172563200000,
+      "description": "Merrill Lynch & Co. Inc. entered into an agreement to acquire First Permanent Financial Services Pty Ltd. from Devine Ltd.",
+      "csvRow": "1930\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3297156>"
+    },
+    {
+      "id": "evt_111",
+      "label": "Merrill Lynch & Co. Inc. completed the acquisition of First Permanent Financial Services Pty Ltd. fr",
+      "type": "merger_acquisition",
+      "date": "2007-02-27",
+      "timestamp": 1172563200000,
+      "description": "Merrill Lynch & Co. Inc. completed the acquisition of First Permanent Financial Services Pty Ltd. from Devine Ltd.",
+      "csvRow": "1931\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3593772>"
+    },
+    {
+      "id": "evt_112",
+      "label": "Atlas Air Worldwide Holdings Engages PricewaterhouseCoopers in Place of Ernst & Young as its Princip",
+      "type": "business_operations",
+      "date": "2007-02-27",
+      "timestamp": 1172563200000,
+      "description": "Atlas Air Worldwide Holdings Engages PricewaterhouseCoopers in Place of Ernst & Young as its Principal Independent Accountants",
+      "csvRow": "22309\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3642302>"
+    },
+    {
+      "id": "evt_113",
+      "label": "Vivendi Steps Up $7.5 Billion Federal Lawsuit Against T-Mobile USA Inc. and Deutsche Telekom AG",
+      "type": "legal_issue",
+      "date": "2007-02-27",
+      "timestamp": 1172563200000,
+      "description": "Vivendi Steps Up $7.5 Billion Federal Lawsuit Against T-Mobile USA Inc. and Deutsche Telekom AG",
+      "csvRow": "55933\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3601698>"
+    },
+    {
+      "id": "evt_114",
+      "label": "Bear Stearns Names Pascal Lambert as Chief Administrative Officer for Asia Ex-Japan",
+      "type": "management_change",
+      "date": "2007-02-28",
+      "timestamp": 1172649600000,
+      "description": "Bear Stearns Names Pascal Lambert as Chief Administrative Officer for Asia Ex-Japan",
+      "csvRow": "18543\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3606487>"
+    },
+    {
+      "id": "evt_115",
+      "label": "ADVO Inc. dropped from S&P SmallCap 600 Sector Indices - Consumer Discretionary Sector Index",
+      "type": "credit_downgrade",
+      "date": "2007-02-28",
+      "timestamp": 1172649600000,
+      "description": "ADVO Inc. dropped from S&P SmallCap 600 Sector Indices - Consumer Discretionary Sector Index",
+      "csvRow": "14961\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3598535>"
+    },
+    {
+      "id": "evt_116",
+      "label": "FedEx Express completed the acquisition of the remaining 50% stake in Federal Express Dtw Co., Ltd.",
+      "type": "merger_acquisition",
+      "date": "2007-02-28",
+      "timestamp": 1172649600000,
+      "description": "FedEx Express completed the acquisition of the remaining 50% stake in Federal Express Dtw Co., Ltd. from Datian W. Air Service Corporation.",
+      "csvRow": "15582\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_100846879>"
+    },
+    {
+      "id": "evt_117",
+      "label": "Goldman Sachs Group Inc. to Report Q1, 2007 Results on March 13, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-02-28",
+      "timestamp": 1172649600000,
+      "description": "Goldman Sachs Group Inc. to Report Q1, 2007 Results on March 13, 2007",
+      "csvRow": "59160\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_64505169>"
+    },
+    {
+      "id": "evt_118",
+      "label": "Goldman Sachs Group Inc., Q1 2007 Earnings Call, Mar-13-2007",
+      "type": "earnings_announcement",
+      "date": "2007-02-28",
+      "timestamp": 1172649600000,
+      "description": "Goldman Sachs Group Inc., Q1 2007 Earnings Call, Mar-13-2007",
+      "csvRow": "59159\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3602122>"
+    },
+    {
+      "id": "evt_119",
+      "label": "FedEx Express completed the acquisition of Datian W. Air Service Corporation's domestic express asse",
+      "type": "merger_acquisition",
+      "date": "2007-02-28",
+      "timestamp": 1172649600000,
+      "description": "FedEx Express completed the acquisition of Datian W. Air Service Corporation's domestic express assets.",
+      "csvRow": "15581\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4640175>"
+    },
+    {
+      "id": "evt_120",
+      "label": "American International Group, Inc. (NYSE:AIG) announces an Equity Buyback for $8,000 million worth o",
+      "type": "stock_movement",
+      "date": "2007-03-01",
+      "timestamp": 1172736000000,
+      "description": "American International Group, Inc. (NYSE:AIG) announces an Equity Buyback for $8,000 million worth of its shares.",
+      "csvRow": "44018\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4969305>"
+    },
+    {
+      "id": "evt_121",
+      "label": "Gate Gourmet Sold To Merrill Lynch",
+      "type": "merger_acquisition",
+      "date": "2007-03-01",
+      "timestamp": 1172736000000,
+      "description": "Gate Gourmet Sold To Merrill Lynch",
+      "csvRow": "1932\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3606817>"
+    },
+    {
+      "id": "evt_122",
+      "label": "Oak Investment Partners and Goldman Sachs acquired iTouch plc from For-side.com Co., Ltd. (JASDAQ: 2",
+      "type": "merger_acquisition",
+      "date": "2007-03-01",
+      "timestamp": 1172736000000,
+      "description": "Oak Investment Partners and Goldman Sachs acquired iTouch plc from For-side.com Co., Ltd. (JASDAQ: 2330) in a management buyout transaction for $100 million.",
+      "csvRow": "59162\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3625035>"
+    },
+    {
+      "id": "evt_123",
+      "label": "American International Group, Inc.'s Equity Buyback has expired",
+      "type": "merger_acquisition",
+      "date": "2007-03-01",
+      "timestamp": 1172736000000,
+      "description": "American International Group, Inc.'s Equity Buyback has expired",
+      "csvRow": "44019\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4968850>"
+    },
+    {
+      "id": "evt_124",
+      "label": "American International Group Inc. Reports Earnings Results for the Full Year Ended December 31, 2006",
+      "type": "earnings_announcement",
+      "date": "2007-03-01",
+      "timestamp": 1172736000000,
+      "description": "American International Group Inc. Reports Earnings Results for the Full Year Ended December 31, 2006",
+      "csvRow": "44017\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3610879>"
+    },
+    {
+      "id": "evt_125",
+      "label": "American International Group, Inc. Appoints Jerry M. de St. Paer as Senior Vice President, Finance",
+      "type": "management_change",
+      "date": "2007-03-01",
+      "timestamp": 1172736000000,
+      "description": "American International Group, Inc. Appoints Jerry M. de St. Paer as Senior Vice President, Finance",
+      "csvRow": "44020\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3607173>"
+    },
+    {
+      "id": "evt_126",
+      "label": "Merrill Lynch & Co. Inc. acquired remaining stake of Texas Pacific Group in Gate Gourmet Switzerland",
+      "type": "merger_acquisition",
+      "date": "2007-03-02",
+      "timestamp": 1172822400000,
+      "description": "Merrill Lynch & Co. Inc. acquired remaining stake of Texas Pacific Group in Gate Gourmet Switzerland GmbH.",
+      "csvRow": "1933\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3635740>"
+    },
+    {
+      "id": "evt_127",
+      "label": "The Bear Stearns Companies, LLC, Q1 2007 Earnings Call, Mar-15-2007",
+      "type": "earnings_announcement",
+      "date": "2007-03-02",
+      "timestamp": 1172822400000,
+      "description": "The Bear Stearns Companies, LLC, Q1 2007 Earnings Call, Mar-15-2007",
+      "csvRow": "18545\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3611907>"
+    },
+    {
+      "id": "evt_128",
+      "label": "Bear Stearns Companies Inc. to Report Q1, 2007 Results on March 15, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-03-02",
+      "timestamp": 1172822400000,
+      "description": "Bear Stearns Companies Inc. to Report Q1, 2007 Results on March 15, 2007",
+      "csvRow": "18546\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_64288373>"
+    },
+    {
+      "id": "evt_129",
+      "label": "Palm Inc. Hires Morgan Stanley to Explore Sale Options",
+      "type": "business_operations",
+      "date": "2007-03-05",
+      "timestamp": 1173081600000,
+      "description": "Palm Inc. Hires Morgan Stanley to Explore Sale Options",
+      "csvRow": "67702\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3634496>"
+    },
+    {
+      "id": "evt_130",
+      "label": "AES Corp. Appoints Andres Gluski as Executive Vice President and Chief Operating Officer",
+      "type": "management_change",
+      "date": "2007-03-05",
+      "timestamp": 1173081600000,
+      "description": "AES Corp. Appoints Andres Gluski as Executive Vice President and Chief Operating Officer",
+      "csvRow": "17860\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3626697>"
+    },
+    {
+      "id": "evt_131",
+      "label": "FedEx Express Expands Air Freight Services",
+      "type": "business_operations",
+      "date": "2007-03-05",
+      "timestamp": 1173081600000,
+      "description": "FedEx Express Expands Air Freight Services",
+      "csvRow": "15583\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644061>"
+    },
+    {
+      "id": "evt_132",
+      "label": "La Caixa Chooses Morgan Stanley and UBS to Manage Industrial Holding IPO",
+      "type": "business_operations",
+      "date": "2007-03-05",
+      "timestamp": 1173081600000,
+      "description": "La Caixa Chooses Morgan Stanley and UBS to Manage Industrial Holding IPO",
+      "csvRow": "67701\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3633800>"
+    },
+    {
+      "id": "evt_133",
+      "label": "Goldman Sachs Group Inc. dropped from S&P Preferred Stock Index",
+      "type": "credit_downgrade",
+      "date": "2007-03-05",
+      "timestamp": 1173081600000,
+      "description": "Goldman Sachs Group Inc. dropped from S&P Preferred Stock Index",
+      "csvRow": "59164\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_83916687>"
+    },
+    {
+      "id": "evt_134",
+      "label": "Ortega Sells Stake In NH Hoteles To Morgan Stanley",
+      "type": "merger_acquisition",
+      "date": "2007-03-05",
+      "timestamp": 1173081600000,
+      "description": "Ortega Sells Stake In NH Hoteles To Morgan Stanley",
+      "csvRow": "67703\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3625504>"
+    },
+    {
+      "id": "evt_135",
+      "label": "Rick Sherlund Leaves Goldman Sachs Group Inc. to Become Managing Director of Galleon Group",
+      "type": "management_change",
+      "date": "2007-03-05",
+      "timestamp": 1173081600000,
+      "description": "Rick Sherlund Leaves Goldman Sachs Group Inc. to Become Managing Director of Galleon Group",
+      "csvRow": "59163\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3641562>"
+    },
+    {
+      "id": "evt_136",
+      "label": "AIG Announces Formation of AIG Homeland Security SolutionsSM; Names Robert Cruz to Head the Unit",
+      "type": "business_operations",
+      "date": "2007-03-07",
+      "timestamp": 1173254400000,
+      "description": "AIG Announces Formation of AIG Homeland Security SolutionsSM; Names Robert Cruz to Head the Unit",
+      "csvRow": "44021\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3651302>"
+    },
+    {
+      "id": "evt_137",
+      "label": "Judge Dismisses Sensational Lawsuit Against Morgan Stanley",
+      "type": "legal_issue",
+      "date": "2007-03-07",
+      "timestamp": 1173254400000,
+      "description": "Judge Dismisses Sensational Lawsuit Against Morgan Stanley",
+      "csvRow": "67704\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3652121>"
+    },
+    {
+      "id": "evt_138",
+      "label": "Morgan Stanley & Distributed Energy Forms Joint Venture to Finance Renewable Power Generation Projec",
+      "type": "strategic_partnership",
+      "date": "2007-03-07",
+      "timestamp": 1173254400000,
+      "description": "Morgan Stanley & Distributed Energy Forms Joint Venture to Finance Renewable Power Generation Projects",
+      "csvRow": "67705\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3650675>"
+    },
+    {
+      "id": "evt_139",
+      "label": "Allianz to Enter into Indian Banking Sector",
+      "type": "business_operations",
+      "date": "2007-03-07",
+      "timestamp": 1173254400000,
+      "description": "Allianz to Enter into Indian Banking Sector",
+      "csvRow": "71309\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3651499>"
+    },
+    {
+      "id": "evt_140",
+      "label": "Merrill Lynch & Co. acquired a minority stake in BATS Trading Inc.",
+      "type": "merger_acquisition",
+      "date": "2007-03-07",
+      "timestamp": 1173254400000,
+      "description": "Merrill Lynch & Co. acquired a minority stake in BATS Trading Inc.",
+      "csvRow": "1934\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3652258>"
+    },
+    {
+      "id": "evt_141",
+      "label": "Viacom Amends Employment Agreement of Michael D. Fricklas Executive Vice President, General Counsel",
+      "type": "management_change",
+      "date": "2007-03-08",
+      "timestamp": 1173340800000,
+      "description": "Viacom Amends Employment Agreement of Michael D. Fricklas Executive Vice President, General Counsel and Secretary",
+      "csvRow": "77342\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4536507>"
+    },
+    {
+      "id": "evt_142",
+      "label": "Bear Stearns Companies Inc. Appoints Jeffrey M. Farber as Senior Vice President - Finance",
+      "type": "management_change",
+      "date": "2007-03-08",
+      "timestamp": 1173340800000,
+      "description": "Bear Stearns Companies Inc. Appoints Jeffrey M. Farber as Senior Vice President - Finance",
+      "csvRow": "18547\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3658909>"
+    },
+    {
+      "id": "evt_143",
+      "label": "Changjiang Securities Co. Ltd. completed the acquisition of the remaining 33.30% stake in Changjiang",
+      "type": "merger_acquisition",
+      "date": "2007-03-08",
+      "timestamp": 1173340800000,
+      "description": "Changjiang Securities Co. Ltd. completed the acquisition of the remaining 33.30% stake in Changjiang BNP Paribas Peregrine Securities Co Ltd. from BNP Paribas.",
+      "csvRow": "73454\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3660700>"
+    },
+    {
+      "id": "evt_144",
+      "label": "Morgan Stanley, Citigroup Inc. and Actis Capital LLC entered into an agreement to acquire 6% stake i",
+      "type": "merger_acquisition",
+      "date": "2007-03-09",
+      "timestamp": 1173427200000,
+      "description": "Morgan Stanley, Citigroup Inc. and Actis Capital LLC entered into an agreement to acquire 6% stake in National Stock Exchange of India Ltd. from IDBI, SBI, SBI Capital Markets Limited, Corporation Bank, Union Bank of India, Bank of Baroda, Canara Bank and Oriental Bank of Commerce.",
+      "csvRow": "67707\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3659731>"
+    },
+    {
+      "id": "evt_145",
+      "label": "Alasdair Morrison to Retire as Morgan Stanley Asia Chairman on April 4, 2007",
+      "type": "management_change",
+      "date": "2007-03-09",
+      "timestamp": 1173427200000,
+      "description": "Alasdair Morrison to Retire as Morgan Stanley Asia Chairman on April 4, 2007",
+      "csvRow": "67706\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3686233>"
+    },
+    {
+      "id": "evt_146",
+      "label": "Trump Entertainment Hires Merrill Lynch & Co. Inc. to Help Assess its Explore Strategic Alternatives",
+      "type": "business_operations",
+      "date": "2007-03-12",
+      "timestamp": 1173682800000,
+      "description": "Trump Entertainment Hires Merrill Lynch & Co. Inc. to Help Assess its Explore Strategic Alternatives",
+      "csvRow": "1935\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3679355>"
+    },
+    {
+      "id": "evt_147",
+      "label": "Riverstone Holdings LLC, First Reserve Corporation and Lehman Brothers Co-Investment Partners signed",
+      "type": "capital_raising",
+      "date": "2007-03-12",
+      "timestamp": 1173682800000,
+      "description": "Riverstone Holdings LLC, First Reserve Corporation and Lehman Brothers Co-Investment Partners signed a definitive agreement to acquire Dresser, Inc.",
+      "csvRow": "13658\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3687624>"
+    },
+    {
+      "id": "evt_148",
+      "label": "Bear Stearns Companies Inc. Appoints Leonard Feder and Louis Lebedin as Co-Head of Prime Brokerage",
+      "type": "management_change",
+      "date": "2007-03-12",
+      "timestamp": 1173682800000,
+      "description": "Bear Stearns Companies Inc. Appoints Leonard Feder and Louis Lebedin as Co-Head of Prime Brokerage",
+      "csvRow": "18548\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3679533>"
+    },
+    {
+      "id": "evt_149",
+      "label": "Goldman Sachs Appoints Stephen Scherr as Head of its Americas Financing Group",
+      "type": "management_change",
+      "date": "2007-03-12",
+      "timestamp": 1173682800000,
+      "description": "Goldman Sachs Appoints Stephen Scherr as Head of its Americas Financing Group",
+      "csvRow": "59166\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3695070>"
+    },
+    {
+      "id": "evt_150",
+      "label": "Deutsche Telekom Mandates JPMorgan To Sell Ya.com",
+      "type": "restructuring",
+      "date": "2007-03-13",
+      "timestamp": 1173769200000,
+      "description": "Deutsche Telekom Mandates JPMorgan To Sell Ya.com",
+      "csvRow": "55946\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3688667>"
+    },
+    {
+      "id": "evt_151",
+      "label": "Morgan Stanley, Q1 2007 Earnings Call, Mar-21-2007",
+      "type": "earnings_announcement",
+      "date": "2007-03-13",
+      "timestamp": 1173769200000,
+      "description": "Morgan Stanley, Q1 2007 Earnings Call, Mar-21-2007",
+      "csvRow": "67709\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3688530>"
+    },
+    {
+      "id": "evt_152",
+      "label": "Goldman Sachs Group Inc. Announces Management Changes",
+      "type": "management_change",
+      "date": "2007-03-13",
+      "timestamp": 1173769200000,
+      "description": "Goldman Sachs Group Inc. Announces Management Changes",
+      "csvRow": "59167\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3695699>"
+    },
+    {
+      "id": "evt_153",
+      "label": "Portfolio Recovery Associates Inc. Appoints KPMG LLP in Place of PricewaterhouseCoopers, LLP as Audi",
+      "type": "business_operations",
+      "date": "2007-03-13",
+      "timestamp": 1173769200000,
+      "description": "Portfolio Recovery Associates Inc. Appoints KPMG LLP in Place of PricewaterhouseCoopers, LLP as Auditors",
+      "csvRow": "27043\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3703391>"
+    },
+    {
+      "id": "evt_154",
+      "label": "Severn Trent Names Citigroup and Morgan Stanley as Joint Corporate Brokers",
+      "type": "business_operations",
+      "date": "2007-03-13",
+      "timestamp": 1173769200000,
+      "description": "Severn Trent Names Citigroup and Morgan Stanley as Joint Corporate Brokers",
+      "csvRow": "67708\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3702461>"
+    },
+    {
+      "id": "evt_155",
+      "label": "Domtar Corp. Dismisses KPMG LLP and Appoints PricewaterhouseCoopers, LLP as Principal Accountant",
+      "type": "business_operations",
+      "date": "2007-03-13",
+      "timestamp": 1173769200000,
+      "description": "Domtar Corp. Dismisses KPMG LLP and Appoints PricewaterhouseCoopers, LLP as Principal Accountant",
+      "csvRow": "27046\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3933187>"
+    },
+    {
+      "id": "evt_156",
+      "label": "Colonia Real Estate and Merrill Lynch Invest in Joint Venture",
+      "type": "strategic_partnership",
+      "date": "2007-03-14",
+      "timestamp": 1173855600000,
+      "description": "Colonia Real Estate and Merrill Lynch Invest in Joint Venture",
+      "csvRow": "1937\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3704193>"
+    },
+    {
+      "id": "evt_157",
+      "label": "MidOcean Partners LP, through MidOcean Partners III, L.P., agreed to acquire Hunter Fan Company from",
+      "type": "merger_acquisition",
+      "date": "2007-03-14",
+      "timestamp": 1173855600000,
+      "description": "MidOcean Partners LP, through MidOcean Partners III, L.P., agreed to acquire Hunter Fan Company from Lehman Brothers Merchant Banking Group for $310 million.",
+      "csvRow": "10984\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_61431376>"
+    },
+    {
+      "id": "evt_158",
+      "label": "CitiCorp. Offers the American Express Gift Card",
+      "type": "business_operations",
+      "date": "2007-03-14",
+      "timestamp": 1173855600000,
+      "description": "CitiCorp. Offers the American Express Gift Card",
+      "csvRow": "19955\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3703011>"
+    },
+    {
+      "id": "evt_159",
+      "label": "Morgan Stanley to Report Q1, 2007 Results on March 22, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-03-14",
+      "timestamp": 1173855600000,
+      "description": "Morgan Stanley to Report Q1, 2007 Results on March 22, 2007",
+      "csvRow": "67710\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_64506810>"
+    },
+    {
+      "id": "evt_160",
+      "label": "Class Action Against American International Group Inc. Seeks Breach of Contract Damages",
+      "type": "legal_issue",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Class Action Against American International Group Inc. Seeks Breach of Contract Damages",
+      "csvRow": "44023\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3925101>"
+    },
+    {
+      "id": "evt_161",
+      "label": "Goldman Sachs Group Inc. Fined $2 Million by U.S. Market Regulators",
+      "type": "management_change",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Goldman Sachs Group Inc. Fined $2 Million by U.S. Market Regulators",
+      "csvRow": "59168\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4480779>"
+    },
+    {
+      "id": "evt_162",
+      "label": "Interactive Data Corp. Engages Ernst & Young LLP as Independent Registered Public Accounting Firm Re",
+      "type": "business_operations",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Interactive Data Corp. Engages Ernst & Young LLP as Independent Registered Public Accounting Firm Replacing PricewaterhouseCoopers",
+      "csvRow": "22322\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3749037>"
+    },
+    {
+      "id": "evt_163",
+      "label": "GE, Macquarie May Bid For RAMS Mortgage",
+      "type": "merger_acquisition",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "GE, Macquarie May Bid For RAMS Mortgage",
+      "csvRow": "13661\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3705001>"
+    },
+    {
+      "id": "evt_164",
+      "label": "Bear Stearns Companies Inc. Reports Earnings Results for the First Quarter Ended February 28, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Bear Stearns Companies Inc. Reports Earnings Results for the First Quarter Ended February 28, 2007",
+      "csvRow": "18549\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3705019>"
+    },
+    {
+      "id": "evt_165",
+      "label": "Morgan Stanley - Conference Presentation Call",
+      "type": "earnings_announcement",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Morgan Stanley - Conference Presentation Call",
+      "csvRow": "67711\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3713485>"
+    },
+    {
+      "id": "evt_166",
+      "label": "Parker Drilling Co. Appoints KPMG LLP Replaces PricewaterhouseCoopers, LLP as Independent Auditors",
+      "type": "business_operations",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Parker Drilling Co. Appoints KPMG LLP Replaces PricewaterhouseCoopers, LLP as Independent Auditors",
+      "csvRow": "27048\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3906692>"
+    },
+    {
+      "id": "evt_167",
+      "label": "Merrill Lynch & Co. Inc. Enters Russian Financial Markets",
+      "type": "business_operations",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Merrill Lynch & Co. Inc. Enters Russian Financial Markets",
+      "csvRow": "1938\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3721016>"
+    },
+    {
+      "id": "evt_168",
+      "label": "Goldman Sachs Eyes Stake In Sharekhan",
+      "type": "merger_acquisition",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Goldman Sachs Eyes Stake In Sharekhan",
+      "csvRow": "59169\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3696366>"
+    },
+    {
+      "id": "evt_169",
+      "label": "Host Hotels & Resorts Inc added to S&P 500 Sector Indices - Financial Sector Index",
+      "type": "credit_downgrade",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Host Hotels & Resorts Inc added to S&P 500 Sector Indices - Financial Sector Index",
+      "csvRow": "15915\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3702102>"
+    },
+    {
+      "id": "evt_170",
+      "label": "Bear Stearns On The Prowl For Troubled Mortgage Lenders",
+      "type": "merger_acquisition",
+      "date": "2007-03-15",
+      "timestamp": 1173942000000,
+      "description": "Bear Stearns On The Prowl For Troubled Mortgage Lenders",
+      "csvRow": "18550\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3705906>"
+    },
+    {
+      "id": "evt_171",
+      "label": "Merrill Lynch & Co. Inc., Annual General Meeting, Apr 27, 2007",
+      "type": "business_operations",
+      "date": "2007-03-16",
+      "timestamp": 1174028400000,
+      "description": "Merrill Lynch & Co. Inc., Annual General Meeting, Apr 27, 2007",
+      "csvRow": "1939\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3721540>"
+    },
+    {
+      "id": "evt_172",
+      "label": "The Bear Stearns Companies, LLC - Analyst/Investor Day",
+      "type": "earnings_announcement",
+      "date": "2007-03-16",
+      "timestamp": 1174028400000,
+      "description": "The Bear Stearns Companies, LLC - Analyst/Investor Day",
+      "csvRow": "18551\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3714085>"
+    },
+    {
+      "id": "evt_173",
+      "label": "Morgan Stanley Settles Gender Class-action Suit",
+      "type": "legal_issue",
+      "date": "2007-03-16",
+      "timestamp": 1174028400000,
+      "description": "Morgan Stanley Settles Gender Class-action Suit",
+      "csvRow": "67712\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3733861>"
+    },
+    {
+      "id": "evt_174",
+      "label": "Merrill Lynch Plans to Enter Japan's Wholesale Power Distribution Market",
+      "type": "business_operations",
+      "date": "2007-03-18",
+      "timestamp": 1174201200000,
+      "description": "Merrill Lynch Plans to Enter Japan's Wholesale Power Distribution Market",
+      "csvRow": "1940\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3807174>"
+    },
+    {
+      "id": "evt_175",
+      "label": "Goldman Sachs Named in Shareholder Suit over Employee Options",
+      "type": "legal_issue",
+      "date": "2007-03-19",
+      "timestamp": 1174287600000,
+      "description": "Goldman Sachs Named in Shareholder Suit over Employee Options",
+      "csvRow": "59171\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3741220>"
+    },
+    {
+      "id": "evt_176",
+      "label": "Eagle Investment Group Partners with Bear Stearns Companies Inc. to Launch Private Equity Strategic",
+      "type": "capital_raising",
+      "date": "2007-03-19",
+      "timestamp": 1174287600000,
+      "description": "Eagle Investment Group Partners with Bear Stearns Companies Inc. to Launch Private Equity Strategic Alliance in China",
+      "csvRow": "18552\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3741889>"
+    },
+    {
+      "id": "evt_177",
+      "label": "Laureate Education Inc. Appoints PricewaterhouseCoopers, LLP as Independent Registered Public Accoun",
+      "type": "business_operations",
+      "date": "2007-03-19",
+      "timestamp": 1174287600000,
+      "description": "Laureate Education Inc. Appoints PricewaterhouseCoopers, LLP as Independent Registered Public Accounting Firm Replacing Ernst & Young LLP",
+      "csvRow": "22326\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3916245>"
+    },
+    {
+      "id": "evt_178",
+      "label": "ABN AMRO; Barclays Confirm Exclusive Merger Talks",
+      "type": "merger_acquisition",
+      "date": "2007-03-19",
+      "timestamp": 1174287600000,
+      "description": "ABN AMRO; Barclays Confirm Exclusive Merger Talks",
+      "csvRow": "56873\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3734646>"
+    },
+    {
+      "id": "evt_179",
+      "label": "FedEx Announces Next-Business-Day Domestic Express Service in China",
+      "type": "business_operations",
+      "date": "2007-03-19",
+      "timestamp": 1174287600000,
+      "description": "FedEx Announces Next-Business-Day Domestic Express Service in China",
+      "csvRow": "15584\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644062>"
+    },
+    {
+      "id": "evt_180",
+      "label": "Bearingpoint Inc. Announces Resignation of Pricewaterhousecoopers and Appointment of Ernst & Young a",
+      "type": "management_change",
+      "date": "2007-03-19",
+      "timestamp": 1174287600000,
+      "description": "Bearingpoint Inc. Announces Resignation of Pricewaterhousecoopers and Appointment of Ernst & Young as Independent Accountant",
+      "csvRow": "22325\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3886464>"
+    },
+    {
+      "id": "evt_181",
+      "label": "Barclays To Confirm Merger Talks With ABN",
+      "type": "merger_acquisition",
+      "date": "2007-03-19",
+      "timestamp": 1174287600000,
+      "description": "Barclays To Confirm Merger Talks With ABN",
+      "csvRow": "56872\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3727917>"
+    },
+    {
+      "id": "evt_182",
+      "label": "SEC To Investigate Subprime Mortgage Companies",
+      "type": "management_change",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "SEC To Investigate Subprime Mortgage Companies",
+      "csvRow": "18553\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3759733>"
+    },
+    {
+      "id": "evt_183",
+      "label": "Japan Cablenet Limited agreed to acquire a 24.98% stake in Cable Television Tokyo Ltd. from Secom Co",
+      "type": "merger_acquisition",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "Japan Cablenet Limited agreed to acquire a 24.98% stake in Cable Television Tokyo Ltd. from Secom Co. Ltd., Itochu Corp., Mitsubishi Corp. and Marubeni Corp.",
+      "csvRow": "70578\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3790487>"
+    },
+    {
+      "id": "evt_184",
+      "label": "International Business Machines Corp. and Cisco Systems Inc. Unveil Emergency Data Center Service",
+      "type": "business_operations",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "International Business Machines Corp. and Cisco Systems Inc. Unveil Emergency Data Center Service",
+      "csvRow": "32625\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3766905>"
+    },
+    {
+      "id": "evt_185",
+      "label": "Morgan Stanley and State Capital Investment Corp. Agrees to Establish Scic Morgan Stanley Securities",
+      "type": "capital_raising",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "Morgan Stanley and State Capital Investment Corp. Agrees to Establish Scic Morgan Stanley Securities",
+      "csvRow": "67714\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3750716>"
+    },
+    {
+      "id": "evt_186",
+      "label": "Goldman Sachs Group Inc. Closes Fourth Private Equity Secondaries Fund with USD 3 Billion",
+      "type": "business_operations",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "Goldman Sachs Group Inc. Closes Fourth Private Equity Secondaries Fund with USD 3 Billion",
+      "csvRow": "59172\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3791224>"
+    },
+    {
+      "id": "evt_187",
+      "label": "Stifel, Morgan Stanley, Jefferies & Co, and Bear Stearns Co. Named in Suit Against New Century",
+      "type": "legal_issue",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "Stifel, Morgan Stanley, Jefferies & Co, and Bear Stearns Co. Named in Suit Against New Century",
+      "csvRow": "18554\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3767844>"
+    },
+    {
+      "id": "evt_188",
+      "label": "Prudential, AIG Bid Talks Renewed",
+      "type": "merger_acquisition",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "Prudential, AIG Bid Talks Renewed",
+      "csvRow": "44024\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3742390>"
+    },
+    {
+      "id": "evt_189",
+      "label": "Host Hotels & Resorts, Inc.(NYSE:HST) added to S&P 500 Sector Indices - Financials Sector Index",
+      "type": "credit_downgrade",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "Host Hotels & Resorts, Inc.(NYSE:HST) added to S&P 500 Sector Indices - Financials Sector Index",
+      "csvRow": "15918\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_82118650>"
+    },
+    {
+      "id": "evt_190",
+      "label": "Morgan Stanley Promotes Shane Zhang to Head of China Investment Banking",
+      "type": "capital_raising",
+      "date": "2007-03-20",
+      "timestamp": 1174374000000,
+      "description": "Morgan Stanley Promotes Shane Zhang to Head of China Investment Banking",
+      "csvRow": "67713\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3750579>"
+    },
+    {
+      "id": "evt_191",
+      "label": "Universal Health Services Engages PricewaterhouseCoopers as Auditors, Replacing KPMG LLP",
+      "type": "business_operations",
+      "date": "2007-03-21",
+      "timestamp": 1174460400000,
+      "description": "Universal Health Services Engages PricewaterhouseCoopers as Auditors, Replacing KPMG LLP",
+      "csvRow": "27060\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3860872>"
+    },
+    {
+      "id": "evt_192",
+      "label": "Court Throws Out Verdict Against Morgan Stanley for Perelman",
+      "type": "legal_issue",
+      "date": "2007-03-21",
+      "timestamp": 1174460400000,
+      "description": "Court Throws Out Verdict Against Morgan Stanley for Perelman",
+      "csvRow": "67716\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3766702>"
+    },
+    {
+      "id": "evt_193",
+      "label": "Morgan Stanley Reports Earnings Results for the First Quarter Ended Feb. 28, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-03-21",
+      "timestamp": 1174460400000,
+      "description": "Morgan Stanley Reports Earnings Results for the First Quarter Ended Feb. 28, 2007",
+      "csvRow": "67715\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3750810>"
+    },
+    {
+      "id": "evt_194",
+      "label": "International Business Machines Corp. Launches Developers' Resources in Second Life",
+      "type": "business_operations",
+      "date": "2007-03-21",
+      "timestamp": 1174460400000,
+      "description": "International Business Machines Corp. Launches Developers' Resources in Second Life",
+      "csvRow": "32631\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3775543>"
+    },
+    {
+      "id": "evt_195",
+      "label": "Morgan Stanley Wins Reversal of $1.57 Billion Jury Award",
+      "type": "legal_issue",
+      "date": "2007-03-22",
+      "timestamp": 1174546800000,
+      "description": "Morgan Stanley Wins Reversal of $1.57 Billion Jury Award",
+      "csvRow": "67717\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3767914>"
+    },
+    {
+      "id": "evt_196",
+      "label": "ING Group NV Hires Investment Banks Goldman Sachs and JP Morgan to Act as Advisors",
+      "type": "capital_raising",
+      "date": "2007-03-22",
+      "timestamp": 1174546800000,
+      "description": "ING Group NV Hires Investment Banks Goldman Sachs and JP Morgan to Act as Advisors",
+      "csvRow": "59173\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3817708>"
+    },
+    {
+      "id": "evt_197",
+      "label": "IBM Corp. and Cisco Systems Inc. Partners to Provide Emergency Crisis Response as an End-to-end Mana",
+      "type": "strategic_partnership",
+      "date": "2007-03-22",
+      "timestamp": 1174546800000,
+      "description": "IBM Corp. and Cisco Systems Inc. Partners to Provide Emergency Crisis Response as an End-to-end Managed Service",
+      "csvRow": "32634\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3776163>"
+    },
+    {
+      "id": "evt_198",
+      "label": "American International Group, Inc. - Conference Presentation Call",
+      "type": "earnings_announcement",
+      "date": "2007-03-23",
+      "timestamp": 1174633200000,
+      "description": "American International Group, Inc. - Conference Presentation Call",
+      "csvRow": "44025\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3776211>"
+    },
+    {
+      "id": "evt_199",
+      "label": "Morgan Stanley to Enter New Businesses in India",
+      "type": "business_operations",
+      "date": "2007-03-23",
+      "timestamp": 1174633200000,
+      "description": "Morgan Stanley to Enter New Businesses in India",
+      "csvRow": "67718\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3776015>"
+    },
+    {
+      "id": "evt_200",
+      "label": "Morgan Stanley Announces Amendments to Articles of Incorporation or Bylaws",
+      "type": "business_operations",
+      "date": "2007-03-23",
+      "timestamp": 1174633200000,
+      "description": "Morgan Stanley Announces Amendments to Articles of Incorporation or Bylaws",
+      "csvRow": "67719\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3809891>"
+    },
+    {
+      "id": "evt_201",
+      "label": "ING May Spoil Barclays-ABN Merger Plan",
+      "type": "merger_acquisition",
+      "date": "2007-03-23",
+      "timestamp": 1174633200000,
+      "description": "ING May Spoil Barclays-ABN Merger Plan",
+      "csvRow": "56877\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3760488>"
+    },
+    {
+      "id": "evt_202",
+      "label": "Openwave Systems Hires Merrill Lynch to Advise It on A Number of Options",
+      "type": "business_operations",
+      "date": "2007-03-23",
+      "timestamp": 1174633200000,
+      "description": "Openwave Systems Hires Merrill Lynch to Advise It on A Number of Options",
+      "csvRow": "1945\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3768337>"
+    },
+    {
+      "id": "evt_203",
+      "label": "GE Commercial Finance made an offer to acquire Sanyo Electric Credit from Goldman Sachs Group Inc. (",
+      "type": "merger_acquisition",
+      "date": "2007-03-23",
+      "timestamp": 1174633200000,
+      "description": "GE Commercial Finance made an offer to acquire Sanyo Electric Credit from Goldman Sachs Group Inc. (NYSE: GS) and Sanyo Electric Co. Ltd. (TSE: 6764) for \u00a5135.21 billion.",
+      "csvRow": "59174\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3775528>"
+    },
+    {
+      "id": "evt_204",
+      "label": "Barclays Shareholders Express Doubts Over Proposed ABN AMRO Merger",
+      "type": "merger_acquisition",
+      "date": "2007-03-25",
+      "timestamp": 1174806000000,
+      "description": "Barclays Shareholders Express Doubts Over Proposed ABN AMRO Merger",
+      "csvRow": "56878\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3784962>"
+    },
+    {
+      "id": "evt_205",
+      "label": "Genstar Capital Names Edmund M. Carpenter as Operating Partner",
+      "type": "management_change",
+      "date": "2007-03-26",
+      "timestamp": 1174892400000,
+      "description": "Genstar Capital Names Edmund M. Carpenter as Operating Partner",
+      "csvRow": "241\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3800400>"
+    },
+    {
+      "id": "evt_206",
+      "label": "IBM Opens Business to Support Mortgage Industry",
+      "type": "business_operations",
+      "date": "2007-03-26",
+      "timestamp": 1174892400000,
+      "description": "IBM Opens Business to Support Mortgage Industry",
+      "csvRow": "32637\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3818307>"
+    },
+    {
+      "id": "evt_207",
+      "label": "Energias de Portugal S.A. signed an agreement to acquire Horizon Wind Energy LLC from Goldman Sachs",
+      "type": "merger_acquisition",
+      "date": "2007-03-27",
+      "timestamp": 1174978800000,
+      "description": "Energias de Portugal S.A. signed an agreement to acquire Horizon Wind Energy LLC from Goldman Sachs Group Inc. for approximately $2.33 billion.",
+      "csvRow": "59176\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3807812>"
+    },
+    {
+      "id": "evt_208",
+      "label": "Bear Stearns Companies Inc., Annual General Meeting, Apr 18, 2007",
+      "type": "business_operations",
+      "date": "2007-03-27",
+      "timestamp": 1174978800000,
+      "description": "Bear Stearns Companies Inc., Annual General Meeting, Apr 18, 2007",
+      "csvRow": "18555\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3807232>"
+    },
+    {
+      "id": "evt_209",
+      "label": "Convergys Corp., Microsoft Corp., QinetiQ Ltd. and Tibco to Participate in the Second Phase of Produ",
+      "type": "strategic_partnership",
+      "date": "2007-03-27",
+      "timestamp": 1174978800000,
+      "description": "Convergys Corp., Microsoft Corp., QinetiQ Ltd. and Tibco to Participate in the Second Phase of Product and Service Assembly Initiative",
+      "csvRow": "7385\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3801229>"
+    },
+    {
+      "id": "evt_210",
+      "label": "IBM Mortgage Unit Sets Up in Charlotte to Provide Loan Processing Services",
+      "type": "business_operations",
+      "date": "2007-03-27",
+      "timestamp": 1174978800000,
+      "description": "IBM Mortgage Unit Sets Up in Charlotte to Provide Loan Processing Services",
+      "csvRow": "32642\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3810049>"
+    },
+    {
+      "id": "evt_211",
+      "label": "Jonathan Firester Joins Bear Stearns Corporate Strategy Team",
+      "type": "management_change",
+      "date": "2007-03-28",
+      "timestamp": 1175065200000,
+      "description": "Jonathan Firester Joins Bear Stearns Corporate Strategy Team",
+      "csvRow": "18556\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3809304>"
+    },
+    {
+      "id": "evt_212",
+      "label": "Morgan Stanley In Pole Position To Acquire Kensington",
+      "type": "merger_acquisition",
+      "date": "2007-03-28",
+      "timestamp": 1175065200000,
+      "description": "Morgan Stanley In Pole Position To Acquire Kensington",
+      "csvRow": "67720\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3819226>"
+    },
+    {
+      "id": "evt_213",
+      "label": "Barclays Mulls Terms Of ABN Takeover",
+      "type": "merger_acquisition",
+      "date": "2007-03-28",
+      "timestamp": 1175065200000,
+      "description": "Barclays Mulls Terms Of ABN Takeover",
+      "csvRow": "56880\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3801156>"
+    },
+    {
+      "id": "evt_214",
+      "label": "Gome Chairman Forms Strategic Alliance with Bear Stearns",
+      "type": "strategic_partnership",
+      "date": "2007-03-28",
+      "timestamp": 1175065200000,
+      "description": "Gome Chairman Forms Strategic Alliance with Bear Stearns",
+      "csvRow": "18557\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4350011>"
+    },
+    {
+      "id": "evt_215",
+      "label": "Agere Systems Inc. Sues Microsoft Corp. for Allegedly Misappropriating Trade Secrets",
+      "type": "legal_issue",
+      "date": "2007-03-29",
+      "timestamp": 1175151600000,
+      "description": "Agere Systems Inc. Sues Microsoft Corp. for Allegedly Misappropriating Trade Secrets",
+      "csvRow": "7394\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3825845>"
+    },
+    {
+      "id": "evt_216",
+      "label": "Governor Rendell Selects Morgan Stanley & Co. as Financial Adviser for Transportation Funding Option",
+      "type": "capital_raising",
+      "date": "2007-03-29",
+      "timestamp": 1175151600000,
+      "description": "Governor Rendell Selects Morgan Stanley & Co. as Financial Adviser for Transportation Funding Options",
+      "csvRow": "67721\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3825243>"
+    },
+    {
+      "id": "evt_217",
+      "label": "Tong Cong ty Du lich Sai Gon Signs Global Insurance Deal with American International Group, Inc",
+      "type": "business_operations",
+      "date": "2007-03-29",
+      "timestamp": 1175151600000,
+      "description": "Tong Cong ty Du lich Sai Gon Signs Global Insurance Deal with American International Group, Inc",
+      "csvRow": "44026\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3826512>"
+    },
+    {
+      "id": "evt_218",
+      "label": "Morgan Stanley - Shareholder/Analyst Call",
+      "type": "earnings_announcement",
+      "date": "2007-03-30",
+      "timestamp": 1175238000000,
+      "description": "Morgan Stanley - Shareholder/Analyst Call",
+      "csvRow": "67723\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3826868>"
+    },
+    {
+      "id": "evt_219",
+      "label": "Goldman Sachs Group Inc. has completed a Fixed-Income Offering in the amount of $101.11 million.",
+      "type": "capital_raising",
+      "date": "2007-03-30",
+      "timestamp": 1175238000000,
+      "description": "Goldman Sachs Group Inc. has completed a Fixed-Income Offering in the amount of $101.11 million.",
+      "csvRow": "59177\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_5089610>"
+    },
+    {
+      "id": "evt_220",
+      "label": "Pfizer Restructuring to Cost 160 Local Jobs",
+      "type": "restructuring",
+      "date": "2007-03-30",
+      "timestamp": 1175238000000,
+      "description": "Pfizer Restructuring to Cost 160 Local Jobs",
+      "csvRow": "38464\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3887715>"
+    },
+    {
+      "id": "evt_221",
+      "label": "AT&T Inc., Verizon Communications and Qwest Communications International Wins $20 Billion in Federal",
+      "type": "business_operations",
+      "date": "2007-03-30",
+      "timestamp": 1175238000000,
+      "description": "AT&T Inc., Verizon Communications and Qwest Communications International Wins $20 Billion in Federal Work",
+      "csvRow": "65613\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3860076>"
+    },
+    {
+      "id": "evt_222",
+      "label": "TravelCenters of America LLC Replaces Pricewaterhousecoopers, LLP with Ernst & Young LLP as Independ",
+      "type": "business_operations",
+      "date": "2007-03-30",
+      "timestamp": 1175238000000,
+      "description": "TravelCenters of America LLC Replaces Pricewaterhousecoopers, LLP with Ernst & Young LLP as Independent Registered Public Accounting Firm",
+      "csvRow": "22340\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3916190>"
+    },
+    {
+      "id": "evt_223",
+      "label": "Orix Corp. (8591), Nomura Holdings Inc. (8604) and Nomura Securities Co. acquired 12% stake in JCB C",
+      "type": "merger_acquisition",
+      "date": "2007-03-31",
+      "timestamp": 1175324400000,
+      "description": "Orix Corp. (8591), Nomura Holdings Inc. (8604) and Nomura Securities Co. acquired 12% stake in JCB Co. from Resona Holdings Inc. (8308).",
+      "csvRow": "76597\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_6142460>"
+    },
+    {
+      "id": "evt_224",
+      "label": "AIG Arm In Talks To Buy 15% In RMZ",
+      "type": "merger_acquisition",
+      "date": "2007-04-02",
+      "timestamp": 1175497200000,
+      "description": "AIG Arm In Talks To Buy 15% In RMZ",
+      "csvRow": "44027\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3840262>"
+    },
+    {
+      "id": "evt_225",
+      "label": "AMCORE Financial Inc. Issues $51,547,000 of Junior Subordinated Debt Securities",
+      "type": "capital_raising",
+      "date": "2007-04-02",
+      "timestamp": 1175497200000,
+      "description": "AMCORE Financial Inc. Issues $51,547,000 of Junior Subordinated Debt Securities",
+      "csvRow": "42904\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3916197>"
+    },
+    {
+      "id": "evt_226",
+      "label": "ArcLight Capital Partners, LLC, Kelso & Company and Lehman Brothers Holdings, Inc. signed an agreeme",
+      "type": "merger_acquisition",
+      "date": "2007-04-03",
+      "timestamp": 1175583600000,
+      "description": "ArcLight Capital Partners, LLC, Kelso & Company and Lehman Brothers Holdings, Inc. signed an agreement to acquire 62.9% stake in Buckeye GP Holdings, LP from Carlyle/Riverstone Global Energy and Power Fund II, LP, certain members of the management and other limited partners.",
+      "csvRow": "473\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_5929487>"
+    },
+    {
+      "id": "evt_227",
+      "label": "AvtoVAZ Announces Discontinue of Relations with Global Auditor Pricewaterhousecoopers",
+      "type": "business_operations",
+      "date": "2007-04-04",
+      "timestamp": 1175670000000,
+      "description": "AvtoVAZ Announces Discontinue of Relations with Global Auditor Pricewaterhousecoopers",
+      "csvRow": "22343\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3950164>"
+    },
+    {
+      "id": "evt_228",
+      "label": "Update to The Goldman Sachs Group, Inc.\u0092s Equity Buyback on December 12, 2006",
+      "type": "stock_movement",
+      "date": "2007-04-04",
+      "timestamp": 1175670000000,
+      "description": "Update to The Goldman Sachs Group, Inc.\u0092s Equity Buyback on December 12, 2006",
+      "csvRow": "59179\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3364001>"
+    },
+    {
+      "id": "evt_229",
+      "label": "Merrill Lynch & Co. Inc. to Appoint Tsunehiro Nakayama as Chairman of Japanese Securities Business",
+      "type": "management_change",
+      "date": "2007-04-04",
+      "timestamp": 1175670000000,
+      "description": "Merrill Lynch & Co. Inc. to Appoint Tsunehiro Nakayama as Chairman of Japanese Securities Business",
+      "csvRow": "1947\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3877746>"
+    },
+    {
+      "id": "evt_230",
+      "label": "Nissan to Launch Second Strategic Vehicle",
+      "type": "business_operations",
+      "date": "2007-04-05",
+      "timestamp": 1175756400000,
+      "description": "Nissan to Launch Second Strategic Vehicle",
+      "csvRow": "48289\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3886138>"
+    },
+    {
+      "id": "evt_231",
+      "label": "Fedex Express Announces Next-Business-Day Domestic Express Service in China",
+      "type": "business_operations",
+      "date": "2007-04-05",
+      "timestamp": 1175756400000,
+      "description": "Fedex Express Announces Next-Business-Day Domestic Express Service in China",
+      "csvRow": "15585\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644065>"
+    },
+    {
+      "id": "evt_232",
+      "label": "BofA Merrill Lynch, Q1 2007 Earnings Call, Apr-19-2007",
+      "type": "earnings_announcement",
+      "date": "2007-04-05",
+      "timestamp": 1175756400000,
+      "description": "BofA Merrill Lynch, Q1 2007 Earnings Call, Apr-19-2007",
+      "csvRow": "1948\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3879472>"
+    },
+    {
+      "id": "evt_233",
+      "label": "Merrill Lynch & Co. Inc. to Report Q1, 2007 Results on April 19, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-04-05",
+      "timestamp": 1175756400000,
+      "description": "Merrill Lynch & Co. Inc. to Report Q1, 2007 Results on April 19, 2007",
+      "csvRow": "1949\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_64136643>"
+    },
+    {
+      "id": "evt_234",
+      "label": "Update to Morgan Stanley\u0092s Equity Buyback on March 21, 2007",
+      "type": "stock_movement",
+      "date": "2007-04-06",
+      "timestamp": 1175842800000,
+      "description": "Update to Morgan Stanley\u0092s Equity Buyback on March 21, 2007",
+      "csvRow": "67724\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3751652>"
+    },
+    {
+      "id": "evt_235",
+      "label": "American International Group, Inc., Annual General Meeting, May 16, 2007",
+      "type": "business_operations",
+      "date": "2007-04-06",
+      "timestamp": 1175842800000,
+      "description": "American International Group, Inc., Annual General Meeting, May 16, 2007",
+      "csvRow": "44029\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3887597>"
+    },
+    {
+      "id": "evt_236",
+      "label": "FedEx Express entered into a definitive agreement to acquire Flying-Cargo Hungary Kft from Flying Ca",
+      "type": "merger_acquisition",
+      "date": "2007-04-06",
+      "timestamp": 1175842800000,
+      "description": "FedEx Express entered into a definitive agreement to acquire Flying-Cargo Hungary Kft from Flying Cargo Group.",
+      "csvRow": "15586\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4640178>"
+    },
+    {
+      "id": "evt_237",
+      "label": "Morgan Stanley To Walk Out From Kensington Takeover",
+      "type": "merger_acquisition",
+      "date": "2007-04-08",
+      "timestamp": 1176015600000,
+      "description": "Morgan Stanley To Walk Out From Kensington Takeover",
+      "csvRow": "67725\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3905850>"
+    },
+    {
+      "id": "evt_238",
+      "label": "Merrill Lynch Announces Joining of Alane S. Siem as Director of Western Pennsylvania Division",
+      "type": "management_change",
+      "date": "2007-04-08",
+      "timestamp": 1176015600000,
+      "description": "Merrill Lynch Announces Joining of Alane S. Siem as Director of Western Pennsylvania Division",
+      "csvRow": "1950\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3907918>"
+    },
+    {
+      "id": "evt_239",
+      "label": "Merrill Lynch & Co. Inc. Announces Executive Appointments",
+      "type": "management_change",
+      "date": "2007-04-08",
+      "timestamp": 1176015600000,
+      "description": "Merrill Lynch & Co. Inc. Announces Executive Appointments",
+      "csvRow": "1951\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3907926>"
+    },
+    {
+      "id": "evt_240",
+      "label": "Newtek Business Services Enters Into Web Linking Agreement with AIG Small Business",
+      "type": "business_operations",
+      "date": "2007-04-09",
+      "timestamp": 1176102000000,
+      "description": "Newtek Business Services Enters Into Web Linking Agreement with AIG Small Business",
+      "csvRow": "44030\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3907969>"
+    },
+    {
+      "id": "evt_241",
+      "label": "Propex Inc. Replaces Ernst & Young with PricewaterhouseCoopers as Auditor",
+      "type": "business_operations",
+      "date": "2007-04-10",
+      "timestamp": 1176188400000,
+      "description": "Propex Inc. Replaces Ernst & Young with PricewaterhouseCoopers as Auditor",
+      "csvRow": "22347\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3923244>"
+    },
+    {
+      "id": "evt_242",
+      "label": "Morgan Stanley Hunts For Hedge Fund Acquisitions",
+      "type": "merger_acquisition",
+      "date": "2007-04-10",
+      "timestamp": 1176188400000,
+      "description": "Morgan Stanley Hunts For Hedge Fund Acquisitions",
+      "csvRow": "67726\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3915554>"
+    },
+    {
+      "id": "evt_243",
+      "label": "Microsoft Corp. Releases Critical Security Updates",
+      "type": "business_operations",
+      "date": "2007-04-10",
+      "timestamp": 1176188400000,
+      "description": "Microsoft Corp. Releases Critical Security Updates",
+      "csvRow": "7417\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3924834>"
+    },
+    {
+      "id": "evt_244",
+      "label": "Shanghai Real Estate Ltd. Announces Resignation of PricewaterhouseCoopers and Appointment of Ernst &",
+      "type": "management_change",
+      "date": "2007-04-11",
+      "timestamp": 1176274800000,
+      "description": "Shanghai Real Estate Ltd. Announces Resignation of PricewaterhouseCoopers and Appointment of Ernst & Young LLP as Auditors",
+      "csvRow": "22348\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3932902>"
+    },
+    {
+      "id": "evt_245",
+      "label": "Goldman Sachs Group Inc. Promotes Steve Strongin to Global Head of Investment Research",
+      "type": "capital_raising",
+      "date": "2007-04-11",
+      "timestamp": 1176274800000,
+      "description": "Goldman Sachs Group Inc. Promotes Steve Strongin to Global Head of Investment Research",
+      "csvRow": "59180\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3925283>"
+    },
+    {
+      "id": "evt_246",
+      "label": "German Union Stages Warning Strikes over Deutsche Telekom Restructuring Plan",
+      "type": "management_change",
+      "date": "2007-04-11",
+      "timestamp": 1176274800000,
+      "description": "German Union Stages Warning Strikes over Deutsche Telekom Restructuring Plan",
+      "csvRow": "55967\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3924591>"
+    },
+    {
+      "id": "evt_247",
+      "label": "FedEx Pays $53.5 Million to Settle Class-Action Racial Discrimination Lawsuit",
+      "type": "legal_issue",
+      "date": "2007-04-11",
+      "timestamp": 1176274800000,
+      "description": "FedEx Pays $53.5 Million to Settle Class-Action Racial Discrimination Lawsuit",
+      "csvRow": "15587\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4644066>"
+    },
+    {
+      "id": "evt_248",
+      "label": "Morgan Stanley Hires Viveka Ekberg to Head Up its Nordic Business Arm",
+      "type": "management_change",
+      "date": "2007-04-11",
+      "timestamp": 1176274800000,
+      "description": "Morgan Stanley Hires Viveka Ekberg to Head Up its Nordic Business Arm",
+      "csvRow": "67727\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3933049>"
+    },
+    {
+      "id": "evt_249",
+      "label": "Richard Bilotti Leaves Morgan Stanley as Managing Director",
+      "type": "management_change",
+      "date": "2007-04-12",
+      "timestamp": 1176361200000,
+      "description": "Richard Bilotti Leaves Morgan Stanley as Managing Director",
+      "csvRow": "67728\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3941942>"
+    },
+    {
+      "id": "evt_250",
+      "label": "Morgan Stanley To Buy ANA Hotels for $2.4 Billion",
+      "type": "merger_acquisition",
+      "date": "2007-04-13",
+      "timestamp": 1176447600000,
+      "description": "Morgan Stanley To Buy ANA Hotels for $2.4 Billion",
+      "csvRow": "67729\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3934228>"
+    },
+    {
+      "id": "evt_251",
+      "label": "ABN Amro Holding NV Engages Goldman Sachs Group Inc. as Adviser",
+      "type": "business_operations",
+      "date": "2007-04-13",
+      "timestamp": 1176447600000,
+      "description": "ABN Amro Holding NV Engages Goldman Sachs Group Inc. as Adviser",
+      "csvRow": "59183\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3949723>"
+    },
+    {
+      "id": "evt_252",
+      "label": "Atlas Air Worldwide Holdings Engages Pricewaterhousecoopers, LLP as Independent Accountant in Place",
+      "type": "business_operations",
+      "date": "2007-04-16",
+      "timestamp": 1176706800000,
+      "description": "Atlas Air Worldwide Holdings Engages Pricewaterhousecoopers, LLP as Independent Accountant in Place of Ernst & Young LLP",
+      "csvRow": "22354\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3973300>"
+    },
+    {
+      "id": "evt_253",
+      "label": "SEC SERVIZI Selects Data Warehouse Solution Based on Microsoft SQL Server 2005",
+      "type": "business_operations",
+      "date": "2007-04-16",
+      "timestamp": 1176706800000,
+      "description": "SEC SERVIZI Selects Data Warehouse Solution Based on Microsoft SQL Server 2005",
+      "csvRow": "7431\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3964416>"
+    },
+    {
+      "id": "evt_254",
+      "label": "Morgan Stanley Announces Board Changes",
+      "type": "management_change",
+      "date": "2007-04-16",
+      "timestamp": 1176706800000,
+      "description": "Morgan Stanley Announces Board Changes",
+      "csvRow": "67730\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3971266>"
+    },
+    {
+      "id": "evt_255",
+      "label": "MidOcean Partners LP, through MidOcean Partners III, L.P., completed the acquisition of Hunter Fan C",
+      "type": "merger_acquisition",
+      "date": "2007-04-16",
+      "timestamp": 1176706800000,
+      "description": "MidOcean Partners LP, through MidOcean Partners III, L.P., completed the acquisition of Hunter Fan Company from Lehman Brothers Merchant Banking Group.",
+      "csvRow": "10989\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_61431416>"
+    },
+    {
+      "id": "evt_256",
+      "label": "Microsoft Opens its Second Development Center in Israel",
+      "type": "business_operations",
+      "date": "2007-04-17",
+      "timestamp": 1176793200000,
+      "description": "Microsoft Opens its Second Development Center in Israel",
+      "csvRow": "7436\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3980514>"
+    },
+    {
+      "id": "evt_257",
+      "label": "Domtar Corp. Replaces KPMG LLP by PricewaterhouseCoopers LLC as Principal Accountant",
+      "type": "business_operations",
+      "date": "2007-04-18",
+      "timestamp": 1176879600000,
+      "description": "Domtar Corp. Replaces KPMG LLP by PricewaterhouseCoopers LLC as Principal Accountant",
+      "csvRow": "27085\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_5568874>"
+    },
+    {
+      "id": "evt_258",
+      "label": "Boston Life Sciences Inc. Dismisses PricewaterhouseCoopers LLP and Appoints McGladrey & Pullen, L.L.",
+      "type": "business_operations",
+      "date": "2007-04-18",
+      "timestamp": 1176879600000,
+      "description": "Boston Life Sciences Inc. Dismisses PricewaterhouseCoopers LLP and Appoints McGladrey & Pullen, L.L.P. as Auditors",
+      "csvRow": "25153\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3989094>"
+    },
+    {
+      "id": "evt_259",
+      "label": "Sientra Inc. announced it has received $85 million in funding from Clarus Ventures, Goldman Sachs Gr",
+      "type": "capital_raising",
+      "date": "2007-04-18",
+      "timestamp": 1176879600000,
+      "description": "Sientra Inc. announced it has received $85 million in funding from Clarus Ventures, Goldman Sachs Group, Merchant Banking Division, OrbiMed Advisors, L.L.C., and Teachers Insurance and Annuity Association College Retirement Equities Fund.",
+      "csvRow": "42627\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3989175>"
+    },
+    {
+      "id": "evt_260",
+      "label": "JPMorgan Chase Treasury Services signed a definitive agreement to acquire Xign Corporation.",
+      "type": "merger_acquisition",
+      "date": "2007-04-18",
+      "timestamp": 1176879600000,
+      "description": "JPMorgan Chase Treasury Services signed a definitive agreement to acquire Xign Corporation.",
+      "csvRow": "17259\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3988915>"
+    },
+    {
+      "id": "evt_261",
+      "label": "Merrill Lynch & Co. Inc. Appoints Mark Matthews as Chief Asia Strategist",
+      "type": "management_change",
+      "date": "2007-04-18",
+      "timestamp": 1176879600000,
+      "description": "Merrill Lynch & Co. Inc. Appoints Mark Matthews as Chief Asia Strategist",
+      "csvRow": "1955\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3991766>"
+    },
+    {
+      "id": "evt_262",
+      "label": "Morgan Stanley Appoints Blair Pickerell as Managing Director and Head of Morgan Stanley Investment M",
+      "type": "capital_raising",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Morgan Stanley Appoints Blair Pickerell as Managing Director and Head of Morgan Stanley Investment Management for Asia",
+      "csvRow": "67732\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3999446>"
+    },
+    {
+      "id": "evt_263",
+      "label": "Barclays Said To Find Allies In Bid For ABN AMRO",
+      "type": "merger_acquisition",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Barclays Said To Find Allies In Bid For ABN AMRO",
+      "csvRow": "73478\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3982306>"
+    },
+    {
+      "id": "evt_264",
+      "label": "PSA Peugeot Citroen to Close Ryton Plant with the Loss of 2,300 Jobs",
+      "type": "earnings_loss",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "PSA Peugeot Citroen to Close Ryton Plant with the Loss of 2,300 Jobs",
+      "csvRow": "72599\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3999432>"
+    },
+    {
+      "id": "evt_265",
+      "label": "Barclays Gets Backing From BOA; BNP Paribas For ABN Bid",
+      "type": "merger_acquisition",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Barclays Gets Backing From BOA; BNP Paribas For ABN Bid",
+      "csvRow": "73479\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3982564>"
+    },
+    {
+      "id": "evt_266",
+      "label": "Merrill Lynch & Co. Inc. Reports Earnings Results for the First Quarter of 2007",
+      "type": "earnings_announcement",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Merrill Lynch & Co. Inc. Reports Earnings Results for the First Quarter of 2007",
+      "csvRow": "1956\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3990247>"
+    },
+    {
+      "id": "evt_267",
+      "label": "Barclays Unlikely To Form Alliance With BBVA In ABN Takeover",
+      "type": "merger_acquisition",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Barclays Unlikely To Form Alliance With BBVA In ABN Takeover",
+      "csvRow": "73480\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3998028>"
+    },
+    {
+      "id": "evt_268",
+      "label": "Peabody Appoints Morgan Stanley To Assist In The Strategic Review Of Its Virginia And Kentucky Opera",
+      "type": "restructuring",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Peabody Appoints Morgan Stanley To Assist In The Strategic Review Of Its Virginia And Kentucky Operations",
+      "csvRow": "67731\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3991942>"
+    },
+    {
+      "id": "evt_269",
+      "label": "Update to Merrill Lynch & Co. Inc\u0092s Equity Buyback on March 30, 2007",
+      "type": "stock_movement",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Update to Merrill Lynch & Co. Inc\u0092s Equity Buyback on March 30, 2007",
+      "csvRow": "1957\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3997826>"
+    },
+    {
+      "id": "evt_270",
+      "label": "Morgan Stanley To Offer TWD 2.5 \u0096 TWD 3 Billion For Polaris International",
+      "type": "merger_acquisition",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Morgan Stanley To Offer TWD 2.5 \u0096 TWD 3 Billion For Polaris International",
+      "csvRow": "67733\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3982565>"
+    },
+    {
+      "id": "evt_271",
+      "label": "Goldman Sachs, Others Interested In ASE After Carlyle Drops Bid",
+      "type": "merger_acquisition",
+      "date": "2007-04-19",
+      "timestamp": 1176966000000,
+      "description": "Goldman Sachs, Others Interested In ASE After Carlyle Drops Bid",
+      "csvRow": "59184\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_3981497>"
+    },
+    {
+      "id": "evt_272",
+      "label": "Salix Engages PricewaterhouseCoopers, Replacing Ernst & Young as Registered Public Accounting Firm",
+      "type": "business_operations",
+      "date": "2007-04-20",
+      "timestamp": 1177052400000,
+      "description": "Salix Engages PricewaterhouseCoopers, Replacing Ernst & Young as Registered Public Accounting Firm",
+      "csvRow": "22365\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4000749>"
+    },
+    {
+      "id": "evt_273",
+      "label": "Merrill Lynch & Co. Inc. (NYSE:MER) acquired an unknown stake in Hild Asset Limited.",
+      "type": "merger_acquisition",
+      "date": "2007-04-20",
+      "timestamp": 1177052400000,
+      "description": "Merrill Lynch & Co. Inc. (NYSE:MER) acquired an unknown stake in Hild Asset Limited.",
+      "csvRow": "1958\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4055659>"
+    },
+    {
+      "id": "evt_274",
+      "label": "Merrill Lynch & Co. Announces Appointment of Assistant Vice Presidents",
+      "type": "management_change",
+      "date": "2007-04-22",
+      "timestamp": 1177225200000,
+      "description": "Merrill Lynch & Co. Announces Appointment of Assistant Vice Presidents",
+      "csvRow": "1959\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4030999>"
+    },
+    {
+      "id": "evt_275",
+      "label": "Goldman Sachs Group Inc. Closes GS Capital Partners VI",
+      "type": "business_operations",
+      "date": "2007-04-23",
+      "timestamp": 1177311600000,
+      "description": "Goldman Sachs Group Inc. Closes GS Capital Partners VI",
+      "csvRow": "59186\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4020823>"
+    },
+    {
+      "id": "evt_276",
+      "label": "Goldman Sachs Forms $20 Billion Fund; May Seek Acquisitions",
+      "type": "merger_acquisition",
+      "date": "2007-04-23",
+      "timestamp": 1177311600000,
+      "description": "Goldman Sachs Forms $20 Billion Fund; May Seek Acquisitions",
+      "csvRow": "59187\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4020779>"
+    },
+    {
+      "id": "evt_277",
+      "label": "Carver Bank Announces Agreement with Merrill Lynch",
+      "type": "business_operations",
+      "date": "2007-04-23",
+      "timestamp": 1177311600000,
+      "description": "Carver Bank Announces Agreement with Merrill Lynch",
+      "csvRow": "1960\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4028558>"
+    },
+    {
+      "id": "evt_278",
+      "label": "Bear Stearns Plans an Aggressive Expansion in Europe and Asia",
+      "type": "business_operations",
+      "date": "2007-04-23",
+      "timestamp": 1177311600000,
+      "description": "Bear Stearns Plans an Aggressive Expansion in Europe and Asia",
+      "csvRow": "18558\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4028712>"
+    },
+    {
+      "id": "evt_279",
+      "label": "Morgan Stanley Names Stephen Roach as Asia Chairman",
+      "type": "management_change",
+      "date": "2007-04-23",
+      "timestamp": 1177311600000,
+      "description": "Morgan Stanley Names Stephen Roach as Asia Chairman",
+      "csvRow": "67734\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4028221>"
+    },
+    {
+      "id": "evt_280",
+      "label": "AIG Small Business Introduces AIG Bank Card Protector(SM) for Small, Private Banking & Financial Ins",
+      "type": "business_operations",
+      "date": "2007-04-23",
+      "timestamp": 1177311600000,
+      "description": "AIG Small Business Introduces AIG Bank Card Protector(SM) for Small, Private Banking & Financial Institutions",
+      "csvRow": "44031\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4021475>"
+    },
+    {
+      "id": "evt_281",
+      "label": "Qinetiq-led Consortium Lands \u00a35 Million Enabling Secure Information Infrastructure Programme by the",
+      "type": "merger_acquisition",
+      "date": "2007-04-24",
+      "timestamp": 1177398000000,
+      "description": "Qinetiq-led Consortium Lands \u00a35 Million Enabling Secure Information Infrastructure Programme by the MoD's Research Acquisition Organisation",
+      "csvRow": "32710\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4038453>"
+    },
+    {
+      "id": "evt_282",
+      "label": "Morgan Stanley Global Wealth Management Group Settles Gender Class Action Lawsuit",
+      "type": "legal_issue",
+      "date": "2007-04-24",
+      "timestamp": 1177398000000,
+      "description": "Morgan Stanley Global Wealth Management Group Settles Gender Class Action Lawsuit",
+      "csvRow": "67735\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4030724>"
+    },
+    {
+      "id": "evt_283",
+      "label": "GE Plastics Bidders Narrow As The Auction Reaches Second Round",
+      "type": "merger_acquisition",
+      "date": "2007-04-25",
+      "timestamp": 1177484400000,
+      "description": "GE Plastics Bidders Narrow As The Auction Reaches Second Round",
+      "csvRow": "13710\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4039705>"
+    },
+    {
+      "id": "evt_284",
+      "label": "Klayman & Toskes Announces Class Action Lawsuit Against Merrill Lynch & Co",
+      "type": "legal_issue",
+      "date": "2007-04-25",
+      "timestamp": 1177484400000,
+      "description": "Klayman & Toskes Announces Class Action Lawsuit Against Merrill Lynch & Co",
+      "csvRow": "1961\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4046019>"
+    },
+    {
+      "id": "evt_285",
+      "label": "International Business Machines Corp. Opens First SOA Institute for U.S. Federal Organizations",
+      "type": "business_operations",
+      "date": "2007-04-26",
+      "timestamp": 1177570800000,
+      "description": "International Business Machines Corp. Opens First SOA Institute for U.S. Federal Organizations",
+      "csvRow": "32716\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4055904>"
+    },
+    {
+      "id": "evt_286",
+      "label": "Genstar Capital, LLC Names Perry D. Odak as Operating Partner",
+      "type": "management_change",
+      "date": "2007-04-26",
+      "timestamp": 1177570800000,
+      "description": "Genstar Capital, LLC Names Perry D. Odak as Operating Partner",
+      "csvRow": "244\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4049125>"
+    },
+    {
+      "id": "evt_287",
+      "label": "American International Group, Inc., Q1 2007 Earnings Call, May-11-2007",
+      "type": "earnings_announcement",
+      "date": "2007-04-26",
+      "timestamp": 1177570800000,
+      "description": "American International Group, Inc., Q1 2007 Earnings Call, May-11-2007",
+      "csvRow": "44032\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4048973>"
+    },
+    {
+      "id": "evt_288",
+      "label": "American International Group Inc. to Report Q1, 2007 Results on May 10, 2007",
+      "type": "earnings_announcement",
+      "date": "2007-04-26",
+      "timestamp": 1177570800000,
+      "description": "American International Group Inc. to Report Q1, 2007 Results on May 10, 2007",
+      "csvRow": "44033\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_64106799>"
+    },
+    {
+      "id": "evt_289",
+      "label": "Goldman Sachs Group Inc. (NYSE: GS) signed a basic agreement to acquire Shanghai Daito Trust Constru",
+      "type": "merger_acquisition",
+      "date": "2007-04-27",
+      "timestamp": 1177657200000,
+      "description": "Goldman Sachs Group Inc. (NYSE: GS) signed a basic agreement to acquire Shanghai Daito Trust Construction Co., Ltd from Daito Trust Construction Co. Ltd. (TSE: 1878) for \u00a522.1 billion.",
+      "csvRow": "59189\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_83034155>"
+    },
+    {
+      "id": "evt_290",
+      "label": "American International Group Launces AIG India Equity Fund",
+      "type": "business_operations",
+      "date": "2007-04-28",
+      "timestamp": 1177743600000,
+      "description": "American International Group Launces AIG India Equity Fund",
+      "csvRow": "44034\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4078574>"
+    },
+    {
+      "id": "evt_291",
+      "label": "Merrill Lynch & Co. Inc. Appoints Matthew West and Philip Maher to its UK Advisory Team",
+      "type": "management_change",
+      "date": "2007-04-30",
+      "timestamp": 1177916400000,
+      "description": "Merrill Lynch & Co. Inc. Appoints Matthew West and Philip Maher to its UK Advisory Team",
+      "csvRow": "1962\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4094420>"
+    },
+    {
+      "id": "evt_292",
+      "label": "American International Group to Expand Business, Add 150 Offices in India in 2007",
+      "type": "business_operations",
+      "date": "2007-04-30",
+      "timestamp": 1177916400000,
+      "description": "American International Group to Expand Business, Add 150 Offices in India in 2007",
+      "csvRow": "44035\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4093141>"
+    },
+    {
+      "id": "evt_293",
+      "label": "Vulcan Power Company announced that it has received $35 million of a $150 million funding from Merri",
+      "type": "capital_raising",
+      "date": "2007-05-01",
+      "timestamp": 1178002800000,
+      "description": "Vulcan Power Company announced that it has received $35 million of a $150 million funding from Merrill Lynch & Co., Inc.",
+      "csvRow": "1964\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4102533>"
+    },
+    {
+      "id": "evt_294",
+      "label": "Morgan Stanley - Conference Presentation Call",
+      "type": "earnings_announcement",
+      "date": "2007-05-01",
+      "timestamp": 1178002800000,
+      "description": "Morgan Stanley - Conference Presentation Call",
+      "csvRow": "67736\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4094171>"
+    },
+    {
+      "id": "evt_295",
+      "label": "Merrill Lynch & Co. Inc. Names Harrold E. Ford Jr. as Vice-Chairman and Senior Policy Adviser",
+      "type": "management_change",
+      "date": "2007-05-01",
+      "timestamp": 1178002800000,
+      "description": "Merrill Lynch & Co. Inc. Names Harrold E. Ford Jr. as Vice-Chairman and Senior Policy Adviser",
+      "csvRow": "1963\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "9.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4332974>"
+    },
+    {
+      "id": "evt_296",
+      "label": "American International Group Introduce AIG Passport For Excess Casualty",
+      "type": "business_operations",
+      "date": "2007-05-01",
+      "timestamp": 1178002800000,
+      "description": "American International Group Introduce AIG Passport For Excess Casualty",
+      "csvRow": "44036\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4093877>"
+    },
+    {
+      "id": "evt_297",
+      "label": "Morgan Stanley Announces Retirement of David H. Sidwell as Executive Vice President and Chief Financ",
+      "type": "management_change",
+      "date": "2007-05-01",
+      "timestamp": 1178002800000,
+      "description": "Morgan Stanley Announces Retirement of David H. Sidwell as Executive Vice President and Chief Financial Officer at Year End",
+      "csvRow": "67737\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4087014>"
+    },
+    {
+      "id": "evt_298",
+      "label": "Merrill Lynch & Co. Inc. and Credit Agricole SA Launch Collateralised Foreign Exchange Obligation",
+      "type": "business_operations",
+      "date": "2007-05-02",
+      "timestamp": 1178089200000,
+      "description": "Merrill Lynch & Co. Inc. and Credit Agricole SA Launch Collateralised Foreign Exchange Obligation",
+      "csvRow": "1965\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "8.0E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4103928>"
+    },
+    {
+      "id": "evt_299",
+      "label": "ONEOK Partners GP Replaces KPMG LLP with PricewaterhouseCoopers as Principal Accountants",
+      "type": "business_operations",
+      "date": "2007-05-02",
+      "timestamp": 1178089200000,
+      "description": "ONEOK Partners GP Replaces KPMG LLP with PricewaterhouseCoopers as Principal Accountants",
+      "csvRow": "27110\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+      "confidence": "7.5E-1\"^^<http://www.w3.org/2001/XMLSchema#float>",
+      "uri": "<http://feekg.org/ontology#evt_4211268>"
+    }
+  ],
+  "stats": {
+    "total": 300,
+    "dateRange": [
+      "2007-01-01",
+      "2007-05-02"
+    ]
+  }
+};
+        const events = timelineData.events;
+
+        // Event type colors
+        const typeColors = {
+            'bankruptcy': '#ef4444',
+            'credit_downgrade': '#f59e0b',
+            'merger_acquisition': '#3b82f6',
+            'regulatory_pressure': '#8b5cf6',
+            'stock_decline': '#ec4899',
+            'debt_default': '#dc2626',
+            'missed_payment': '#f97316',
+            'default': '#6b7280'
+        };
+
+        // Setup SVG
+        const margin = {top: 40, right: 40, bottom: 60, left: 60};
+        const width = 1300 - margin.left - margin.right;
+        const height = 600 - margin.top - margin.bottom;
+
+        const svg = d3.select('#timeline')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleTime()
+            .domain(d3.extent(events, d => new Date(d.date)))
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([height, 0]);
+
+        // Axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(10)
+            .tickFormat(d3.timeFormat('%b %Y'));
+
+        svg.append('g')
+            .attr('class', 'axis')
+            .attr('transform', `translate(0,${height})`)
+            .call(xAxis)
+            .selectAll('text')
+            .attr('transform', 'rotate(-45)')
+            .style('text-anchor', 'end');
+
+        // Draw events
+        let filteredEvents = events;
+        const tooltip = d3.select('#tooltip');
+
+        function render() {
+            // Clear existing
+            svg.selectAll('.event-node').remove();
+            svg.selectAll('.event-label').remove();
+
+            // Distribute events vertically to avoid overlap
+            const eventsByDate = d3.group(filteredEvents, d => d.date);
+            const positioned = [];
+
+            eventsByDate.forEach((evts, date) => {
+                evts.forEach((evt, i) => {
+                    positioned.push({
+                        ...evt,
+                        y: (i % 5) / 5 // Distribute across 5 vertical levels
+                    });
+                });
+            });
+
+            // Draw event nodes
+            svg.selectAll('.event-node')
+                .data(positioned)
+                .join('circle')
+                .attr('class', 'event-node')
+                .attr('cx', d => xScale(new Date(d.date)))
+                .attr('cy', d => yScale(d.y))
+                .attr('r', 8)
+                .attr('fill', d => typeColors[d.type] || typeColors['default'])
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2)
+                .on('mouseover', showTooltip)
+                .on('mouseout', hideTooltip);
+
+            // Update stats
+            document.getElementById('visibleEvents').textContent = filteredEvents.length;
+        }
+
+        function showTooltip(event, d) {
+            let html = `<strong>${d.label}</strong>`;
+            html += `<div class="date">${d.date}</div>`;
+            html += `<div style="margin-top: 8px; font-size: 12px;">${d.description || 'No description'}</div>`;
+            html += `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e9ecef; font-size: 11px; color: #666;">`;
+            html += `Type: ${d.type}<br>`;
+            if (d.csvRow) html += `CSV Row: ${d.csvRow}<br>`;
+            if (d.confidence) html += `Confidence: ${(parseFloat(d.confidence) * 100).toFixed(1)}%`;
+            html += `</div>`;
+
+            tooltip
+                .html(html)
+                .style('left', (event.pageX + 15) + 'px')
+                .style('top', (event.pageY - 15) + 'px')
+                .classed('show', true);
+        }
+
+        function hideTooltip() {
+            tooltip.classed('show', false);
+        }
+
+        // Date range filter
+        const allDates = events.map(e => new Date(e.date)).sort((a, b) => a - b);
+        const dateSlider = document.getElementById('dateSlider');
+        const startDateEl = document.getElementById('startDate');
+        const endDateEl = document.getElementById('endDate');
+
+        startDateEl.textContent = d3.timeFormat('%b %Y')(allDates[0]);
+        endDateEl.textContent = d3.timeFormat('%b %Y')(allDates[allDates.length - 1]);
+
+        dateSlider.addEventListener('input', (e) => {
+            const percent = e.target.value / 100;
+            const cutoffIndex = Math.floor(allDates.length * percent);
+            const cutoffDate = allDates[cutoffIndex];
+
+            endDateEl.textContent = d3.timeFormat('%b %Y')(cutoffDate);
+
+            filteredEvents = events.filter(ev => new Date(ev.date) <= cutoffDate);
+            render();
+        });
+
+        // Type filters
+        const types = [...new Set(events.map(e => e.type))].sort();
+        const typeFiltersEl = document.getElementById('typeFilters');
+        const selectedTypes = new Set(types);
+
+        types.forEach(type => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn active';
+            btn.textContent = type.replace(/_/g, ' ');
+            btn.onclick = () => {
+                if (selectedTypes.has(type)) {
+                    selectedTypes.delete(type);
+                    btn.classList.remove('active');
+                } else {
+                    selectedTypes.add(type);
+                    btn.classList.add('active');
+                }
+
+                filteredEvents = events.filter(e =>
+                    selectedTypes.has(e.type) &&
+                    new Date(e.date) <= allDates[Math.floor(allDates.length * (dateSlider.value / 100))]
+                );
+                render();
+            };
+            typeFiltersEl.appendChild(btn);
+        });
+
+        // Initial render
+        document.getElementById('totalEvents').textContent = events.length;
+        document.getElementById('dateRangeText').textContent =
+            `${d3.timeFormat('%b %Y')(allDates[0])} - ${d3.timeFormat('%b %Y')(allDates[allDates.length - 1])}`;
+        render();
+    </script>
+</body>
+</html>

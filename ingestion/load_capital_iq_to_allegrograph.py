@@ -98,9 +98,80 @@ class AllegroGraphRDFLoader:
             return True
         except Exception as e:
             print(f"   ❌ Upload failed: {e}")
-            if hasattr(e, 'response'):
+            if hasattr(e, 'response') and e.response is not None:
                 print(f"   Response: {e.response.text[:200]}")
             return False
+
+    def upload_turtle_with_retry(self, turtle_content: str, max_retries: int = 3) -> bool:
+        """
+        Upload Turtle content with retry logic and exponential backoff
+
+        Args:
+            turtle_content: Turtle format RDF data
+            max_retries: Maximum number of retry attempts (default: 3)
+
+        Returns:
+            True if upload succeeded, False otherwise
+        """
+        import time
+
+        for attempt in range(max_retries):
+            try:
+                response = requests.post(
+                    self.statements_url,
+                    data=turtle_content.encode('utf-8'),
+                    headers={'Content-Type': 'text/turtle'},
+                    auth=self.auth,
+                    timeout=120  # Increased timeout for large batches
+                )
+                response.raise_for_status()
+                return True
+
+            except requests.exceptions.Timeout as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                    print(f"   ⏰ Timeout. Retrying in {wait_time}s... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(wait_time)
+                else:
+                    print(f"   ❌ Upload failed after {max_retries} attempts: Timeout")
+                    return False
+
+            except requests.exceptions.ConnectionError as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    print(f"   🔌 Connection error. Retrying in {wait_time}s... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(wait_time)
+                else:
+                    print(f"   ❌ Upload failed after {max_retries} attempts: Connection error")
+                    return False
+
+            except requests.exceptions.HTTPError as e:
+                # Don't retry on client errors (4xx)
+                if e.response.status_code < 500:
+                    print(f"   ❌ Upload failed: HTTP {e.response.status_code}")
+                    if hasattr(e, 'response') and e.response is not None:
+                        print(f"   Response: {e.response.text[:200]}")
+                    return False
+                else:
+                    # Retry on server errors (5xx)
+                    if attempt < max_retries - 1:
+                        wait_time = 2 ** attempt
+                        print(f"   ⚠️  Server error {e.response.status_code}. Retrying in {wait_time}s...")
+                        time.sleep(wait_time)
+                    else:
+                        print(f"   ❌ Upload failed after {max_retries} attempts: Server error")
+                        return False
+
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    print(f"   ⚠️  Unexpected error: {e}. Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    print(f"   ❌ Upload failed after {max_retries} attempts: {e}")
+                    return False
+
+        return False
 
     def convert_to_turtle(self, data: Dict, batch_size: int = 500) -> List[str]:
         """
@@ -165,6 +236,30 @@ class AllegroGraphRDFLoader:
                 if 'severity' in event:
                     event_triples.append(f'{event_uri} feekg:severity "{event["severity"]}" .')
 
+                # CSV Source metadata (for traceability back to original CSV)
+                if 'csvSource' in event:
+                    csv_src = event['csvSource']
+                    if 'rowNumber' in csv_src:
+                        event_triples.append(f'{event_uri} feekg:csvRowNumber "{csv_src["rowNumber"]}"^^xsd:integer .')
+                    if 'filename' in csv_src:
+                        event_triples.append(f'{event_uri} feekg:csvFilename "{csv_src["filename"]}" .')
+                    if 'capitalIqId' in csv_src:
+                        event_triples.append(f'{event_uri} feekg:capitalIqId "{csv_src["capitalIqId"]}" .')
+                    if 'companyId' in csv_src:
+                        event_triples.append(f'{event_uri} feekg:companyId "{csv_src["companyId"]}" .')
+                    if 'companyName' in csv_src:
+                        event_triples.append(f'{event_uri} feekg:companyName "{self._escape(csv_src["companyName"])}" .')
+                    if 'originalEventType' in csv_src:
+                        event_triples.append(f'{event_uri} feekg:originalEventType "{self._escape(csv_src["originalEventType"])}" .')
+
+                # Classification metadata (for quality tracking)
+                if 'classification' in event:
+                    classification = event['classification']
+                    if 'confidence' in classification:
+                        event_triples.append(f'{event_uri} feekg:classificationConfidence "{classification["confidence"]:.2f}"^^xsd:float .')
+                    if 'method' in classification:
+                        event_triples.append(f'{event_uri} feekg:classificationMethod "{classification["method"]}" .')
+
                 # Link to entities
                 for entity_name in event.get('entities', []):
                     # Find entity ID
@@ -216,8 +311,10 @@ class AllegroGraphRDFLoader:
                         triples.append(f'{link_id} feekg:{comp_name}Score "{comp_value:.4f}"^^xsd:float .')
 
             turtle = header + "\n".join(triples)
-            if not self.upload_turtle(turtle):
-                return False
+            if not self.upload_turtle_with_retry(turtle, max_retries=3):
+                print(f"   ⚠️  Failed to upload evolution link batch {i+1}. Skipping...")
+                # Don't return False - continue with other batches
+                continue
 
         return True
 
@@ -267,20 +364,31 @@ def load_file_to_allegrograph(
     batches = loader.convert_to_turtle(data, batch_size=500)
     print(f"   ✅ Created {len(batches)} batches")
 
-    # Upload batches
+    # Upload batches with retry and checkpoint tracking
     print(f"\n3. Uploading to AllegroGraph...")
     initial_count = loader.get_triple_count()
 
+    successful_batches = 0
+    failed_batches = []
+
     for i, batch in enumerate(batches, 1):
         print(f"   Batch {i}/{len(batches)}... ", end='', flush=True)
-        if loader.upload_turtle(batch):
+        if loader.upload_turtle_with_retry(batch, max_retries=3):
             print("✅")
+            successful_batches += 1
         else:
             print("❌")
-            return (0, 0, 0)
+            failed_batches.append(i)
+            # Continue processing other batches instead of stopping
 
     new_count = loader.get_triple_count()
-    print(f"   ✅ Uploaded {new_count - initial_count:,} triples")
+    uploaded_count = new_count - initial_count
+
+    if failed_batches:
+        print(f"   ⚠️  Uploaded {uploaded_count:,} triples ({successful_batches}/{len(batches)} batches)")
+        print(f"   ⚠️  Failed batches: {failed_batches} (continuing anyway)")
+    else:
+        print(f"   ✅ Uploaded {uploaded_count:,} triples (all {len(batches)} batches successful)")
 
     # Compute evolution links
     link_count = 0
