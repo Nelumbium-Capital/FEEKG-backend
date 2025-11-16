@@ -53,6 +53,13 @@ def create_app():
         """Serve triple conversion example"""
         return send_file('triple_example.html')
 
+    @app.route('/docs_hub.html')
+    def docs_hub():
+        """Serve documentation hub"""
+        import os
+        docs_path = os.path.join(os.path.dirname(__file__), '..', 'docs_hub.html')
+        return send_file(docs_path)
+
     # ==========================================================================
     # HEALTH & INFO ENDPOINTS
     # ==========================================================================
