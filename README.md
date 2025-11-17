@@ -2,6 +2,14 @@
 
 Implementation of the FEEKG paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
 
+**Tech Stack:** AllegroGraph (RDF) + Flask API + Python 3.10+ | **Data:** 4,000 real Capital IQ events (2007-2009 Lehman crisis)
+
+## 📚 Documentation
+
+- **[Developer Guide](CLAUDE.md)** - Complete technical guide for contributors
+- **[Security Policy](SECURITY.md)** - Security guidelines and reporting
+- **[Internal Docs](docs/internal/)** - Stage summaries, migration notes, and archived documentation
+
 ## 📊 Database: AllegroGraph (Production)
 
 **Current Setup:**
@@ -11,7 +19,7 @@ Implementation of the FEEKG paper: "Risk identification and management through k
 - **Entities:** 22 major financial institutions (Morgan Stanley, Lehman Brothers, etc.)
 - **Query Language:** SPARQL
 
-> ⚠️ **Note:** Neo4j has been retired in favor of AllegroGraph. See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for details.
+> ⚠️ **Note:** Neo4j has been retired in favor of AllegroGraph. See [docs/internal/migration-notes/ALLEGROGRAPH_MIGRATION.md](docs/internal/migration-notes/ALLEGROGRAPH_MIGRATION.md) for details.
 
 ## 🚀 How to View Everything
 
@@ -32,7 +40,7 @@ open results/dashboard.html                  # Statistics dashboard
 - `clean_knowledge_graph.html` - Simplified graph view
 - And 2 more...
 
-See [FRONTEND_STATUS.md](FRONTEND_STATUS.md) for complete visualization documentation.
+See [docs/internal/archived/FRONTEND_STATUS.md](docs/internal/archived/FRONTEND_STATUS.md) for complete visualization documentation.
 
 ### Option 2: Interactive API Demo (Web Browser)
 
@@ -58,7 +66,7 @@ The demo page provides:
 ./venv/bin/python scripts/utils/check_feekg_mycatalog.py
 ```
 
-See [ALLEGROGRAPH_MIGRATION.md](ALLEGROGRAPH_MIGRATION.md) for SPARQL query examples.
+See [docs/internal/migration-notes/ALLEGROGRAPH_MIGRATION.md](docs/internal/migration-notes/ALLEGROGRAPH_MIGRATION.md) for SPARQL query examples.
 
 ### Option 4: Run Query Demos (Terminal)
 
@@ -114,16 +122,17 @@ pip install -r requirements.txt
 
 ### 2. Configure Credentials
 
-The `.env` file should already exist with your AllegroGraph credentials:
+Create a `.env` file with your AllegroGraph credentials:
 
 ```bash
 AG_URL=https://qa-agraph.nelumbium.ai/
-AG_USER=sadmin
-AG_PASS=279H-Dt<>,YU
-AG_REPO=feekg_dev
+AG_USER=your_username
+AG_PASS=your_password
+AG_CATALOG=mycatalog
+AG_REPO=FEEKG
 ```
 
-**⚠️ NEVER commit the .env file to Git!**
+**⚠️ NEVER commit the .env file to Git!** See [SECURITY.md](SECURITY.md) for details.
 
 ### 3. Test Connection
 
