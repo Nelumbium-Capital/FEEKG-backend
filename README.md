@@ -1,4 +1,4 @@
-# FE-EKG: Financial Event Evolution Knowledge Graph
+# FE-EKG: Financial Event Evolution Knowledge Graph (Latest Update: Nov 16, 2025) Developed by Junjie and Jayana
 
 Implementation of the FEEKG paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
 
