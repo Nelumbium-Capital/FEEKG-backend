@@ -74,7 +74,13 @@
       "Bash(mv:*)",
       "Bash(git ls-tree:*)",
       "Bash(/Users/hansonxiong/Desktop/DDP/feekg/venv/bin/python3:*)",
-      "Bash(/bashes)"
+      "Bash(/bashes)",
+      "Bash(git stash:*)",
+      "Bash(git rm:*)",
+      "Bash(git remote:*)",
+      "Bash(npm run build:*)",
+      "Bash(git fetch:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
