@@ -8,9 +8,9 @@ All sensitive credentials are stored in `.env` file:
 
 ```bash
 AG_URL=https://qa-agraph.nelumbium.ai/
-AG_USER=sadmin
-AG_PASS=279H-Dt<>,YU
-AG_REPO=feekg_dev
+AG_USER=...
+AG_PASS=...
+AG_REPO=...
 ```
 
 ### Rules
