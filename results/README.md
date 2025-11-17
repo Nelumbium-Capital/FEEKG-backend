@@ -176,23 +176,24 @@ All knowledge graphs exported in three standard RDF formats for interoperability
 ## 📈 Statistics Summary
 
 ### Dataset Overview
-- **Total Events:** 20 (Evergrande)
-- **Total Entities:** 10 (companies, banks, regulators)
-- **Total Risks:** 10 instances across 12 types
-- **Evolution Links:** 154 computed causal connections
-- **Time Range:** Aug 2020 - Aug 2022 (24 months)
+- **Total Events:** 4,000 (Lehman Brothers Crisis)
+- **Total Entities:** 22 (major financial institutions)
+- **Total Risks:** Risk data being computed
+- **Evolution Links:** 31,173 evolution links
+- **Time Range:** 2007-2009 (Financial Crisis)
 
 ### RDF Triple Counts
-- **Events:** ~180 triples
-- **Entities:** ~40 triples
-- **Risks:** ~50 triples
-- **Evolution Links:** 154 triples
-- **Total:** ~424 triples
+- **Events:** ~32,000 triples
+- **Entities:** ~220 triples
+- **Risks:** Being computed
+- **Evolution Links:** 31,173 triples
+- **Total:** 59,090 triples in AllegroGraph
 
 ### Visualization Sizes
-- **Total Visualizations:** 7 PNG files
-- **Total Size:** ~3.0 MB
-- **Resolution:** High-DPI suitable for publications
+- **Total Visualizations:** 7 interactive HTML files
+- **Total Size:** ~150 MB (includes interactive visualizations)
+- **Format:** HTML with vis.js (optimized_knowledge_graph.html, timeline_view.html, dashboard.html, etc.)
+- **Resolution:** Interactive, zoomable, filterable
 
 ---
 
