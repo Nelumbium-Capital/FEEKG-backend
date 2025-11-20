@@ -194,3 +194,4 @@ logs/*.log
 results/*.png
 results/*.json
 results/*.csv
+rag/data/
