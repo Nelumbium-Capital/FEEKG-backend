@@ -1,10 +1,16 @@
-# FE-EKG: Financial Event Evolution Knowledge Graph (Latest Update: Nov 16, 2025)
+# CRISIS Economics Simulator - Python Implementation
 
-Team Junjie and Jayana of the KG SLM Group for UC Berkeley's Data Discovery Program 
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Mesa](https://img.shields.io/badge/mesa-2.1.0+-green.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-Implementation of the FEEKG paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
+Team Junjie and Jayana of the KG SLM Group for UC Berkeley's Data Discovery Program
 
-**Tech Stack:** AllegroGraph (RDF) + Flask API + Python 3.10+ | **Data:** 4,000 real Capital IQ events (2007-2009 Lehman crisis)
+Implementation of the FE-EKG (Financial Event Evolution Knowledge Graph) with Agent-Based Modeling for crisis simulation.
+
+Based on the paper: "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach"
+
+**Tech Stack:** AllegroGraph (RDF) + Flask API + Mesa ABM + Python 3.10+ | **Data:** 4,000 real Capital IQ events (2007-2009 Lehman crisis)
 
 ## 📚 Documentation
 
