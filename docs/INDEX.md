@@ -1,9 +1,9 @@
-# FE-EKG Documentation Index
+# CRISIS Economics Simulator - Documentation Index
 
-Complete documentation for the Financial Event Evolution Knowledge Graph (FE-EKG) system.
+Complete documentation for the CRISIS Economics Simulator: FE-EKG + ABM + RAG + SLM.
 
-**Last Updated:** 2025-11-15
-**Documentation Version:** 2.0 (Consolidated)
+**Last Updated:** 2025-11-20
+**Documentation Version:** 3.0 (With Simulation Modules)
 
 ---
 
@@ -137,6 +137,75 @@ Complete documentation for the Financial Event Evolution Knowledge Graph (FE-EKG
 
 ---
 
+## 🎮 Simulation Modules
+
+### ABM (Agent-Based Modeling)
+**Location:** `abm/`
+
+Mesa-based crisis simulation with intelligent agents.
+
+**Components:**
+- `agents.py` - Bank and Regulator agents with decision logic
+- `model.py` - CrisisModel for running simulations
+- `network.py` - Interbank network topology
+- `metrics.py` - Simulation metrics and analysis
+
+**Features:**
+- Bank agents with capital, liquidity, and risk management
+- Regulator agents for intervention decisions
+- Contagion modeling through interbank networks
+- Integration with knowledge graph for event-driven scenarios
+
+---
+
+### RAG (Retrieval-Augmented Generation)
+**Location:** `rag/`
+
+Knowledge retrieval system for financial queries.
+
+**Components:**
+- `ingest.py` - Document ingestion to vector store
+- `retriever.py` - Query and retrieval logic
+- `RAG_WORKFLOW.md` - System workflow documentation
+- `EVALUATION_PLAN.md` - Evaluation methodology
+
+**Features:**
+- ChromaDB vector storage
+- Sentence transformer embeddings
+- Financial event knowledge retrieval
+- Integration with SLM for enhanced responses
+
+---
+
+### SLM (Small Language Model)
+**Location:** `slm/`
+
+Lightweight language model integration for agent decisions.
+
+**Components:**
+- `__init__.py` - Module initialization
+- `test_connection.py` - Connection testing
+
+**Features:**
+- Low-latency inference for agent decisions
+- Integration with ABM agents
+- Financial domain adaptation
+
+---
+
+### Research Directions
+**File:** `docs/RESEARCH_DIRECTIONS.md`
+
+Future research and development roadmap.
+
+**Topics:**
+- Multi-agent simulation scenarios
+- Knowledge graph expansion
+- RAG enhancement strategies
+- Cross-domain applications
+
+---
+
 ## ⚡ Performance
 
 ### [OPTIMIZATION.md](OPTIMIZATION.md) (52K)
@@ -219,6 +288,14 @@ docs/
 ---
 
 ## 📝 Documentation Changelog
+
+### Version 3.0 (2025-11-20)
+- ✅ Rebranded to CRISIS Economics Simulator
+- ✅ Added ABM (Agent-Based Modeling) documentation
+- ✅ Added RAG (Retrieval-Augmented Generation) documentation
+- ✅ Added SLM (Small Language Model) documentation
+- ✅ Added Research Directions section
+- ✅ Updated all references to new branding
 
 ### Version 2.0 (2025-11-15)
 - ✅ Consolidated 25+ markdown files into 9 organized documents

@@ -37,6 +37,13 @@ flask-cors>=4.0.0
 # Optional: install openai package for alternative API clients
 # openai>=1.0.0
 
+# Agent-Based Modeling (ABM)
+mesa>=2.1.0
+
+# RAG System
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
 # Testing
 pytest>=7.0.0
 pytest-cov>=4.0.0

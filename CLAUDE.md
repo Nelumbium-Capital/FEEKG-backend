@@ -1,11 +1,17 @@
-# FE-EKG Project Guide for Claude
+# CRISIS Economics Simulator - Project Guide
 
 ## Project Overview
 
-This is a complete implementation of the **FE-EKG (Financial Event Evolution Knowledge Graph)** system based on the paper:
+This is a complete implementation of the **CRISIS Economics Simulator** combining:
+- **FE-EKG (Financial Event Evolution Knowledge Graph)** - Three-layer knowledge graph for risk analysis
+- **Agent-Based Modeling (ABM)** - Mesa-based crisis simulation with bank/regulator agents
+- **RAG System** - Retrieval-Augmented Generation for financial knowledge queries
+- **SLM Integration** - Small Language Model support for agent decision-making
+
+Based on the paper:
 > "Risk identification and management through knowledge Association: A financial event evolution knowledge graph approach" (Liu et al., 2024)
 
-**Purpose:** Build a three-layer knowledge graph for financial risk analysis using real Capital IQ data from the 2007-2009 Lehman Brothers financial crisis.
+**Purpose:** Build an integrated crisis simulation platform using real Capital IQ data from the 2007-2009 Lehman Brothers financial crisis.
 
 ## Architecture
 
@@ -30,6 +36,8 @@ This is a complete implementation of the **FE-EKG (Financial Event Evolution Kno
 
 - **Database:** AllegroGraph 8.4.0 (cloud-hosted RDF triplestore) ⭐ **PRIMARY**
 - **Backend:** Python 3.10+
+- **ABM Framework:** Mesa 2.1.0+ (Agent-Based Modeling)
+- **RAG:** ChromaDB + Sentence Transformers
 - **Graph Library:** NetworkX, RDFLib, requests (SPARQL)
 - **Visualization:** Matplotlib, Pandas
 - **API:** Flask + CORS
@@ -87,8 +95,23 @@ feekg/
 │   ├── demo_risk_queries.py  # Query demo
 │   └── demo_visualizations.py # Visualization demo
 │
+├── abm/                      # Agent-Based Modeling
+│   ├── agents.py             # Bank and Regulator agents
+│   ├── model.py              # CrisisModel simulation
+│   ├── network.py            # Interbank network topology
+│   └── metrics.py            # Simulation metrics
+│
+├── rag/                      # RAG System
+│   ├── ingest.py             # Document ingestion
+│   ├── retriever.py          # Query retrieval
+│   └── requirements.txt      # RAG-specific dependencies
+│
+├── slm/                      # SLM Integration
+│   ├── __init__.py           # Module initialization
+│   └── test_connection.py    # Connection testing
+│
 └── results/                  # Output files
-    ├── *.png                 # Generated visualizations
+    ├── *.html                # Interactive visualizations
     └── evolution_links.json  # Computed evolution links
 ```
 

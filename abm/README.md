@@ -1,12 +1,14 @@
-# Agent-Based Model Component
+# CRISIS Economics Simulator - ABM Component
 
-**Component 2 of Financial Crisis AI System**
+![Mesa](https://img.shields.io/badge/mesa-2.1.0+-green.svg)
+
+**Core simulation engine of the CRISIS Economics Simulator**
 
 ---
 
 ## Overview
 
-This component implements an Agent-Based Model (ABM) for simulating financial crisis contagion using the Mesa framework. Agents (banks, regulators, markets) interact in a network, making decisions that lead to emergent systemic behavior.
+This component implements an Agent-Based Model (ABM) for simulating financial crisis contagion using the Mesa framework. Banks, regulators, and markets interact in a network, making decisions that lead to emergent systemic behavior. Integrates with the FE-EKG knowledge graph for event-driven scenarios and historical context.
 
 ---
 
